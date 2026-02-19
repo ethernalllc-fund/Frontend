@@ -48,7 +48,7 @@ export const queryClient = new QueryClient({
 
 function createPersister(): Persister {
   return {
-    persistClient: async (client: PersistedClient) => {
+    persistClient: (client: PersistedClient) => {
       try {
         const payload = JSON.stringify(
           { clientState: client.clientState, timestamp: Date.now() },
@@ -66,10 +66,10 @@ function createPersister(): Persister {
       }
     },
 
-    restoreClient: async (): Promise<PersistedClient | undefined> => {
+    restoreClient: (): Promise<PersistedClient | undefined> => {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return undefined;
+        if (!raw) return Promise.resolve(undefined);
 
         const parsed = JSON.parse(raw, bigIntReviver) as {
           clientState: unknown;
@@ -78,25 +78,25 @@ function createPersister(): Persister {
 
         if (Date.now() - parsed.timestamp > CACHE_TTL) {
           localStorage.removeItem(STORAGE_KEY);
-          return undefined;
+          return Promise.resolve(undefined);
         }
 
-        return { clientState: parsed.clientState } as PersistedClient;
+        return Promise.resolve({ clientState: parsed.clientState } as PersistedClient);
       } catch (err) {
         console.warn('[QueryClient] Could not restore cache:', err);
         localStorage.removeItem(STORAGE_KEY);
-        return undefined;
+        return Promise.resolve(undefined);
       }
     },
 
-    removeClient: async () => {
+    removeClient: () => {
       localStorage.removeItem(STORAGE_KEY);
     },
   };
 }
 
 if (typeof window !== 'undefined') {
-  persistQueryClient({
+  void persistQueryClient({
     queryClient,
     persister:  createPersister(),
     maxAge:     CACHE_TTL,

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, startTransition } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAccount, useDisconnect, useBalance, useChainId, useSwitchChain } from 'wagmi';
 import { useAppKit } from '@reown/appkit/react';
@@ -39,7 +39,7 @@ const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    setIsMobileMenuOpen(false);
+    startTransition(() => setIsMobileMenuOpen(false));
   }, [location.pathname]);
 
   useEffect(() => {
@@ -211,7 +211,7 @@ const Navbar: React.FC = () => {
                         <button
                           onClick={() => {
                             setIsDropdownOpen(false);
-                            open({ view: 'Account' });
+                            void open({ view: 'Account' });
                           }}
                           className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm font-medium"
                         >
@@ -250,7 +250,7 @@ const Navbar: React.FC = () => {
               </>
             ) : (
               <button
-                onClick={() => open()}
+                onClick={() => { void open(); }}
                 className="btn btn-primary flex items-center gap-2"
               >
                 <Wallet size={18} />
@@ -263,7 +263,7 @@ const Navbar: React.FC = () => {
           <div className="md:hidden flex items-center gap-2">
             {/* Single wallet button: open account if connected, open modal if not */}
             <button
-              onClick={() => open(isConnected ? { view: 'Account' } : undefined)}
+              onClick={() => { void open(isConnected ? { view: 'Account' } : undefined); }}
               className="p-2 bg-gradient-to-r from-forest-green to-dark-blue text-white rounded-lg hover:opacity-90 transition"
               aria-label={
                 isConnected ? t('wallet.connectedWallet') : t('nav.connectWallet')

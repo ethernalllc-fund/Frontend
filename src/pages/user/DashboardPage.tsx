@@ -226,13 +226,13 @@ const DashboardPage: React.FC = () => {
     usdcAmount:               activeDepositAmountBigInt,
     enabled:                  hasFund && isDepositModalOpen && parseFloat(activeDepositAmount) > 0,
     autoExecuteAfterApproval: true,
-    onTransactionSuccess: (_txHash: string) => {
-      refetchAll();
+    onTransactionSuccess: () => {
+      void refetchAll();
       setIsDepositModalOpen(false);
       setDepositAmount('');
       setDepositMode('monthly');
     },
-    onError: (_err: unknown) => {},
+    onError: () => {},
   });
 
   // ─── Progress calc ──────────────────────────────────────────────────────
@@ -290,7 +290,7 @@ const DashboardPage: React.FC = () => {
       setDepositAmountError('Ingresa un monto válido antes de continuar');
       return;
     }
-    depositTx.executeAll();
+    void depositTx.executeAll();
   }, [depositMode, depositAmount, depositTx]);
 
   const handleStartRetirement = useCallback(() => {
@@ -375,7 +375,7 @@ const DashboardPage: React.FC = () => {
             <span className="block sm:inline">Administra tu futuro financiero en blockchain</span>
           </p>
           <button
-            onClick={refetchAll}
+            onClick={() => { void refetchAll(); }}
             className="mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition flex items-center gap-2 mx-auto"
           >
             <RefreshCw size={20} />
@@ -536,7 +536,7 @@ const DashboardPage: React.FC = () => {
                     Todavía no tienes un fondo de retiro
                   </p>
                   <button
-                    onClick={() => navigate('/calculator')}
+                    onClick={() => { void navigate('/calculator'); }}
                     className="bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white font-black text-lg sm:text-xl py-5 px-10 rounded-2xl shadow-2xl transition transform hover:scale-105 inline-flex items-center gap-3"
                   >
                     <Sparkles size={28} />

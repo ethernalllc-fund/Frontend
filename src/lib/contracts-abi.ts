@@ -2,7 +2,6 @@ import { useReadContract, useAccount } from 'wagmi';
 import { erc20Abi, type Address } from 'viem';
 import { useUSDCAddress, USDC_DECIMALS, formatUSDC, parseUSDC } from '@/hooks/usdc/usdcUtils';
 
-// ─── Re-export ABIs from canonical source ────────────────────────────────────
 export {
   DATETIME_ABI,
   TREASURY_ABI,
@@ -14,9 +13,6 @@ export {
   PERSONAL_FUND_FACTORY_ABI,
 } from '@/contracts/abis';
 
-// ─── Risk / Strategy constants ────────────────────────────────────────────────
-
-/** Matches the uint8 riskLevel values used in ProtocolRegistry */
 export const RISK_LEVELS = {
   LOW:    0,
   MEDIUM: 1,
@@ -24,14 +20,12 @@ export const RISK_LEVELS = {
 } as const;
 
 export type RiskLevel = typeof RISK_LEVELS[keyof typeof RISK_LEVELS];
-
 export const RISK_LABELS: Record<RiskLevel, string> = {
   [RISK_LEVELS.LOW]:    'Bajo',
   [RISK_LEVELS.MEDIUM]: 'Medio',
   [RISK_LEVELS.HIGH]:   'Alto',
 };
 
-/** Matches the uint8 strategyType values used in UserPreferences */
 export const STRATEGY_TYPES = {
   MANUAL:           0,
   AUTO_BEST_APY:    1,
@@ -40,7 +34,6 @@ export const STRATEGY_TYPES = {
 } as const;
 
 export type StrategyType = typeof STRATEGY_TYPES[keyof typeof STRATEGY_TYPES];
-
 export const STRATEGY_LABELS: Record<StrategyType, string> = {
   [STRATEGY_TYPES.MANUAL]:           'Manual',
   [STRATEGY_TYPES.AUTO_BEST_APY]:    'Mejor APY automático',
@@ -48,9 +41,6 @@ export const STRATEGY_LABELS: Record<StrategyType, string> = {
   [STRATEGY_TYPES.DIVERSIFIED]:      'Diversificado',
 };
 
-// ─── Types derived from contract structs ─────────────────────────────────────
-
-/** Mirrors getUserConfig() return struct from UserPreferences */
 export interface UserConfig {
   selectedProtocol: Address;
   autoCompound:     boolean;
@@ -60,14 +50,12 @@ export interface UserConfig {
   totalWithdrawn:   bigint;
 }
 
-/** Mirrors getUserStrategy() return struct from UserPreferences */
 export interface RoutingStrategy {
   strategyType:           StrategyType;
   diversificationPercent: bigint;
   rebalanceThreshold:     bigint;
 }
 
-/** Mirrors compareProtocols() array element from UserPreferences */
 export interface ProtocolComparison {
   protocolAddress: Address;
   apy:             bigint;
@@ -75,7 +63,6 @@ export interface ProtocolComparison {
   score:           bigint;
 }
 
-/** Mirrors getProtocol() return struct from ProtocolRegistry */
 export interface ProtocolStats {
   protocolAddress: Address;
   name:            string;
@@ -87,8 +74,6 @@ export interface ProtocolStats {
   lastUpdated:     bigint;
   verified:        boolean;
 }
-
-// ─── USDC hook utilities (unchanged) ─────────────────────────────────────────
 
 export interface ReadContractResult<T> {
   data:       T | undefined;
@@ -138,7 +123,7 @@ export function useUSDCBalance(
     isFetching: result.isFetching,
     isError:    result.isError,
     error:      result.error as Error | null,
-    refetch:    result.refetch,
+    refetch:    () => { void result.refetch(); },
   };
 }
 
@@ -164,7 +149,7 @@ export function useUSDCAllowance(
     isFetching: result.isFetching,
     isError:    result.isError,
     error:      result.error as Error | null,
-    refetch:    result.refetch,
+    refetch:    () => { void result.refetch(); },
   };
 }
 
@@ -186,7 +171,7 @@ export function useUSDCSymbol(): ReadContractResult<string> {
     isFetching: result.isFetching,
     isError:    result.isError,
     error:      result.error as Error | null,
-    refetch:    result.refetch,
+    refetch:    () => { void result.refetch(); },
   };
 }
 
@@ -208,7 +193,7 @@ export function useUSDCName(): ReadContractResult<string> {
     isFetching: result.isFetching,
     isError:    result.isError,
     error:      result.error as Error | null,
-    refetch:    result.refetch,
+    refetch:    () => { void result.refetch(); },
   };
 }
 
@@ -230,7 +215,7 @@ export function useUSDCDecimals(): ReadContractResult<number> {
     isFetching: result.isFetching,
     isError:    result.isError,
     error:      result.error as Error | null,
-    refetch:    result.refetch,
+    refetch:    () => { void result.refetch(); },
   };
 }
 
@@ -252,7 +237,7 @@ export function useUSDCTotalSupply(): ReadContractResult<bigint> {
     isFetching: result.isFetching,
     isError:    result.isError,
     error:      result.error as Error | null,
-    refetch:    result.refetch,
+    refetch:    () => { void result.refetch(); },
   };
 }
 

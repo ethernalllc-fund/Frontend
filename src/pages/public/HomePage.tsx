@@ -66,7 +66,7 @@ const HomePage: React.FC = () => {
 
   const handleGetStarted = () => {
     if (isConnected) {
-      navigate('/calculator');
+      void navigate('/calculator');
     } else {
       openModal();
     }
@@ -272,7 +272,7 @@ const HomePage: React.FC = () => {
 
           {/* Survey form */}
           {!success && !showFollowUp && (
-            <form onSubmit={handleSurveySubmit} className="bg-white rounded-2xl shadow-xl p-8 space-y-8">
+            <form onSubmit={(e) => { void handleSurveySubmit(e); }} className="bg-white rounded-2xl shadow-xl p-8 space-y-8">
 
               {/* Q1: Age */}
               <div>
@@ -354,7 +354,7 @@ const HomePage: React.FC = () => {
                 </div>
               </div>
 
-              <form onSubmit={handleFollowUpSubmit} className="space-y-6">
+              <form onSubmit={(e) => { void handleFollowUpSubmit(e); }} className="space-y-6">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-4">
                     {t('followUp.question1')} *
