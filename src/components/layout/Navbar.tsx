@@ -189,7 +189,7 @@ const Navbar: React.FC = () => {
                         {/* Network status banner */}
                         {isCorrectNetwork ? (
                           <div className="bg-green-50 border border-green-200 rounded-lg p-3 flex items-start gap-2">
-                            <CheckCircle className="text-green-600 flex-shrink-0" size={16} />
+                            <CheckCircle className="text-green-600 shrink-0" size={16} />
                             <div className="text-xs text-green-800">
                               <strong>{t('wallet.correctNetwork')}</strong>{' '}
                               {t('wallet.connectedTo')} {chainConfig.name}.
@@ -197,7 +197,7 @@ const Navbar: React.FC = () => {
                           </div>
                         ) : (
                           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex items-start gap-2">
-                            <AlertTriangle className="text-yellow-600 flex-shrink-0" size={16} />
+                            <AlertTriangle className="text-yellow-600 shrink-0" size={16} />
                             <div className="text-xs text-yellow-800">
                               <strong>{t('wallet.wrongNetwork')}</strong>{' '}
                               {getChainErrorMessage(chainId)}
@@ -291,7 +291,7 @@ const Navbar: React.FC = () => {
             aria-hidden="true"
           />
 
-          <div className="fixed top-[73px] left-0 right-0 bottom-0 bg-white z-50 md:hidden overflow-y-auto">
+          <div className="fixed top-18.25 left-0 right-0 bottom-0 bg-white z-50 md:hidden overflow-y-auto">
             <nav className="flex flex-col p-6 space-y-4">
               {navLinks.map((link) => (
                 <Link

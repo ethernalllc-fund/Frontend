@@ -124,7 +124,7 @@ const ContactPage: React.FC = () => {
         {success && (
           <div className="bg-green-50 border-2 border-green-200 rounded-2xl p-4 sm:p-6 mb-6 shadow-lg animate-fade-in">
             <div className="flex items-start gap-3">
-              <CheckCircle className="text-green-600 flex-shrink-0 mt-1" size={24} />
+              <CheckCircle className="text-green-600 shrink-0 mt-1" size={24} />
               <div>
                 <h3 className="font-semibold text-green-800 mb-1">{t('contact.success')}</h3>
                 <p className="text-green-700 text-sm">{t('contact.successDetail')}</p>
@@ -137,7 +137,7 @@ const ContactPage: React.FC = () => {
         {error && (
           <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-4 sm:p-6 mb-6 shadow-lg">
             <div className="flex items-start gap-3">
-              <AlertCircle className="text-red-600 flex-shrink-0 mt-1" size={24} />
+              <AlertCircle className="text-red-600 shrink-0 mt-1" size={24} />
               <div>
                 <h3 className="font-semibold text-red-800 mb-1">{t('common.error')}</h3>
                 <p className="text-red-700 text-sm">{error}</p>
@@ -252,7 +252,7 @@ const ContactPage: React.FC = () => {
           {address && (
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
               <div className="flex items-start gap-2">
-                <CheckCircle className="text-blue-600 flex-shrink-0 mt-0.5" size={18} />
+                <CheckCircle className="text-blue-600 shrink-0 mt-0.5" size={18} />
                 <div>
                   <p className="text-sm font-medium text-blue-800 mb-1">
                     {t('contact.walletConnected')}

@@ -272,7 +272,7 @@ const CalculatorPage: React.FC = () => {
         {error && (
           <div className="max-w-2xl mx-auto mb-6">
             <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-4 flex items-start gap-3">
-              <AlertCircle className="text-red-600 flex-shrink-0 mt-0.5" size={20} />
+              <AlertCircle className="text-red-600 shrink-0 mt-0.5" size={20} />
               <div>
                 <h3 className="font-semibold text-red-800 mb-1">{t('calculator.dataError')}</h3>
                 <p className="text-red-700 text-sm">{error}</p>
@@ -415,7 +415,7 @@ const CalculatorPage: React.FC = () => {
                     key={item.step}
                     className="bg-white rounded-xl p-4 flex items-start gap-4 shadow-md hover:shadow-lg transition-shadow"
                   >
-                    <div className="bg-purple-100 text-purple-700 font-bold w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
+                    <div className="bg-purple-100 text-purple-700 font-bold w-8 h-8 rounded-full flex items-center justify-center shrink-0">
                       {item.step}
                     </div>
                     <div className="flex-1">
@@ -425,14 +425,14 @@ const CalculatorPage: React.FC = () => {
                       </div>
                       <p className="text-sm text-gray-600">{t(item.descKey)}</p>
                     </div>
-                    <ChevronRight className="text-gray-400 flex-shrink-0" size={20} />
+                    <ChevronRight className="text-gray-400 shrink-0" size={20} />
                   </div>
                 ))}
               </div>
 
               <div className="mt-6 bg-amber-50 border-2 border-amber-200 rounded-xl p-4">
                 <div className="flex items-start gap-3">
-                  <AlertCircle className="text-amber-600 flex-shrink-0 mt-0.5" size={20} />
+                  <AlertCircle className="text-amber-600 shrink-0 mt-0.5" size={20} />
                   <div>
                     <h4 className="font-semibold text-amber-900 mb-1">{t('calculator.testnetOnly')}</h4>
                     <p className="text-sm text-amber-800">{t('calculator.testnetOnlyDesc')}</p>

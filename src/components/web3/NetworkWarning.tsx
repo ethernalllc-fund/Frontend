@@ -28,7 +28,7 @@ export function NetworkWarning({ expectedChainId }: NetworkWarningProps) {
 
         {/* Info */}
         <div className="flex items-center gap-4">
-          <AlertTriangle className="w-8 h-8 flex-shrink-0 animate-pulse" />
+          <AlertTriangle className="w-8 h-8 shrink-0 animate-pulse" />
           <div>
             <p className="font-bold text-lg leading-tight">Wrong Network Detected</p>
             <p className="text-sm opacity-90">
@@ -50,7 +50,7 @@ export function NetworkWarning({ expectedChainId }: NetworkWarningProps) {
           className="bg-white text-red-600 font-bold py-3 px-6 rounded-xl
                      hover:bg-gray-100 transition
                      disabled:opacity-50 disabled:cursor-not-allowed
-                     flex items-center gap-2 flex-shrink-0"
+                     flex items-center gap-2 shrink-0"
         >
           {isSwitchingNetwork ? (
             <>

@@ -55,7 +55,7 @@ export default function BackendStatus({ apiUrl }: BackendStatusProps) {
     return (
       <div className="fixed top-4 right-4 z-50 max-w-md rounded-lg bg-yellow-500/10 px-4 py-3 text-sm text-yellow-600 backdrop-blur-sm border border-yellow-500/20">
         <div className="flex items-start gap-3">
-          <Loader2 className="h-5 w-5 animate-spin flex-shrink-0 mt-0.5" />
+          <Loader2 className="h-5 w-5 animate-spin shrink-0 mt-0.5" />
           <div className="flex-1">
             <p className="font-semibold mb-1">Backend is waking up...</p>
             <p className="text-xs text-yellow-600/80">
@@ -72,7 +72,7 @@ export default function BackendStatus({ apiUrl }: BackendStatusProps) {
     return (
       <div className="fixed top-4 right-4 z-50 max-w-md rounded-lg bg-red-500/10 px-4 py-3 text-sm text-red-600 backdrop-blur-sm border border-red-500/20">
         <div className="flex items-start gap-3">
-          <WifiOff className="h-5 w-5 flex-shrink-0 mt-0.5" />
+          <WifiOff className="h-5 w-5 shrink-0 mt-0.5" />
           <div className="flex-1">
             <p className="font-semibold mb-1">Backend unavailable</p>
             <p className="text-xs text-red-600/80">

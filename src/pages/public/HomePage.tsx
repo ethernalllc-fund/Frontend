@@ -244,7 +244,7 @@ const HomePage: React.FC = () => {
           {finalSuccess && (
             <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6 mb-6 shadow-lg animate-fade-in">
               <div className="flex items-start gap-3">
-                <CheckCircle className="text-green-600 flex-shrink-0 mt-1" size={24} />
+                <CheckCircle className="text-green-600 shrink-0 mt-1" size={24} />
                 <div>
                   <h3 className="font-semibold text-green-800 mb-1">{t('followUp.thankYou')}</h3>
                   <p className="text-green-700 text-sm">
@@ -261,7 +261,7 @@ const HomePage: React.FC = () => {
           {error && (
             <div className="bg-red-50 border-2 border-red-200 rounded-xl p-6 mb-6 shadow-lg">
               <div className="flex items-start gap-3">
-                <AlertCircle className="text-red-600 flex-shrink-0 mt-1" size={24} />
+                <AlertCircle className="text-red-600 shrink-0 mt-1" size={24} />
                 <div>
                   <h3 className="font-semibold text-red-800 mb-1">{t('survey.errorTitle')}</h3>
                   <p className="text-red-700 text-sm">{error}</p>
@@ -346,7 +346,7 @@ const HomePage: React.FC = () => {
             <div className="bg-white rounded-2xl shadow-xl p-8 space-y-6 animate-fade-in">
               <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6 mb-6">
                 <div className="flex items-start gap-3">
-                  <CheckCircle className="text-green-600 flex-shrink-0 mt-1" size={24} />
+                  <CheckCircle className="text-green-600 shrink-0 mt-1" size={24} />
                   <div>
                     <h3 className="font-semibold text-green-800 mb-1">{t('followUp.successTitle')}</h3>
                     <p className="text-green-700 text-sm">{t('followUp.successMessage')}</p>

@@ -485,7 +485,7 @@ const DashboardPage: React.FC = () => {
                         href={`${ARBISCAN_BASE}${fundAddress}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-lg transition flex-shrink-0"
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-lg transition shrink-0"
                         title="Ver en Arbiscan"
                       >
                         <ExternalLink size={20} />
@@ -584,7 +584,7 @@ const DashboardPage: React.FC = () => {
               {/* Current config summary */}
               {userPreferences.userConfig && (
                 <div className="bg-indigo-50 border border-indigo-200 rounded-2xl p-4 mb-6 flex items-start gap-3">
-                  <Info size={18} className="text-indigo-500 flex-shrink-0 mt-0.5" />
+                  <Info size={18} className="text-indigo-500 shrink-0 mt-0.5" />
                   <div className="text-sm text-indigo-800">
                     <span className="font-semibold">Config actual: </span>
                     <span className={`font-bold ${riskLevelColor(currentRisk)}`}>{riskLevelLabel(currentRisk)}</span>
@@ -614,14 +614,14 @@ const DashboardPage: React.FC = () => {
                             : 'border border-gray-200 hover:bg-gray-50'
                         }`}
                       >
-                        <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${isSelected ? r.badge : 'bg-gray-100'}`}>
+                        <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${isSelected ? r.badge : 'bg-gray-100'}`}>
                           <Icon size={18} className={isSelected ? '' : 'text-gray-400'} />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className={`font-bold text-sm ${isSelected ? '' : 'text-gray-600'}`}>{r.label}</p>
                           <p className={`text-xs truncate ${isSelected ? 'text-gray-600' : 'text-gray-400'}`}>{r.description}</p>
                         </div>
-                        {isSelected && <CheckCircle size={16} className="text-current flex-shrink-0 opacity-70" />}
+                        {isSelected && <CheckCircle size={16} className="text-current shrink-0 opacity-70" />}
                       </button>
                     );
                   })}
@@ -658,7 +658,7 @@ const DashboardPage: React.FC = () => {
                               </span>
                             </div>
                           </div>
-                          {isSelected && <CheckCircle size={16} className="text-indigo-500 flex-shrink-0" />}
+                          {isSelected && <CheckCircle size={16} className="text-indigo-500 shrink-0" />}
                         </button>
                       );
                     })}
@@ -673,7 +673,7 @@ const DashboardPage: React.FC = () => {
               {/* Save config feedback */}
               {prefSaveError && (
                 <p className="text-red-600 text-xs mb-3 flex items-start gap-1">
-                  <AlertCircle size={14} className="flex-shrink-0 mt-0.5" />
+                  <AlertCircle size={14} className="shrink-0 mt-0.5" />
                   {prefSaveError}
                 </p>
               )}
@@ -727,14 +727,14 @@ const DashboardPage: React.FC = () => {
                             : 'border-gray-200 hover:bg-gray-50'
                         }`}
                       >
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${isSelected ? 'bg-violet-100 text-violet-700' : 'bg-gray-100 text-gray-400'}`}>
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isSelected ? 'bg-violet-100 text-violet-700' : 'bg-gray-100 text-gray-400'}`}>
                           <Icon size={16} />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className={`font-bold text-sm ${isSelected ? 'text-violet-800' : 'text-gray-600'}`}>{s.label}</p>
                           <p className="text-xs text-gray-400 truncate">{s.description}</p>
                         </div>
-                        {isSelected && <CheckCircle size={16} className="text-violet-500 flex-shrink-0" />}
+                        {isSelected && <CheckCircle size={16} className="text-violet-500 shrink-0" />}
                       </button>
                     );
                   })}
@@ -787,7 +787,7 @@ const DashboardPage: React.FC = () => {
                             )}
                           </div>
                         </div>
-                        <div className="text-right flex-shrink-0">
+                        <div className="text-right shrink-0">
                           <p className="text-emerald-600 font-black text-sm">
                             {(Number(p.apy) / 100).toFixed(2)}%
                           </p>
@@ -838,13 +838,13 @@ const DashboardPage: React.FC = () => {
                       className={`border rounded-2xl p-4 ${colorMap[item.color]} transition hover:shadow-md cursor-pointer`}
                     >
                       <div className="flex items-start gap-3">
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${iconColorMap[item.color]}`}>
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${iconColorMap[item.color]}`}>
                           <Icon size={16} />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-1 mb-1">
                             <p className="font-bold text-sm text-gray-800 leading-tight">{item.title}</p>
-                            <ChevronRight size={14} className="text-gray-400 flex-shrink-0 mt-0.5" />
+                            <ChevronRight size={14} className="text-gray-400 shrink-0 mt-0.5" />
                           </div>
                           <p className="text-xs text-gray-500 leading-relaxed mb-2">{item.summary}</p>
                           <p className="text-xs text-gray-400">{item.date}</p>
@@ -940,7 +940,7 @@ const DashboardPage: React.FC = () => {
 
               {!depositTx.hasEnoughBalance && parseFloat(activeDepositAmount) > 0 && (
                 <div className="flex items-start gap-2 bg-red-50 border border-red-200 rounded-xl p-3">
-                  <AlertCircle className="text-red-500 flex-shrink-0 mt-0.5" size={18} />
+                  <AlertCircle className="text-red-500 shrink-0 mt-0.5" size={18} />
                   <p className="text-red-700 text-sm">
                     Balance de USDC insuficiente. Necesitas {formatUSDCWithSymbol(depositTx.userBalance)} más.
                   </p>

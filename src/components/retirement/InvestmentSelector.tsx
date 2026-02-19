@@ -293,7 +293,7 @@ export const InvestmentSelector: React.FC<InvestmentSelectorProps> = ({
           {selectedProvider && !availableProviders.find(p => p.id === selectedProvider)?.supported && (
             <div className="mt-3 bg-amber-50 border-2 border-amber-200 rounded-xl p-3">
               <div className="flex items-start gap-2">
-                <Info className="text-amber-600 flex-shrink-0 mt-0.5" size={16} />
+                <Info className="text-amber-600 shrink-0 mt-0.5" size={16} />
                 <div>
                   <h4 className="font-bold text-amber-900 text-sm mb-1">Coming Soon</h4>
                   <p className="text-xs text-amber-800">
