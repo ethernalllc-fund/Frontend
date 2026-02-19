@@ -180,7 +180,7 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-gray-50 pt-16 pb-20">
 
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-700 via-indigo-600 to-blue-700 shadow-2xl">
+      <div className="bg-linear-to-r from-purple-700 via-indigo-600 to-blue-700 shadow-2xl">
         <div className="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <Shield className="w-12 h-12 text-white" />

@@ -346,7 +346,7 @@ const DashboardPage: React.FC = () => {
   // ─── Loading ────────────────────────────────────────────────────────────
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-indigo-50 to-purple-50 flex items-center justify-center">
         <div className="text-center">
           <RefreshCw className="animate-spin mx-auto mb-6 text-indigo-600" size={64} />
           <p className="text-2xl font-bold text-gray-700">Cargando tu Dashboard...</p>
@@ -357,7 +357,7 @@ const DashboardPage: React.FC = () => {
 
   // ══════════════════════════════════════════════════════════════════════
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-8 sm:py-12 px-4 sm:px-6">
+    <div className="min-h-screen bg-linear-to-br from-indigo-50 via-purple-50 to-pink-50 py-8 sm:py-12 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto">
 
         {/* ── Header ── */}
@@ -423,7 +423,7 @@ const DashboardPage: React.FC = () => {
                   </div>
 
                   {progress && (
-                    <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 border-2 border-blue-200">
+                    <div className="bg-linear-to-r from-blue-50 to-purple-50 rounded-2xl p-6 border-2 border-blue-200">
                       <div className="flex items-center justify-between mb-3">
                         <h3 className="font-bold text-gray-800 flex items-center gap-2">
                           <Target size={20} className="text-blue-600" />
@@ -475,7 +475,7 @@ const DashboardPage: React.FC = () => {
                     ))}
                   </div>
 
-                  <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-4 sm:p-6 border-2 border-indigo-200">
+                  <div className="bg-linear-to-r from-indigo-50 to-purple-50 rounded-2xl p-4 sm:p-6 border-2 border-indigo-200">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         <p className="text-gray-700 font-medium mb-1">Dirección del Contrato</p>
@@ -494,7 +494,7 @@ const DashboardPage: React.FC = () => {
                   </div>
 
                   {personalFund.timelockInfo?.timelockEnd && (
-                    <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-6 border-2 border-amber-300">
+                    <div className="bg-linear-to-r from-amber-50 to-orange-50 rounded-2xl p-6 border-2 border-amber-300">
                       <p className="text-gray-700 font-medium mb-2 flex items-center gap-2">
                         <Clock size={24} className="text-amber-600" />
                         Timelock termina:
@@ -513,7 +513,7 @@ const DashboardPage: React.FC = () => {
                   <div className="grid sm:grid-cols-2 gap-4">
                     <button
                       onClick={handleOpenDepositModal}
-                      className="bg-gradient-to-r from-emerald-600 to-green-700 hover:from-emerald-700 hover:to-green-800 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition transform hover:scale-105 flex items-center justify-center gap-3"
+                      className="bg-linear-to-r from-emerald-600 to-green-700 hover:from-emerald-700 hover:to-green-800 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition transform hover:scale-105 flex items-center justify-center gap-3"
                     >
                       <DollarSign size={24} />
                       Realizar Depósito
@@ -521,7 +521,7 @@ const DashboardPage: React.FC = () => {
                     {!personalFund.fundInfo?.retirementStarted && personalFund.timelockInfo?.isUnlocked && (
                       <button
                         onClick={handleStartRetirement}
-                        className="bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition transform hover:scale-105 flex items-center justify-center gap-3"
+                        className="bg-linear-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition transform hover:scale-105 flex items-center justify-center gap-3"
                       >
                         <TrendingUp size={24} />
                         Iniciar Retiro
@@ -537,7 +537,7 @@ const DashboardPage: React.FC = () => {
                   </p>
                   <button
                     onClick={() => { void navigate('/calculator'); }}
-                    className="bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white font-black text-lg sm:text-xl py-5 px-10 rounded-2xl shadow-2xl transition transform hover:scale-105 inline-flex items-center gap-3"
+                    className="bg-linear-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white font-black text-lg sm:text-xl py-5 px-10 rounded-2xl shadow-2xl transition transform hover:scale-105 inline-flex items-center gap-3"
                   >
                     <Sparkles size={28} />
                     Crear Mi Fondo
@@ -610,7 +610,7 @@ const DashboardPage: React.FC = () => {
                         onClick={() => setPendingRisk(r.value)}
                         className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left ${
                           isSelected
-                            ? `bg-gradient-to-r ${r.gradient} border-2 ${r.border} shadow`
+                            ? `bg-linear-to-r ${r.gradient} border-2 ${r.border} shadow`
                             : 'border border-gray-200 hover:bg-gray-50'
                         }`}
                       >
@@ -687,7 +687,7 @@ const DashboardPage: React.FC = () => {
               <button
                 onClick={handleSaveUserConfig}
                 disabled={isSavingPrefs || (pendingRisk === null && pendingProtocol === null)}
-                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:from-gray-300 disabled:to-gray-300 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2"
+                className="w-full bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:from-gray-300 disabled:to-gray-300 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2"
               >
                 {isSavingPrefs
                   ? <><RefreshCw className="animate-spin" size={16} />Guardando...</>
@@ -750,7 +750,7 @@ const DashboardPage: React.FC = () => {
                 <button
                   onClick={handleSaveStrategy}
                   disabled={isSavingStrategy || pendingStrategy === null}
-                  className="w-full mt-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 disabled:from-gray-300 disabled:to-gray-300 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2"
+                  className="w-full mt-3 bg-linear-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 disabled:from-gray-300 disabled:to-gray-300 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2"
                 >
                   {isSavingStrategy
                     ? <><RefreshCw className="animate-spin" size={16} />Guardando...</>
@@ -857,7 +857,7 @@ const DashboardPage: React.FC = () => {
             </div>
 
             {/* ── Soporte ── */}
-            <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-3xl shadow-2xl border-2 border-pink-200 p-6 sm:p-8">
+            <div className="bg-linear-to-r from-pink-50 to-purple-50 rounded-3xl shadow-2xl border-2 border-pink-200 p-6 sm:p-8">
               <h3 className="text-xl sm:text-2xl font-black text-gray-800 mb-4 flex items-center gap-3">
                 <MessageCircle className="text-pink-600" size={28} />
                 ¿Necesitas ayuda?
@@ -988,7 +988,7 @@ const DashboardPage: React.FC = () => {
                   !depositTx.hasEnoughBalance ||
                   (depositMode === 'custom' && !isValidUSDCAmount(depositAmount))
                 }
-                className="w-full bg-gradient-to-r from-emerald-600 to-green-700 hover:from-emerald-700 hover:to-green-800 disabled:from-gray-300 disabled:to-gray-300 text-white font-bold py-4 rounded-xl transition flex items-center justify-center gap-2"
+                className="w-full bg-linear-to-r from-emerald-600 to-green-700 hover:from-emerald-700 hover:to-green-800 disabled:from-gray-300 disabled:to-gray-300 text-white font-bold py-4 rounded-xl transition flex items-center justify-center gap-2"
               >
                 {depositTx.isLoading ? (
                   <><RefreshCw className="animate-spin" size={18} />Procesando...</>

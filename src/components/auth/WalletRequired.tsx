@@ -9,7 +9,7 @@ export function WalletRequired() {
   const { open } = useAppKit();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-linear-to-br from-yellow-50 to-orange-50 flex items-center justify-center px-4">
       <div className="max-w-lg w-full">
         <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-12 text-center border-4 border-yellow-300">
           <Wallet className="w-32 h-32 text-yellow-600 mx-auto mb-6 animate-pulse" />
@@ -25,7 +25,7 @@ export function WalletRequired() {
           <div className="space-y-4">
             <button
               onClick={() => open()}
-              className="w-full bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white font-bold py-5 px-8 rounded-2xl text-xl transition shadow-lg"
+              className="w-full bg-linear-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white font-bold py-5 px-8 rounded-2xl text-xl transition shadow-lg"
             >
               {t('nav.connectWallet')}
             </button>

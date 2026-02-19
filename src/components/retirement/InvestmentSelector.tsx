@@ -307,7 +307,7 @@ export const InvestmentSelector: React.FC<InvestmentSelectorProps> = ({
       )}
 
       {selectedMethod && selectedProvider && (
-        <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-4 border-2 border-indigo-200">
+        <div className="bg-linear-to-r from-indigo-50 to-purple-50 rounded-xl p-4 border-2 border-indigo-200">
           <div className="flex items-center gap-2 mb-2">
             <CheckCircle className="text-indigo-600" size={20} />
             <h4 className="font-bold text-indigo-800">Investment Method Selected</h4>

@@ -74,7 +74,7 @@ export function VerificationStep({ plan, onVerificationComplete }: VerificationS
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-2xl p-6">
+      <div className="bg-linear-to-r from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-2xl p-6">
         <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
           <AlertCircle className="text-indigo-600" size={28} />
           Verificación de Requisitos

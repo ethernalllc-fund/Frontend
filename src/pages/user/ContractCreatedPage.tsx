@@ -85,11 +85,11 @@ const ContractCreatedPage = () => {
 
   if (txSuccess && successTxHash) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 flex items-center justify-center px-4 py-16">
+      <div className="min-h-screen bg-linear-to-br from-emerald-50 via-green-50 to-teal-50 flex items-center justify-center px-4 py-16">
         <div className="max-w-4xl w-full">
           <div className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl border-4 border-emerald-300 overflow-hidden">
 
-            <div className="bg-gradient-to-r from-emerald-600 to-green-700 p-12 text-center text-white">
+            <div className="bg-linear-to-r from-emerald-600 to-green-700 p-12 text-center text-white">
               <CheckCircle2 className="w-32 h-32 mx-auto mb-6 animate-bounce" />
               <h1 className="text-4xl sm:text-5xl font-black mb-4">¡Contrato Creado Exitosamente!</h1>
               <p className="text-lg sm:text-xl opacity-90">Tu fondo de retiro está ahora en la blockchain</p>
@@ -97,7 +97,7 @@ const ContractCreatedPage = () => {
 
             <div className="p-8 sm:p-12 space-y-8">
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl p-6 border-2 border-emerald-200">
+                <div className="bg-linear-to-br from-emerald-50 to-green-50 rounded-2xl p-6 border-2 border-emerald-200">
                   <div className="flex items-center gap-2 mb-2">
                     <DollarSign className="text-emerald-600" size={20} />
                     <p className="text-gray-600 font-semibold">Depósito Inicial Realizado</p>
@@ -110,7 +110,7 @@ const ContractCreatedPage = () => {
                   </p>
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border-2 border-blue-200">
+                <div className="bg-linear-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border-2 border-blue-200">
                   <div className="flex items-center gap-2 mb-2">
                     <Calendar className="text-blue-600" size={20} />
                     <p className="text-gray-600 font-semibold">Depósito Mensual</p>
@@ -122,7 +122,7 @@ const ContractCreatedPage = () => {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-8 border-2 border-indigo-200">
+              <div className="bg-linear-to-r from-indigo-50 to-purple-50 rounded-2xl p-8 border-2 border-indigo-200">
                 <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
                   <Sparkles className="text-purple-600" />
                   Próximos Pasos
@@ -143,7 +143,7 @@ const ContractCreatedPage = () => {
 
               <button
                 onClick={() => navigate('/dashboard')}
-                className="w-full bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white font-black text-xl sm:text-2xl py-6 sm:py-8 rounded-2xl shadow-2xl transition-all transform hover:scale-105 flex items-center justify-center gap-4"
+                className="w-full bg-linear-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white font-black text-xl sm:text-2xl py-6 sm:py-8 rounded-2xl shadow-2xl transition-all transform hover:scale-105 flex items-center justify-center gap-4"
               >
                 Ir al Dashboard
                 <ArrowRight size={32} />
@@ -160,11 +160,11 @@ const ContractCreatedPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center px-4 py-16">
+    <div className="min-h-screen bg-linear-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center px-4 py-16">
       <div className="max-w-4xl w-full">
         <div className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl border-2 border-indigo-300 overflow-hidden">
 
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-700 p-8 sm:p-12 text-center text-white">
+          <div className="bg-linear-to-r from-indigo-600 to-purple-700 p-8 sm:p-12 text-center text-white">
             <h1 className="text-3xl sm:text-5xl font-black mb-4">Confirmación Final</h1>
             <p className="text-base sm:text-xl opacity-90">Revisa cuidadosamente antes de crear tu contrato</p>
           </div>
@@ -191,7 +191,7 @@ const ContractCreatedPage = () => {
 
             {/* Depósito inicial y mensual */}
             <div className="grid md:grid-cols-2 gap-6">
-              <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl p-6 border-2 border-emerald-200">
+              <div className="bg-linear-to-br from-emerald-50 to-green-50 rounded-2xl p-6 border-2 border-emerald-200">
                 <div className="flex items-center gap-2 mb-2">
                   <DollarSign className="text-emerald-600" size={20} />
                   <p className="text-gray-600 font-semibold">Depósito Inicial</p>
@@ -208,7 +208,7 @@ const ContractCreatedPage = () => {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border-2 border-blue-200">
+              <div className="bg-linear-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border-2 border-blue-200">
                 <div className="flex items-center gap-2 mb-2">
                   <Calendar className="text-blue-600" size={20} />
                   <p className="text-gray-600 font-semibold">Depósito Mensual</p>
@@ -222,7 +222,7 @@ const ContractCreatedPage = () => {
             </div>
 
             {/* Breakdown */}
-            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border-2 border-purple-200">
+            <div className="bg-linear-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border-2 border-purple-200">
               <h3 className="text-xl font-bold text-purple-800 mb-4 flex items-center gap-2">
                 <Info className="text-purple-600" size={24} />
                 Breakdown del Depósito Inicial
@@ -271,7 +271,7 @@ const ContractCreatedPage = () => {
 
             {/* Método de inversión */}
             {investmentMethod && (
-              <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-6 border-2 border-indigo-200">
+              <div className="bg-linear-to-br from-indigo-50 to-purple-50 rounded-2xl p-6 border-2 border-indigo-200">
                 <h3 className="font-bold text-indigo-800 text-lg mb-2">Método de Inversión</h3>
                 <p className="text-indigo-700">
                   <strong>{investmentMethod.method}</strong>
@@ -283,7 +283,7 @@ const ContractCreatedPage = () => {
             {/* Confirmación y ejecución */}
             {!confirmed ? (
               <div className="space-y-4">
-                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border-2 border-purple-200">
+                <div className="bg-linear-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border-2 border-purple-200">
                   <label className="flex items-start gap-3 cursor-pointer">
                     <input
                       type="checkbox"
@@ -303,7 +303,7 @@ const ContractCreatedPage = () => {
                   disabled={!confirmed}
                   className={`w-full font-black text-2xl py-6 rounded-2xl shadow-xl transition-all transform ${
                     confirmed
-                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white hover:scale-105'
+                      ? 'bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white hover:scale-105'
                       : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                   }`}
                 >

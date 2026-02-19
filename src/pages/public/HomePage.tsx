@@ -219,7 +219,7 @@ const HomePage: React.FC = () => {
     <div className="pt-4">
 
       {/* ── Hero ── */}
-      <section className="bg-gradient-to-b from-gray-800 to-green-800 text-white py-20 px-4">
+      <section className="bg-linear-to-b from-gray-800 to-green-800 text-white py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl font-bold mb-6">{t('hero.title')}</h1>
           <p className="text-xl mb-8 text-gray-200">{t('hero.subtitle')}</p>
@@ -233,7 +233,7 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* ── Survey ── */}
-      <section className="py-16 px-4 bg-gradient-to-br from-blue-50 to-green-50">
+      <section className="py-16 px-4 bg-linear-to-br from-blue-50 to-green-50">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-10">
             <h2 className="text-4xl font-bold text-gray-800 mb-4">{t('survey.title')}</h2>
@@ -322,7 +322,7 @@ const HomePage: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full px-6 py-4 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-xl font-semibold text-lg hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-lg"
+                className="w-full px-6 py-4 bg-linear-to-r from-green-600 to-blue-600 text-white rounded-xl font-semibold text-lg hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-lg"
               >
                 {loading ? (
                   <>
@@ -404,7 +404,7 @@ const HomePage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full px-6 py-4 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-xl font-semibold text-lg hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-lg"
+                  className="w-full px-6 py-4 bg-linear-to-r from-green-600 to-blue-600 text-white rounded-xl font-semibold text-lg hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-lg"
                 >
                   {loading ? (
                     <>

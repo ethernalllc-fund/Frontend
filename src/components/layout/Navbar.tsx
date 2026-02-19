@@ -33,7 +33,6 @@ const Navbar: React.FC = () => {
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
   const { open } = useAppKit();
- 
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -52,7 +51,6 @@ const Navbar: React.FC = () => {
   const isCorrectNetwork = isValidChain(chainId);
   const chainConfig = appConfig.chain;
   const faucetUrl = getFaucetUrl();
-
   const formatAddress = (addr: string) =>
     `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 
@@ -75,7 +73,7 @@ const Navbar: React.FC = () => {
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
 
         {/* ── Logo ── */}
         <Link to="/" className="flex items-center gap-3 group">
@@ -114,7 +112,7 @@ const Navbar: React.FC = () => {
               <>
                 <button
                   onClick={() => setIsDropdownOpen((v) => !v)}
-                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-forest-green to-dark-blue text-white rounded-lg hover:opacity-90 transition"
+                  className="flex items-center gap-2 px-4 py-2 bg-linear-to-r from-forest-green to-dark-blue text-white rounded-lg hover:opacity-90 transition"
                   aria-label={t('wallet.connectedWallet')}
                   aria-expanded={isDropdownOpen}
                 >
@@ -139,7 +137,7 @@ const Navbar: React.FC = () => {
                     <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
 
                       {/* Wallet address header */}
-                      <div className="p-4 bg-gradient-to-r from-forest-green/10 to-dark-blue/10 border-b border-gray-200">
+                      <div className="p-4 bg-linear-to-r from-forest-green/10 to-dark-blue/10 border-b border-gray-200">
                         <div className="flex items-center justify-between mb-2">
                           <h3 className="font-semibold text-gray-900">
                             {t('wallet.connectedWallet')}
@@ -261,10 +259,9 @@ const Navbar: React.FC = () => {
 
           {/* ── Mobile Buttons ── */}
           <div className="md:hidden flex items-center gap-2">
-            {/* Single wallet button: open account if connected, open modal if not */}
             <button
               onClick={() => { void open(isConnected ? { view: 'Account' } : undefined); }}
-              className="p-2 bg-gradient-to-r from-forest-green to-dark-blue text-white rounded-lg hover:opacity-90 transition"
+              className="p-2 bg-linear-to-r from-forest-green to-dark-blue text-white rounded-lg hover:opacity-90 transition"
               aria-label={
                 isConnected ? t('wallet.connectedWallet') : t('nav.connectWallet')
               }

@@ -176,7 +176,7 @@ export const UserRouter: React.FC<UserRouterProps> = ({
           </p>
           <button
             onClick={() => { window.location.href = '/'; }}
-            className="px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg font-bold text-lg hover:opacity-90 transition shadow-lg"
+            className="px-8 py-4 bg-linear-to-r from-green-600 to-emerald-600 text-white rounded-lg font-bold text-lg hover:opacity-90 transition shadow-lg"
           >
             Go Home & Connect Wallet
           </button>

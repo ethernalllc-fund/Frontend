@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* ─── Keyframes — deben estar a nivel raíz, fuera de @theme ─────────────────── */
 @keyframes fadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
@@ -15,12 +14,11 @@
   to { transform: rotate(360deg); }
 }
 
-/* ─── Design tokens ─────────────────────────────────────────────────────────── */
 @theme {
   /* Brand Colors */
   --color-forest-green: #1B5E20;
   --color-dark-blue:    #1f2937;
-  --color-gold:         #8a7d07;   /* sin alpha embebido — usá /opacity en Tailwind */
+  --color-gold:         #8a7d07;   
 
   /* Background & Neutrals */
   --color-background-light: #f8fafc;
@@ -63,7 +61,6 @@
   --animate-slide-up: slideUp 0.6s ease-out;
 }
 
-/* ─── Reset base ────────────────────────────────────────────────────────────── */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -79,7 +76,6 @@ html {
 }
 
 body {
-  /* Stack moderno: system-ui primero, Segoe UI como fallback Windows, luego genéricos */
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: var(--color-background-light);
   color: var(--color-black);
@@ -87,7 +83,6 @@ body {
   overflow-x: hidden;
 }
 
-/* ─── Base layer ────────────────────────────────────────────────────────────── */
 @layer base {
   h1, h2, h3, h4, h5, h6 {
     @apply font-bold text-gray-800 mb-3 leading-tight;
@@ -114,14 +109,12 @@ body {
     color: var(--color-dark-blue);
   }
 
-  /* Touch-friendly tap targets — Apple HIG mínimo */
   button, [role="button"] {
     @apply cursor-pointer;
     min-height: 44px;
   }
 }
 
-/* ─── Components layer ──────────────────────────────────────────────────────── */
 @layer components {
 
   /* Layout */
@@ -134,7 +127,6 @@ body {
     @apply py-8 sm:py-12 lg:py-16;
   }
 
-  /* ── Botones ── */
   .btn {
     @apply inline-flex items-center justify-center gap-2
            w-full sm:w-auto
@@ -272,7 +264,6 @@ body {
   .alert-info    { @apply bg-blue-50 text-blue-700 border border-blue-200; }
 }
 
-/* ─── Utilities layer ───────────────────────────────────────────────────────── */
 @layer utilities {
   /* Animaciones */
   .animate-fade-in  { animation: var(--animate-fade-in); }

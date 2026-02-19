@@ -108,7 +108,7 @@ const CreateContractPage = () => {
   if (!formData || isLoadingFund) return null;
   if (!factoryAddress || factoryAddress === ZERO_ADDRESS) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-linear-to-br from-red-50 to-orange-50 flex items-center justify-center px-4">
         <div className="bg-white rounded-3xl shadow-2xl p-12 text-center max-w-lg border border-red-200">
           <AlertCircle className="w-24 h-24 text-red-600 mx-auto mb-6" />
           <h1 className="text-4xl font-black text-red-700 mb-4">Configuración Faltante</h1>
@@ -128,7 +128,7 @@ const CreateContractPage = () => {
 
   if (chainId !== EXPECTED_CHAIN_ID) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-linear-to-br from-red-50 to-orange-50 flex items-center justify-center px-4">
         <div className="bg-white rounded-3xl shadow-2xl p-12 text-center max-w-lg border border-red-200">
           <AlertCircle className="w-24 h-24 text-red-600 mx-auto mb-6 animate-pulse" />
           <h1 className="text-4xl font-black text-red-700 mb-4">Red Incorrecta</h1>
@@ -154,7 +154,7 @@ const CreateContractPage = () => {
 
   if (hasFund && fundAddress) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-linear-to-br from-amber-50 to-orange-50 flex items-center justify-center px-4">
         <div className="bg-white rounded-3xl shadow-2xl p-12 text-center max-w-lg border border-amber-300">
           <Info className="w-24 h-24 text-amber-600 mx-auto mb-6" />
           <h1 className="text-4xl font-black text-amber-700 mb-4">Ya Tienes un Fondo</h1>
@@ -190,7 +190,7 @@ const CreateContractPage = () => {
   })();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-16 px-4">
+    <div className="min-h-screen bg-linear-to-br from-indigo-50 via-purple-50 to-pink-50 py-16 px-4">
       <div className="max-w-5xl mx-auto">
 
         <button
@@ -204,7 +204,7 @@ const CreateContractPage = () => {
         <div className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-purple-100 overflow-hidden">
 
           {/* Header */}
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-700 p-10 text-white text-center">
+          <div className="bg-linear-to-r from-indigo-600 to-purple-700 p-10 text-white text-center">
             <h1 className="text-5xl font-black mb-4 flex items-center justify-center gap-5">
               <Sparkles className="w-14 h-14 animate-pulse" />
               Revisión del Plan
@@ -251,7 +251,7 @@ const CreateContractPage = () => {
 
                 {/* Resumen del Depósito */}
                 {planDerived && (
-                  <div className="mt-6 bg-gradient-to-br from-emerald-50 to-green-50 rounded-3xl p-8 border-2 border-emerald-200">
+                  <div className="mt-6 bg-linear-to-br from-emerald-50 to-green-50 rounded-3xl p-8 border-2 border-emerald-200">
                     <h3 className="text-2xl font-bold text-emerald-800 mb-6">Resumen del Depósito</h3>
                     <div className="space-y-4 text-lg">
                       <div className="flex justify-between">
@@ -275,7 +275,7 @@ const CreateContractPage = () => {
 
               {/* Columna derecha — verificación e inversión */}
               <div className="space-y-6">
-                <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border-2 border-purple-200">
+                <div className="bg-linear-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border-2 border-purple-200">
                   <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center gap-2">
                     <Briefcase className="text-purple-600" size={28} />
                     Método de Inversión
@@ -297,7 +297,7 @@ const CreateContractPage = () => {
                 )}
 
                 {verificationPassed && (
-                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border-2 border-blue-200">
+                  <div className="bg-linear-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border-2 border-blue-200">
                     <div className="flex items-start gap-4 mb-3">
                       <CheckCircle className="text-blue-600 shrink-0 mt-0.5" size={32} />
                       <div>
@@ -335,7 +335,7 @@ const CreateContractPage = () => {
                   w-full font-black text-2xl sm:text-3xl px-8 py-7 rounded-3xl shadow-2xl
                   transition-all transform flex items-center justify-center gap-4 sm:gap-6
                   ${canContinue
-                    ? 'bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white hover:scale-105'
+                    ? 'bg-linear-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white hover:scale-105'
                     : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                   }
                 `}

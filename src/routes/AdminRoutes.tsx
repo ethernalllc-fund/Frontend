@@ -139,7 +139,7 @@ export const AdminRouter: React.FC<AdminRouterProps> = ({ currentPage, wallet, c
           <p className="text-gray-600 mb-6">Please connect your wallet with admin privileges</p>
           <button
             onClick={() => (window.location.href = '/')}
-            className="px-6 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-lg font-semibold hover:opacity-90 transition"
+            className="px-6 py-3 bg-linear-to-r from-green-600 to-blue-600 text-white rounded-lg font-semibold hover:opacity-90 transition"
           >
             Go to Home
           </button>

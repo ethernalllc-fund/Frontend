@@ -415,7 +415,7 @@ export function ExecutionStep({
 
       {/* Idle — botón de inicio */}
       {step === 'idle' && (
-        <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border-2 border-purple-200">
+        <div className="bg-linear-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border-2 border-purple-200">
           <h3 className="text-xl font-bold text-gray-800 mb-4">
             Listo para crear tu contrato
           </h3>
@@ -427,7 +427,7 @@ export function ExecutionStep({
           <button
             onClick={handleStart}
             disabled={isApprovalPending || isCreatePending}
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-600
+            className="w-full bg-linear-to-r from-purple-600 to-pink-600
                        hover:from-purple-700 hover:to-pink-700 text-white font-bold
                        text-xl py-4 rounded-xl shadow-lg transition-all transform
                        hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed

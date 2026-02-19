@@ -22,7 +22,7 @@ export function NetworkWarning({ expectedChainId }: NetworkWarningProps) {
   return (
     <div
       role="alert"
-      className="bg-gradient-to-r from-orange-500 to-red-600 text-white py-4 px-6 shadow-lg"
+      className="bg-linear-to-r from-orange-500 to-red-600 text-white py-4 px-6 shadow-lg"
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-4">
 

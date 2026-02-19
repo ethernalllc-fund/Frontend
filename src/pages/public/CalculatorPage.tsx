@@ -253,7 +253,7 @@ const CalculatorPage: React.FC = () => {
   const victoryData = chartData.map((d) => ({ x: d.year, y: d.balance }));
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-8 sm:py-12 px-4">
+    <div className="min-h-screen bg-linear-to-br from-indigo-50 via-purple-50 to-pink-50 py-8 sm:py-12 px-4">
       <div className="max-w-7xl mx-auto">
 
         {/* Header */}
@@ -382,7 +382,7 @@ const CalculatorPage: React.FC = () => {
             </div>
 
             {/* Faucet */}
-            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-3xl shadow-2xl p-6 sm:p-8 border-2 border-blue-200">
+            <div className="bg-linear-to-br from-blue-50 to-cyan-50 rounded-3xl shadow-2xl p-6 sm:p-8 border-2 border-blue-200">
               <div className="flex items-center gap-3 mb-4">
                 <div className="bg-blue-600 p-3 rounded-xl">
                   <Droplets className="text-white" size={24} />
@@ -396,7 +396,7 @@ const CalculatorPage: React.FC = () => {
             </div>
 
             {/* Step-by-step guide */}
-            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl shadow-2xl p-6 sm:p-8 border-2 border-purple-200">
+            <div className="bg-linear-to-br from-purple-50 to-pink-50 rounded-3xl shadow-2xl p-6 sm:p-8 border-2 border-purple-200">
               <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
                 <Info className="text-purple-600" />
                 {t('calculator.howToStart')}
@@ -511,7 +511,7 @@ const CalculatorPage: React.FC = () => {
               </div>
 
               {/* Deposit summary */}
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-3xl p-6 sm:p-8">
+              <div className="bg-linear-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-3xl p-6 sm:p-8">
                 <h3 className="text-xl sm:text-2xl font-bold text-blue-800 mb-4 sm:mb-6 flex items-center gap-3">
                   <Info className="w-6 h-6 sm:w-8 sm:h-8" />
                   {t('calculator.depositSummary')}
@@ -541,7 +541,7 @@ const CalculatorPage: React.FC = () => {
               </div>
 
               {/* CTA */}
-              <div className="bg-gradient-to-r from-indigo-600 to-purple-700 rounded-3xl shadow-2xl p-6 sm:p-10 text-white text-center">
+              <div className="bg-linear-to-r from-indigo-600 to-purple-700 rounded-3xl shadow-2xl p-6 sm:p-10 text-white text-center">
                 <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black mb-4 sm:mb-6">
                   {isConnected ? t('calculator.fundReady') : t('calculator.lastStep')}
                 </h2>
