@@ -57,7 +57,7 @@ export function useUSDCBalance(
     isFetching: result.isFetching,
     isError:    result.isError,
     error:      result.error as Error | null,
-    refetch:    result.refetch,
+    refetch:    () => { void result.refetch(); },
   };
 }
 
@@ -84,7 +84,7 @@ export function useUSDCAllowance(
     isFetching: result.isFetching,
     isError:    result.isError,
     error:      result.error as Error | null,
-    refetch:    result.refetch,
+    refetch:    () => { void result.refetch(); },
   };
 }
 
@@ -107,7 +107,7 @@ export function useUSDCSymbol(): ReadContractResult<string> {
     isFetching: result.isFetching,
     isError:    result.isError,
     error:      result.error as Error | null,
-    refetch:    result.refetch,
+    refetch:    () => { void result.refetch(); },
   };
 }
 
@@ -130,7 +130,7 @@ export function useUSDCName(): ReadContractResult<string> {
     isFetching: result.isFetching,
     isError:    result.isError,
     error:      result.error as Error | null,
-    refetch:    result.refetch,
+    refetch:    () => { void result.refetch(); },
   };
 }
 
@@ -153,7 +153,7 @@ export function useUSDCDecimals(): ReadContractResult<number> {
     isFetching: result.isFetching,
     isError:    result.isError,
     error:      result.error as Error | null,
-    refetch:    result.refetch,
+    refetch:    () => { void result.refetch(); },
   };
 }
 
@@ -176,7 +176,7 @@ export function useUSDCTotalSupply(): ReadContractResult<bigint> {
     isFetching: result.isFetching,
     isError:    result.isError,
     error:      result.error as Error | null,
-    refetch:    result.refetch,
+    refetch:    () => { void result.refetch(); },
   };
 }
 

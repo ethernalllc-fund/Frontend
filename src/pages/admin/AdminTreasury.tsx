@@ -131,7 +131,7 @@ export default function AdminTreasury() {
   const [requests,          setRequests]          = useState<Record<string, EarlyRetirementRequest>>({});
 
   useEffect(() => {
-    if (!localStorage.getItem('admin_token')) navigate('/admin/login');
+    if (!localStorage.getItem('admin_token')) void navigate('/admin/login');
   }, [navigate]);
 
   const base = { address: TREASURY_ADDRESS, abi: TREASURY_ABI } as const;
@@ -174,12 +174,12 @@ export default function AdminTreasury() {
   }, [pendingDetails, pendingAddresses]);
 
   const refetchAll = () => {
-    refetchStats();
-    refetchBalance();
-    refetchFee();
-    refetchRequestStats();
-    refetchPending();
-    refetchDetails();
+    void refetchStats();
+    void refetchBalance();
+    void refetchFee();
+    void refetchRequestStats();
+    void refetchPending();
+    void refetchDetails();
   };
 
   const { writeContract, data: txHash, isPending: isSending, reset: resetWrite } = useWriteContract();
@@ -235,7 +235,7 @@ export default function AdminTreasury() {
   };
 
   const s          = stats as TreasuryStats | undefined;
-  const currentFee = feePercentage !== undefined ? Number(feePercentage as bigint) : null;
+  const currentFee = feePercentage !== undefined ? Number(feePercentage) : null;
   const feeDisplay = currentFee !== null ? `${(currentFee / 100).toFixed(2)}%` : '—';
   const [totalReqs, pendingCount, approvedCount, rejectedCount] =
     (requestStats ?? [0n, 0n, 0n, 0n]) as bigint[];
@@ -281,7 +281,7 @@ export default function AdminTreasury() {
         <div className="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => navigate('/admin')}
+              onClick={() => { void navigate('/admin'); }}
               className="p-2 rounded-lg bg-white/20 hover:bg-white/30 text-white transition"
             >
               <ArrowLeft className="w-5 h-5" />
@@ -306,14 +306,14 @@ export default function AdminTreasury() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <StatCard
             label="Balance USDC"
-            value={`$${fmt(balance as bigint | undefined)}`}
+            value={`$${fmt(balance)}`}
             sub="Disponible en contrato"
             color="bg-emerald-600 text-white"
           />
           <StatCard
             label="Fees totales (alltime)"
             value={`$${fmt(s?.totalFeesCollectedAllTime)}`}
-            sub={`Retirado: $${fmt(totalWithdrawn as bigint | undefined)}`}
+            sub={`Retirado: $${fmt(totalWithdrawn)}`}
             color="bg-indigo-600 text-white"
           />
           <StatCard
@@ -375,7 +375,7 @@ export default function AdminTreasury() {
             </button>
             <p className="text-xs text-gray-400">
               Balance disponible:{' '}
-              <strong className="text-gray-700">${fmt(balance as bigint | undefined)} USDC</strong>
+              <strong className="text-gray-700">${fmt(balance)} USDC</strong>
             </p>
           </div>
         </Section>
@@ -550,7 +550,7 @@ export default function AdminTreasury() {
             <div className="space-y-2">
               {[
                 { label: 'Total fees recaudados (USDC)', value: `$${fmt(s?.totalFeesCollectedUSDC)}` },
-                { label: 'Total fees retirados',         value: `$${fmt(totalWithdrawn as bigint | undefined)}` },
+                { label: 'Total fees retirados',         value: `$${fmt(totalWithdrawn)}` },
                 { label: 'Fondos registrados',           value: s?.totalFundsRegistered?.toString() ?? '—' },
                 { label: 'Fondos activos',               value: s?.activeFundsCount?.toString() ?? '—' },
               ].map(row => (

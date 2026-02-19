@@ -177,7 +177,7 @@ export const useSecureAdmin = (): UseSecureAdminResult => {
         });
       }
 
-      navigate('/admin/dashboard');
+      void navigate('/admin/dashboard');
 
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Failed to login. Please try again.';
@@ -206,7 +206,7 @@ export const useSecureAdmin = (): UseSecureAdminResult => {
     setIsAdmin(false);
     setIsAuthenticated(false);
     setError(null);
-    navigate('/admin/login');
+    void navigate('/admin/login');
 
     if (import.meta.env.DEV) {
       console.log('[useSecureAdmin] 🔓 Admin logout');
@@ -251,7 +251,7 @@ export const useSecureAdmin = (): UseSecureAdminResult => {
       const currentPath = window.location.pathname;
       if (currentPath.startsWith('/admin') && currentPath !== '/admin/login') {
         console.warn('[useSecureAdmin] ⚠️ Unauthorized admin route access');
-        navigate('/admin/login', { replace: true });
+        void navigate('/admin/login', { replace: true });
       }
     }
   }, [isAdmin, isLoading, isCheckingOnChain, navigate]);
@@ -262,7 +262,7 @@ export const useSecureAdmin = (): UseSecureAdminResult => {
       setIsAdmin(false);
       setIsAuthenticated(false);
       setError(null);
-      navigate('/admin/login');
+      void navigate('/admin/login');
     }
   }, [isConnected, isAuthenticated, navigate]);
 

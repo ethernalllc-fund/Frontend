@@ -59,7 +59,7 @@ export default function ContactMessages() {
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
     if (!token) {
-      navigate('/admin/login');
+      void navigate('/admin/login');
     }
   }, [navigate]);
 
@@ -86,7 +86,7 @@ export default function ContactMessages() {
   }, [filter]);
 
   useEffect(() => {
-    fetchMessages();
+    void fetchMessages();
   }, [fetchMessages]);
 
   // ── Actions ─────────────────────────────────────────────────────────────────
@@ -153,7 +153,7 @@ export default function ContactMessages() {
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => navigate('/admin')}
+              onClick={() => { void navigate('/admin'); }}
               className="p-2 rounded-lg hover:bg-gray-200 transition text-gray-600"
               title="Volver al dashboard"
             >
@@ -169,7 +169,7 @@ export default function ContactMessages() {
             </div>
           </div>
           <button
-            onClick={fetchMessages}
+            onClick={() => { void fetchMessages(); }}
             disabled={loading}
             className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition"
           >
@@ -201,7 +201,7 @@ export default function ContactMessages() {
             <AlertCircle className="w-5 h-5 shrink-0" />
             <span>{error}</span>
             <button
-              onClick={fetchMessages}
+              onClick={() => { void fetchMessages(); }}
               className="ml-auto text-sm font-medium underline hover:no-underline"
             >
               Reintentar
@@ -264,7 +264,7 @@ export default function ContactMessages() {
                   <div className="flex gap-2 shrink-0">
                     {!msg.read && (
                       <button
-                        onClick={() => handleMarkAsRead(msg.id!)}
+                        onClick={() => { void handleMarkAsRead(msg.id!); }}
                         className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition"
                         title="Marcar como leído"
                       >

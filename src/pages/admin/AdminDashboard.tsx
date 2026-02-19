@@ -26,7 +26,7 @@ export default function AdminDashboard() {
   const [offchainError, setOffchainError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!localStorage.getItem('admin_token')) navigate('/admin/login');
+    if (!localStorage.getItem('admin_token')) void navigate('/admin/login');
   }, [navigate]);
 
   const { data: onchain, isLoading: loadingOn, refetch: refetchOnchain } = useReadContracts({
@@ -93,14 +93,14 @@ export default function AdminDashboard() {
   }, []);
 
   useEffect(() => {
-    if (localStorage.getItem('admin_token')) fetchOffchain();
+    if (localStorage.getItem('admin_token')) void fetchOffchain();
   }, [fetchOffchain]);
 
-  const refetchAll = () => { refetchOnchain(); fetchOffchain(); };
+  const refetchAll = () => { void refetchOnchain(); void fetchOffchain(); };
   const isLoading  = loadingOn || loadingOff;
   const handleLogout = () => {
     localStorage.removeItem('admin_token');
-    navigate('/admin/login');
+    void navigate('/admin/login');
   };
 
   const fmtUSDC = (val: bigint | undefined) =>
@@ -215,7 +215,7 @@ export default function AdminDashboard() {
           <div className="mb-6 flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 px-5 py-4 rounded-xl">
             <AlertCircle className="w-5 h-5 shrink-0" />
             <span>{offchainError}</span>
-            <button onClick={fetchOffchain} className="ml-auto text-sm font-medium underline hover:no-underline">
+            <button onClick={() => { void fetchOffchain(); }} className="ml-auto text-sm font-medium underline hover:no-underline">
               Reintentar
             </button>
           </div>
