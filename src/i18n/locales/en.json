@@ -1,0 +1,466 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No",
+    "optional": "Optional",
+    "required": "Required"
+  },
+
+  "nav": {
+    "home": "Home",
+    "calculator": "Calculator",
+    "dashboard": "Dashboard",
+    "contact": "Contact",
+    "about": "About",
+    "connectWallet": "Connect Wallet",
+    "disconnect": "Disconnect",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+
+  "wallet": {
+    "connectedWallet": "Connected Wallet",
+    "balance": "Balance",
+    "network": "Network",
+    "switchTo": "Switch to",
+    "correctNetwork": "Correct Network",
+    "connectedTo": "Connected to",
+    "wrongNetwork": "Wrong Network",
+    "viewFullAccount": "View Full Account",
+    "disconnect": "Disconnect Wallet",
+    "needTestEth": "Need test ETH? Get from faucet",
+    "yourWallet": "Your Wallet",
+    "language": "Language",
+    "unknownNetwork": "Unknown"
+  },
+
+  "table": {
+    "search": "Search...",
+    "noResults": "No results found",
+    "noData": "No data available",
+    "previous": "Previous",
+    "next": "Next",
+    "showing": "Showing {{from}} to {{to}} of {{total}} entries"
+  },
+
+  "admin": {
+    "brand": "Ethernal",
+    "panel": "Admin Panel",
+    "nav": {
+      "overview": "Overview",
+      "overviewDesc": "Platform statistics",
+      "contracts": "Contracts",
+      "contractsDesc": "User contracts list",
+      "settings": "Settings",
+      "settingsDesc": "Platform configuration",
+      "backToHome": "Back to Home"
+    },
+    "header": {
+      "title": "Admin Dashboard",
+      "subtitle": "Manage platform contracts and users",
+      "notifications": "Notifications",
+      "adminLabel": "Admin"
+    }
+  },
+
+  "access": {
+    "goHome": "Go to Home",
+    "walletRequired": {
+      "title": "Wallet Connection Required",
+      "description": "Please connect your wallet to access this page."
+    },
+    "unauthorized": {
+      "title": "Access Denied",
+      "description": "You don't have permission to access this page.",
+      "adminRequired": "Administrator privileges are required.",
+      "goDashboard": "Go to Dashboard"
+    }
+  },
+
+  "protectedRoute": {
+    "checkingPermissions": "Verifying access permissions...",
+    "checkingFund": "Verifying your retirement fund...",
+    "connectTitle": "Connect your Wallet",
+    "connectDescription": "You need to connect your wallet to access this section and create your personalized retirement fund.",
+    "backToCalculator": "Back to Calculator",
+    "noFundTitle": "Retirement Fund Not Found",
+    "noFundDescription": "You need to create your Retirement Fund before accessing the Dashboard.",
+    "noFundDetail": "The Dashboard will allow you to manage your deposits, track your progress and manage your DeFi investments.",
+    "createFundCta": "Create My Retirement Fund",
+    "adminTitle": "Restricted Access",
+    "adminDescription": "This section is exclusively reserved for members of the Treasury Team.",
+    "adminDetail": "Only authorized administrators can manage the treasury and proposals."
+  },
+
+  "footer": {
+    "tagline": "Secure your financial future with blockchain-powered retirement savings.",
+    "quickLinks": "Quick Links",
+    "followUs": "Connect With Us",
+    "copyright": "Ethernal - All Rights Reserved",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "disclaimer": "Disclaimer",
+    "documentation": "Documentation",
+    "support": "Support",
+    "community": "Community",
+    "builtOn": "Built on Arbitrum Sepolia \u2022 Secured by Blockchain Technology"
+  },
+
+  "hero": {
+    "title": "Financial Freedom in Your Hands",
+    "subtitle": "Secure Your Tomorrow with the Decision You Make Today",
+    "ctaConnected": "Go to Calculator",
+    "ctaDisconnected": "Connect Wallet & Get Started"
+  },
+
+  "survey": {
+    "title": "Help Us Get to Know You Better",
+    "subtitle": "Your opinion matters. Answer these questions and help us build the best retirement system for you.",
+    "question1": "What is your age range?",
+    "question2": "I trust traditional pension/retirement systems",
+    "question3": "I am familiar with Blockchain/Cryptocurrencies",
+    "question4": "I am worried about not having enough money for retirement",
+    "question5": "I currently have an active retirement plan",
+    "question6": "I value transparency and control over my retirement investments",
+    "question7": "I would be interested in creating my own retirement fund with blockchain transparency",
+    "ageOptions": {
+      "18-24": "18-24 years",
+      "25-34": "25-34 years",
+      "35-44": "35-44 years",
+      "45-54": "45-54 years",
+      "55-64": "55-64 years",
+      "65+": "65+ years"
+    },
+    "rating": {
+      "stronglyDisagree": "Strongly Disagree",
+      "disagree": "Disagree",
+      "neutral": "Neutral",
+      "agree": "Agree",
+      "stronglyAgree": "Strongly Agree"
+    },
+    "submit": "Submit Survey",
+    "submitting": "Submitting...",
+    "required": "All questions are required. Your responses are anonymous.",
+    "errorTitle": "Error",
+    "selectAge": "Please select your age range",
+    "answerAll": "Please answer all questions"
+  },
+
+  "followUp": {
+    "successTitle": "Survey submitted successfully!",
+    "successMessage": "Thank you for your time. Just two more questions and we're done.",
+    "question1": "Would you like to receive more information about Ethernal?",
+    "yesInterested": "Yes, I'm interested",
+    "notNow": "Not now",
+    "question2": "What is your email?",
+    "emailPlaceholder": "your@email.com",
+    "finish": "Finish",
+    "thankYou": "Thank you very much for your time!",
+    "willContact": "We will contact you soon with more information about Ethernal.",
+    "helpImprove": "Your answers will help us improve our service.",
+    "pleaseIndicate": "Please indicate if you wish to receive more information",
+    "enterEmail": "Please enter your email to receive information"
+  },
+
+  "features": {
+    "title": "Why Choose Us?",
+    "security": {
+      "title": "Zero-Knowledge Security",
+      "description": "Your data stays private. We use zero-knowledge methodology to ensure your personal or financial information is never exposed. No registration needed, no personal info or keys stored. Your WALLET is your access method."
+    },
+    "education": {
+      "title": "Financial Education",
+      "description": "Because financial education creates security and peace of mind, our mission is to offer the best e-learning platforms. Access courses, videos, tutorials and expert financial advice to optimize your investments."
+    },
+    "fees": {
+      "title": "Transparent Fees",
+      "description": "Simple fee structure with no hidden costs. Clear, transparent and low fees to optimize your savings and maximize your returns."
+    }
+  },
+
+  "about": {
+    "title": "About Ethernal",
+    "description": "We are dedicated to helping you CALCULATE, CREATE and SELF-MANAGE your Personal Decentralized Retirement Fund, so you can build a solid, secure future tailored to your needs. With a focus on privacy, security and self-management, our Smart Contracts are designed to give you peace of mind and transparency. Your data is protected with Zero-Knowledge methodology, ensuring your personal, sensitive and financial information remains PRIVATE.",
+    "protocolDescription": "Ethernal Fund is a decentralized protocol that allows anyone to create and self-manage a personal retirement fund on the blockchain. Built with a privacy-first philosophy using zero-knowledge methodology — your wallet is your identity, no registration or personal data required.",
+    "keyPrinciples": "Key principles:",
+    "principles": {
+      "zeroKnowledge": "Zero-Knowledge Security — no personal data stored, wallet is your access method",
+      "selfManaged": "Self-Managed Funds — deploy your own PersonalFund smart contract",
+      "transparentFees": "Transparent Fees — simple, low, and visible fee structure on-chain",
+      "multiLanguage": "Multi-language — English, Spanish, Portuguese, Italian, German",
+      "calculator": "Retirement Calculator — plan your future contributions and projections"
+    }
+  },
+
+  "calculator": {
+    "title": "Retirement Calculator",
+    "subtitle": "Plan your financial future with our advanced calculator",
+    "currentAge": "Current Age",
+    "retirementAge": "Retirement Age",
+    "monthlyContribution": "Monthly Contribution",
+    "expectedReturn": "Expected Annual Return",
+    "inflationRate": "Inflation Rate",
+    "calculate": "Calculate",
+    "reset": "Reset",
+    "results": {
+      "title": "Your Retirement Projection",
+      "totalSavings": "Total Savings at Retirement",
+      "monthlyIncome": "Desired Monthly Income",
+      "yearsOfRetirement": "Years of Retirement Funded",
+      "purchasingPower": "Purchasing Power (inflation-adjusted)"
+    },
+    "validation": {
+      "ageRequired": "Please enter your current age",
+      "retirementAgeRequired": "Please enter your retirement age",
+      "retirementAgeTooLow": "Retirement age must be greater than current age",
+      "contributionRequired": "Please enter a monthly contribution"
+    }
+  },
+
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Get in touch with our team. We're here to help.",
+    "name": "Full Name",
+    "email": "Email Address",
+    "subject": "Subject",
+    "message": "Message",
+    "send": "Send Message",
+    "sending": "Sending...",
+    "success": "Message sent successfully! We'll get back to you soon.",
+    "error": "Error sending message. Please try again.",
+    "validation": {
+      "nameRequired": "Please enter your name",
+      "emailRequired": "Please enter your email",
+      "emailInvalid": "Please enter a valid email address",
+      "messageRequired": "Please enter a message"
+    }
+  },
+
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back",
+    "loadingDashboard": "Loading your Dashboard...",
+    "yourDashboard": "Your Ethernal Dashboard",
+    "manageFinancialFuture": "Manage your financial future on blockchain",
+    "refreshAllData": "Refresh All Data",
+    "myPersonalFund": "My Personal Fund",
+    "active": "Active",
+    "noFund": "No Fund",
+    "currentBalance": "Current Balance",
+    "fundStatus": "Fund Status",
+    "retired": "Retired",
+    "saving": "Saving",
+    "progressToGoal": "Progress to Goal",
+    "onTrack": "On Track",
+    "behindSchedule": "Behind Schedule",
+    "monthsUntilRetirement": "months until retirement",
+    "projectedAtRetirement": "Projected at retirement",
+    "targetAmount": "Target Amount",
+    "fundDetails": "Fund Details",
+    "retirementAge": "Retirement Age",
+    "monthlyDeposit": "Monthly Deposit",
+    "retirementStarted": "Retirement Started",
+    "timelockStatus": "Timelock Status",
+    "unlocked": "Unlocked",
+    "locked": "Locked",
+    "unlocksAt": "Unlocks at",
+    "makeMonthlyDeposit": "Make Monthly Deposit",
+    "startRetirement": "Start Retirement",
+    "noFundYet": "You don't have a retirement fund yet",
+    "createMyFundNow": "Create My Fund Now",
+    "defiInvestments": "DeFi Investments",
+    "fundsInvestedInDefi": "Your funds can be invested in approved DeFi protocols to earn returns",
+    "viewInvestmentOpportunities": "View Investment Opportunities",
+    "globalTreasury": "Global Treasury",
+    "totalInTreasury": "Total in Treasury",
+    "fundsCreated": "Funds Created",
+    "governance": "Governance",
+    "activeProposals": "Active Proposals",
+    "viewProposals": "View Proposals",
+    "needHelp": "Need Help?",
+    "contactDaoDescription": "Contact the DAO community for questions about your retirement plan or investment strategies",
+    "contactDao": "Contact DAO",
+    "viewDocumentation": "View Documentation",
+    "makeDeposit": "Make a Deposit",
+    "depositMonthlyAmount": "Deposit Monthly Amount",
+    "orEnterCustom": "Or enter custom amount:",
+    "enterUsdcAmount": "Enter USDC amount",
+    "depositCustomAmount": "Deposit Custom Amount",
+    "myContracts": "My Contracts",
+    "createNew": "Create New Contract",
+    "viewAll": "View All",
+    "stats": {
+      "totalBalance": "Total Balance",
+      "activeContracts": "Active Contracts",
+      "pendingActions": "Pending Actions",
+      "monthlyReturn": "Monthly Return"
+    },
+    "recentActivity": "Recent Activity",
+    "noContracts": "You don't have any contracts yet",
+    "getStarted": "Get started by creating your first retirement contract"
+  },
+
+  "createContract": {
+    "title": "Create Retirement Contract",
+    "subtitle": "Set up your personalized savings plan for retirement",
+    "backToCalculator": "Back to Calculator",
+    "planReview": "Plan Review",
+    "verifyBeforeContinue": "Verify everything is correct before continuing",
+    "fundParameters": "Fund Parameters",
+    "initialDeposit": "Initial Deposit",
+    "monthlySaving": "Monthly Saving",
+    "currentAge": "Current Age",
+    "desiredMonthlyIncome": "Desired Monthly Income",
+    "yearsReceivingIncome": "Years Receiving Income",
+    "returnRate": "Return Rate",
+    "securityTimelock": "Security Timelock",
+    "depositSummary": "Deposit Summary",
+    "totalToDeposit": "Total to deposit",
+    "daoFee": "DAO Fee (3%)",
+    "netToYourFund": "Net to your fund",
+    "investmentMethod": "Investment Method",
+    "chooseInvestmentMethod": "Choose how you want to invest and grow your retirement savings",
+    "verificationCompleted": "Verification Completed",
+    "allRequirementsMet": "All requirements have been met. You can continue to final confirmation.",
+    "twoTransactionsRequired": "2 transactions will be required: USDC approval and contract creation.",
+    "continueToConfirmation": "Continue to Confirmation",
+    "alreadyHaveFund": "Already Have Fund",
+    "selectInvestmentMethod": "Select an Investment Method",
+    "completeVerification": "Complete Verification",
+    "selectHowToInvest": "Select how you want to invest your savings",
+    "ensureSufficientBalance": "Make sure you have sufficient USDC balance and gas before continuing",
+    "missingConfiguration": "Missing Configuration",
+    "factoryAddressNotConfigured": "The Factory contract address is not configured correctly.",
+    "wrongNetwork": "Wrong Network",
+    "pleaseSwitchToArbitrum": "Please switch to Arbitrum Sepolia to continue.",
+    "currentNetwork": "Current network:",
+    "requiredNetwork": "Required network:",
+    "onlyOneFundPerWallet": "You can only have one retirement fund per wallet.",
+    "yourExistingFund": "Your existing fund:",
+    "goToDashboard": "Go to Dashboard",
+    "steps": {
+      "details": "Contract Details",
+      "investment": "Investment Options",
+      "review": "Review & Sign"
+    },
+    "contractType": "Contract Type",
+    "duration": "Duration (years)",
+    "contribution": "Monthly Contribution",
+    "riskLevel": "Risk Level",
+    "riskLevels": {
+      "low": "Low Risk - Conservative",
+      "medium": "Medium Risk - Balanced",
+      "high": "High Risk - Aggressive"
+    },
+    "beneficiary": "Beneficiary (Optional)",
+    "emergencyWithdrawal": "Allow Emergency Withdrawal",
+    "autoReinvest": "Automatically Reinvest Returns",
+    "review": "Review Contract",
+    "sign": "Sign Contract",
+    "signing": "Signing...",
+    "terms": "I accept the terms and conditions",
+    "success": "Contract created successfully!",
+    "error": "Error creating contract. Please try again."
+  },
+
+  "contractCreated": {
+    "title": "Contract Created Successfully!",
+    "subtitle": "Your retirement contract is now active",
+    "contractOnBlockchain": "Your retirement fund is now on the blockchain",
+    "initialDepositMade": "Initial Deposit Made",
+    "netInDefi": "net in DeFi",
+    "monthlyDepositRequired": "Monthly Deposit",
+    "requiredEachMonth": "Required each month (includes 3% fee)",
+    "nextSteps": "Next Steps",
+    "goToDashboardDetail": "Go to Dashboard to view your fund's details and balance",
+    "makeMonthlyDepositsDetail": "Make monthly deposits of {{amount}} to stay on track",
+    "monitorProgress": "Monitor your progress and adjust your plan as needed",
+    "finalConfirmation": "Final Confirmation",
+    "reviewCarefully": "Review carefully before creating your contract",
+    "lastVerification": "Last Verification",
+    "cannotModifyParameters": "Once the contract is created, you will not be able to modify these parameters. Make sure all information is correct.",
+    "timelockPermanent": "The {{years}} year timelock will be permanent",
+    "monthlyDepositsRequired": "Monthly deposits are mandatory to reach your goal",
+    "feeAppliedEachDeposit": "The 3% fee applies to each deposit",
+    "principalPlusFirstMonth": "(Principal + 1st month)",
+    "netToYourFund": "Net to your fund",
+    "during": "During",
+    "feeAppliedMonthly": "(3% fee applied monthly)",
+    "depositBreakdown": "Initial Deposit Breakdown",
+    "requiredFromWallet": "Amount required from your wallet:",
+    "monthlyDepositsAlsoFee": "Monthly deposits of {{amount}} will also have a 3% fee",
+    "contractParameters": "Contract Parameters",
+    "iHaveReviewed": "I have reviewed all parameters and confirm they are correct. I understand that I will not be able to modify these values once the contract is created.",
+    "proceedToCreate": "Proceed to Create Contract",
+    "confirmToContinue": "Confirm to Continue",
+    "backToReview": "Back to Review",
+    "contractId": "Contract ID",
+    "step1": "Your contract is now active on the blockchain",
+    "step2": "You can view and manage it from your dashboard",
+    "step3": "Set up automatic monthly contributions",
+    "viewContract": "View Contract Details"
+  },
+
+  "investmentSelector": {
+    "selectInvestmentType": "Select Investment Type",
+    "selectProvider": "Select Provider",
+    "defiProtocols": "DeFi Protocols",
+    "defiDescription": "Decentralized finance with high yields",
+    "traditionalBank": "Traditional Bank",
+    "bankDescription": "Secure savings with guaranteed returns",
+    "onlineBroker": "Online Broker",
+    "brokerDescription": "Trade stocks and ETFs",
+    "wealthManagement": "Wealth Management",
+    "wealthDescription": "Professional portfolio management",
+    "return": "Return",
+    "risk": "Risk",
+    "lowRisk": "Low Risk",
+    "mediumRisk": "Medium Risk",
+    "highRisk": "High Risk",
+    "variableRisk": "Variable Risk",
+    "ready": "Ready",
+    "fees": "Fees",
+    "api": "API",
+    "comingSoon": "Coming Soon",
+    "providerNotIntegrated": "This provider is not yet integrated. For now, please select a DeFi provider (Aave or Compound).",
+    "investmentMethodSelected": "Investment Method Selected",
+    "via": "via",
+    "leadingLendingProtocol": "Leading lending protocol with competitive yields",
+    "algorithmicMoneyMarket": "Algorithmic money market protocol",
+    "openBankingApi": "Open Banking API available",
+    "globalBanking": "Global banking",
+    "apiFirstTrading": "API-first trading",
+    "automatedInvesting": "Automated investing"
+  },
+
+  "backendStatus": {
+    "connected": "Backend connected",
+    "wakingUp": "Backend is waking up...",
+    "renderFreeTime": "Render.com free tier takes 1-2 minutes to start.",
+    "elapsed": "Elapsed",
+    "unavailable": "Backend unavailable",
+    "offlineMode": "The app will work in offline mode. Some features may be limited.",
+    "connecting": "Connecting to backend..."
+  },
+
+  "errors": {
+    "walletNotConnected": "Please connect your wallet",
+    "networkError": "Network error. Please try again.",
+    "transactionFailed": "Transaction failed",
+    "insufficientFunds": "Insufficient funds",
+    "userRejected": "Transaction rejected by user",
+    "somethingWrong": "Something went wrong. Please try again."
+  }
+}
