@@ -307,7 +307,7 @@ const DashboardPage: React.FC = () => {
         abi:          USER_PREFERENCES_ABI,
         functionName: 'setUserConfig',
         args: [
-          (effectiveProtocol ?? ZERO_ADDRESS) as `0x${string}`,
+          (effectiveProtocol ?? ZERO_ADDRESS),
           userPreferences.userConfig?.autoCompound ?? false,
           effectiveRisk as 0 | 1 | 2,
         ],

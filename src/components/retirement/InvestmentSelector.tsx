@@ -147,7 +147,7 @@ export const InvestmentSelector: React.FC<InvestmentSelectorProps> = ({
     if (!selectedMethod) return;
     setSelectedProvider(provider.id);
     const method = INVESTMENT_METHODS.find(m => m.id === selectedMethod)!;
-    const protocolAddress = (provider.addresses[chainId] ?? ZERO) as `0x${string}`;
+    const protocolAddress = (provider.addresses[chainId] ?? ZERO);
 
     if (provider.supported && protocolAddress === ZERO) {
       console.warn(

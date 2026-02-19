@@ -106,7 +106,7 @@ export function ExecutionStep({
 
   const chainId     = chain?.id ?? 421614;
   const addresses   = getContractAddresses(chainId);
-  const usdcAddress = addresses?.usdc as `0x${string}` | undefined;
+  const usdcAddress = addresses?.usdc;
   const explorerUrl = chainId === 421614
     ? 'https://sepolia.arbiscan.io'
     : 'https://amoy.polygonscan.com';

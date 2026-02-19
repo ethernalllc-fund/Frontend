@@ -90,7 +90,7 @@ export function buildCreateFundArgs(plan: RetirementPlan): readonly [
     BigInt(plan.yearsPayments),
     toInterestRateBps(plan.interestRate),
     BigInt(timelock),
-    (plan.selectedProtocol ?? ZERO_ADDRESS) as Address,
+    (plan.selectedProtocol ?? ZERO_ADDRESS),
   ] as const;
 }
 

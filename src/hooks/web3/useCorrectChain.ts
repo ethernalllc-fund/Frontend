@@ -41,7 +41,7 @@ export function useOnChainAdminRole(address: Address | undefined) {
   const { chain } = useAccount();
   const chainId = chain?.id ?? DEFAULT_CHAIN.id;
   const addresses = getContractAddresses(chainId);
-  const treasuryAddress = addresses?.treasury as Address | undefined;
+  const treasuryAddress = addresses?.treasury;
 
   const {
     data: isAdmin,

@@ -44,7 +44,7 @@ export function useProtocolRegistry(address?: Address): ProtocolRegistryState {
   return {
     activeProtocols:     (active as ProtocolInfo[] | undefined) ?? [],
     protocolCount:       protocolCount as bigint | undefined,
-    activeProtocolCount: activeCount   as bigint | undefined,
+    activeProtocolCount: activeCount,
     isLoading:           l1 || l2 || l3,
     refetch,
   };

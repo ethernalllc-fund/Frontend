@@ -42,7 +42,7 @@ export default function AdminDashboard() {
     ],
   });
 
-  const usdcBalance   = onchain?.[0].status === 'success' ? onchain[0].result as bigint : undefined;
+  const usdcBalance   = onchain?.[0].status === 'success' ? onchain[0].result : undefined;
   const treasuryStats = onchain?.[1].status === 'success' ? onchain[1].result as {
     totalFeesCollectedUSDC:       bigint;
     totalFeesCollectedAllTime:    bigint;
@@ -53,7 +53,7 @@ export default function AdminDashboard() {
     rejectedEarlyRetirements:     bigint;
   } : undefined;
   const requestStats  = onchain?.[2].status === 'success' ? onchain[2].result as [bigint, bigint, bigint, bigint] : undefined;
-  const fundCount     = onchain?.[3].status === 'success' ? onchain[3].result as bigint : undefined;
+  const fundCount     = onchain?.[3].status === 'success' ? onchain[3].result : undefined;
   const pendingRetirements = requestStats ? Number(requestStats[1]) : 0;
   const fetchOffchain = useCallback(async () => {
     setLoadingOff(true);

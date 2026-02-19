@@ -300,7 +300,7 @@ export const updateChainAddresses = (
     console.error(`❌ Chain ${chainId} not configured`)
     return
   }
-  ;(CONTRACT_ADDRESSES as Record<number, ContractAddresses>)[chainId] = {
+  ;(CONTRACT_ADDRESSES)[chainId] = {
     ...current,
     ...addresses,
   }

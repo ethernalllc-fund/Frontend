@@ -148,7 +148,7 @@ export function useUSDCTransaction({
       address:      contractAddress,
       abi,
       functionName,
-      args:         args as unknown[],
+      args:         args,
 
     });
 

@@ -2,7 +2,6 @@ import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAccount, useSignMessage, usePublicClient } from 'wagmi';
 import { z } from 'zod';
-import type { Address } from 'viem';
 import { useOnChainAdminRole, DEFAULT_ADMIN_ROLE } from './web3/useCorrectChain';
 import { getContractAddresses } from './../config/addresses';
 
@@ -91,7 +90,7 @@ export const useSecureAdmin = (): UseSecureAdminResult => {
     isAdmin:   isOnChainAdmin,
     isLoading: isCheckingOnChain,
     isError:   onChainCheckFailed,
-  } = useOnChainAdminRole(address as Address | undefined);
+  } = useOnChainAdminRole(address);
 
   const checkStoredSession = useCallback((): boolean => {
     if (!address || !isConnected) {
@@ -134,7 +133,7 @@ export const useSecureAdmin = (): UseSecureAdminResult => {
       }
 
       const hasRole = await publicClient?.readContract({
-        address: addresses.treasury as Address,
+        address: addresses.treasury,
         abi: [
           {
             name: 'hasRole',

@@ -42,9 +42,9 @@ export function useToken(address?: Address) {
 
   return {
     address:     resolvedAddress,
-    balance:     balance     as bigint | undefined,
-    totalSupply: totalSupply as bigint | undefined,
-    canVote:     canVote     as boolean | undefined,
+    balance:     balance,
+    totalSupply: totalSupply,
+    canVote:     canVote,
     isLoading:   loadingBalance || loadingSupply || loadingVote,
     refetch:     refetchBalance,
   };

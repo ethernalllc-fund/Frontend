@@ -84,8 +84,8 @@ const logLevel: LogLevel = validLevels.includes(logLevelRaw as LogLevel)
 
 export const env: Readonly<AppConfig> = Object.freeze({
   env:       appEnv,
-  isDev:     import.meta.env.DEV  as boolean,
-  isProd:    import.meta.env.PROD as boolean,
+  isDev:     import.meta.env.DEV,
+  isProd:    import.meta.env.PROD,
   isStaging: appEnv === 'staging',
   logLevel,
 
@@ -132,7 +132,7 @@ export const env: Readonly<AppConfig> = Object.freeze({
 
   features: {
     analytics:    bool('VITE_ENABLE_ANALYTICS',   false),
-    debug:        bool('VITE_ENABLE_DEBUG',        import.meta.env.DEV as boolean),
+    debug:        bool('VITE_ENABLE_DEBUG',        import.meta.env.DEV),
     faucet:       bool('VITE_ENABLE_FAUCET',       true),
     experimental: bool('VITE_ENABLE_EXPERIMENTAL', false),
     mocks:        bool('VITE_ENABLE_MOCKS',         false),

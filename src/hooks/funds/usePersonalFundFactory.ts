@@ -28,7 +28,7 @@ export function usePersonalFundFactory(address?: Address): PersonalFundFactorySt
     },
   });
 
-  const userFund = data as `0x${string}` | undefined;
+  const userFund = data;
   const hasFund  = !!userFund && userFund !== ZERO_ADDRESS;
 
   return {

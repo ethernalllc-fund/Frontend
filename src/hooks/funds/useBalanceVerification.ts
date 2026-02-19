@@ -82,8 +82,8 @@ export function useBalanceVerification(plan: RetirementPlan): BalanceVerificatio
     },
   });
 
-  const usdcBalance = (usdcBalanceRaw as bigint | undefined) ?? 0n;
-  const allowance   = (allowanceRaw   as bigint | undefined) ?? 0n;
+  const usdcBalance = (usdcBalanceRaw) ?? 0n;
+  const allowance   = (allowanceRaw) ?? 0n;
   const gasBalance  = gasData?.value ?? 0n;
   const isLoading   = loadingUSDC || loadingAllowance || loadingGas;
 

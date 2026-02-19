@@ -51,8 +51,8 @@ export function useTreasury(address?: Address): TreasuryState {
 
   return {
     totalDeposited: s?.totalDeposited,
-    fundCount:      fundCount as bigint | undefined,
-    balance:        balance   as bigint | undefined,
+    fundCount:      fundCount,
+    balance:        balance,
     isLoading:      l1 || l2 || l3,
     refetch,
   };

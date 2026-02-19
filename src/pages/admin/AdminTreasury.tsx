@@ -203,7 +203,7 @@ export default function AdminTreasury() {
     writeContract({
       ...base,
       functionName: 'withdrawFees',
-      args: [withdrawRecipient as `0x${string}`, parseUnits(withdrawAmount, USDC_DECIMALS)],
+      args: [withdrawRecipient, parseUnits(withdrawAmount, USDC_DECIMALS)],
     });
   };
 
@@ -216,13 +216,13 @@ export default function AdminTreasury() {
 
   const handleAddManager = () => {
     if (!isAddress(newManager)) return showToast('error', 'Dirección inválida.');
-    writeContract({ ...base, functionName: 'addTreasuryManager', args: [newManager as `0x${string}`] });
+    writeContract({ ...base, functionName: 'addTreasuryManager', args: [newManager] });
     setNewManager('');
   };
 
   const handleRemoveManager = () => {
     if (!isAddress(removeManager)) return showToast('error', 'Dirección inválida.');
-    writeContract({ ...base, functionName: 'removeTreasuryManager', args: [removeManager as `0x${string}`] });
+    writeContract({ ...base, functionName: 'removeTreasuryManager', args: [removeManager] });
     setRemoveManager('');
   };
 

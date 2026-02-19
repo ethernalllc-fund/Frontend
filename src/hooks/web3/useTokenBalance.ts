@@ -44,7 +44,7 @@ export const useTokenBalance = ({
         address: tokenAddress,
         abi: tokenAbi,
         functionName: 'balanceOf',
-        args: [address as `0x${string}`],
+        args: [address],
       }) as bigint;
 
       setBalanceRaw(result);

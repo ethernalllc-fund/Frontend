@@ -60,7 +60,7 @@ export function usePersonalFund(fundAddress: `0x${string}` | undefined): Persona
   });
 
   return {
-    balance:      balanceData  as bigint | undefined,
+    balance:      balanceData,
     fundInfo:     fundInfoData as FundInfo | undefined,
     timelockInfo: timelockData as TimelockInfo | undefined,
     depositStats: depositData  as DepositStats | undefined,

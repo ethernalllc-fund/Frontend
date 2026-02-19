@@ -27,7 +27,7 @@ export function useHasFund(): UseHasFundResult {
     },
   });
 
-  const fundAddress = data as `0x${string}` | undefined;
+  const fundAddress = data;
   const hasFund     = !!fundAddress && fundAddress !== ZERO_ADDRESS;
 
   return {
