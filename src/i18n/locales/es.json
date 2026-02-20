@@ -17,7 +17,6 @@
     "optional": "Opcional",
     "required": "Requerido"
   },
-
   "nav": {
     "home": "Inicio",
     "calculator": "Calculadora",
@@ -27,7 +26,6 @@
     "connectWallet": "Conectar Billetera",
     "disconnect": "Desconectar"
   },
-
   "wallet": {
     "connectedWallet": "Billetera Conectada",
     "balance": "Saldo",
@@ -42,14 +40,12 @@
     "yourWallet": "Tu Billetera",
     "language": "Idioma"
   },
-
   "hero": {
     "title": "Libertad Financiera en tus Manos",
     "subtitle": "Asegura tu Mañana con la Decisión que Tomas Hoy",
     "ctaConnected": "Ir a la Calculadora",
     "ctaDisconnected": "Conectar Billetera y Comenzar"
   },
-
   "survey": {
     "title": "Ayúdanos a Conocerte Mejor",
     "subtitle": "Tu opinión es valiosa. Responde estas preguntas y ayúdanos a crear el mejor sistema de jubilación para ti.",
@@ -82,7 +78,6 @@
     "selectAge": "Por favor selecciona tu rango de edad",
     "answerAll": "Por favor responde todas las preguntas"
   },
-
   "followUp": {
     "successTitle": "¡Encuesta enviada exitosamente!",
     "successMessage": "Gracias por tu tiempo. Dos preguntas más y terminamos.",
@@ -98,7 +93,6 @@
     "pleaseIndicate": "Por favor indica si deseas recibir más información",
     "enterEmail": "Por favor ingresa tu email para recibir información"
   },
-
   "features": {
     "title": "¿Por Qué Elegirnos?",
     "security": {
@@ -114,19 +108,17 @@
       "description": "FEE simple Sin costos ocultos. Tarifas claras, transparentes y bajas para Optimizar tus Ahorros y Maximizar tus Beneficios."
     }
   },
-
   "about": {
     "title": "Acerca de Ethernal",
     "description": "Nos dedicamos a ayudarte a CALCULAR, CREAR y AUTO-GESTIONAR tu Fondo Personal Descentralizado de Retiro, para que puedas construir un futuro financiero solido, seguro y a tu medida. Con enfoque en la Privacidad, la Seguridad y la Autogestion, nuestros Smart Contracts están diseñados para darte Tranquilidad y Transparencia. Tus datos están protegidos con Metodologia Zero-knowledge, asegurando que tu Información Personal, Sensible y Financiera permanezca PRIVADA."
   },
-
   "calculator": {
     "title": "Calculadora de Retiro",
-    "subtitle": "Planifica tu futuro financiero con nuestra calculadora avanzada",
+    "subtitle": "Planificá tu futuro financiero con nuestra calculadora avanzada",
     "currentAge": "Edad Actual",
-    "retirementAge": "Edad de Retiro",
-    "monthlyContribution": "Contribución Mensual",
-    "expectedReturn": "Retorno Anual Esperado",
+    "retirementAge": "Edad de Jubilación",
+    "monthlyContribution": "Aporte Mensual",
+    "expectedReturn": "Rendimiento Anual Esperado",
     "inflationRate": "Tasa de Inflación",
     "calculate": "Calcular",
     "reset": "Restablecer",
@@ -138,13 +130,45 @@
       "purchasingPower": "Poder Adquisitivo (ajustado por inflación)"
     },
     "validation": {
-      "ageRequired": "Por favor ingresa tu edad actual",
+      "ageRequired": "Por favor ingresá tu edad actual",
       "retirementAgeRequired": "Por favor ingresa tu edad de jubilación",
-      "retirementAgeTooLow": "La edad de jubilación debe ser mayor que la edad actual",
-      "contributionRequired": "Por favor ingresa una contribución mensual"
-    }
+      "retirementAgeTooLow": "La edad de jubilación debe ser mayor a la edad actual",
+      "contributionRequired": "Por favor ingresá un aporte mensual",
+      "ageTooHigh": "La edad debe ser menor a la edad de jubilación",
+      "minYears": "Necesitás al menos 1 año hasta la jubilación",
+      "rateRange": "La tasa de rendimiento debe estar entre 0% y 50%"
+    },
+    "titleFull": "Calculadora de Jubilación",
+    "titleShort": "Calculadora",
+    "ageLabel": "Edad",
+    "initialCapital": "Capital Inicial",
+    "yearsReceivingIncome": "Años Recibiendo Ingreso",
+    "frequency": "Frecuencia de Aporte",
+    "frequencyMonthly": "Mensual",
+    "frequencyQuarterly": "Trimestral",
+    "frequencyAnnual": "Anual",
+    "monthlySavingsRequired": "Ahorro Mensual Requerido",
+    "growthProjection": "Proyección de Crecimiento",
+    "depositSummary": "Resumen del Depósito",
+    "totalDeposit": "Total a Depositar",
+    "daoFee": "Comisión DAO (3%)",
+    "netToFund": "Neto a Tu Fondo",
+    "forDefi": "Para DeFi",
+    "goesToTreasury": "Va al Tesoro",
+    "configurePlan": "Configurá Tu Plan",
+    "howToStart": "Cómo Comenzar",
+    "lastStep": "Último Paso",
+    "fundReady": "Tu Fondo Está Listo",
+    "walletWillOpen": "Se abrirá la wallet para firmar la transacción",
+    "createContract": "Crear Contrato",
+    "createOnArbitrum": "Crear en Arbitrum Sepolia",
+    "testnetOnly": "Solo Testnet",
+    "testnetOnlyDesc": "Esta app corre en la testnet de Arbitrum Sepolia. No se usan fondos reales.",
+    "getTestTokens": "Obtener Tokens de Prueba",
+    "getTestTokensDesc": "Necesitás USDC de prueba para usar la app. Hacé clic para obtener tokens del faucet.",
+    "fillFormToSeeChart": "Completá el formulario para ver tu gráfico de proyección",
+    "dataError": "Error al cargar los datos. Por favor intentá de nuevo."
   },
-
   "contact": {
     "title": "Contáctanos",
     "subtitle": "Comunícate con nuestro equipo. Estamos aquí para ayudarte.",
@@ -160,10 +184,24 @@
       "nameRequired": "Por favor ingresa tu nombre",
       "emailRequired": "Por favor ingresa tu correo electrónico",
       "emailInvalid": "Por favor ingresa un correo electrónico válido",
-      "messageRequired": "Por favor ingresa un mensaje"
-    }
+      "messageRequired": "Por favor ingresa un mensaje",
+      "nameTooShort": "El nombre debe tener al menos 2 caracteres",
+      "messageTooShort": "El mensaje debe tener al menos 10 caracteres",
+      "formErrors": "Por favor corrige los errores antes de enviar"
+    },
+    "namePlaceholder": "Tu nombre completo",
+    "subjectPlaceholder": "¿De qué se trata?",
+    "messagePlaceholder": "Escribe tu mensaje aquí...",
+    "messageHint": "Mínimo 10 caracteres",
+    "walletConnected": "Wallet conectada",
+    "walletIncluded": "Tu dirección de wallet será incluida:",
+    "requiredFields": "* Campos requeridos",
+    "successDetail": "Te responderemos a la brevedad posible.",
+    "otherWays": "Otras formas de contactarnos",
+    "emailLabel": "Correo",
+    "responseTime": "Tiempo de respuesta",
+    "responseTimeValue": "24-48 horas"
   },
-
   "dashboard": {
     "title": "Panel de Control",
     "welcome": "Bienvenido de nuevo",
@@ -227,7 +265,6 @@
     "noContracts": "Aún no tienes ningún contrato",
     "getStarted": "Comienza creando tu primer contrato de retiro"
   },
-
   "createContract": {
     "title": "Crear Contrato de Retiro",
     "subtitle": "Configura tu Plan de Ahorro personalizado para el Retiro",
@@ -290,7 +327,6 @@
     "success": "¡Contrato creado exitosamente!",
     "error": "Error al crear el contrato. Por favor intenta nuevamente."
   },
-
   "contractCreated": {
     "title": "¡Contrato Creado Exitosamente!",
     "subtitle": "Tu contrato de jubilación está ahora activo",
@@ -328,7 +364,6 @@
     "step3": "Configura contribuciones mensuales automáticas",
     "viewContract": "Ver Detalles del Contrato"
   },
-
   "investmentSelector": {
     "selectInvestmentType": "Seleccionar Tipo de Inversión",
     "selectProvider": "Seleccionar Proveedor",
@@ -360,7 +395,6 @@
     "apiFirstTrading": "Trading orientado a API",
     "automatedInvesting": "Inversión automatizada"
   },
-
   "backendStatus": {
     "connected": "Backend conectado",
     "wakingUp": "El backend se está despertando...",
@@ -370,7 +404,6 @@
     "offlineMode": "La aplicación funcionará en modo offline. Algunas funciones pueden estar limitadas.",
     "connecting": "Conectando al backend..."
   },
-
   "footer": {
     "copyright": "© 2025 Ethernal. Todos los derechos reservados.",
     "privacy": "Política de Privacidad",
@@ -380,7 +413,6 @@
     "community": "Comunidad",
     "followUs": "Síguenos"
   },
-
   "errors": {
     "walletNotConnected": "Por favor conecta tu billetera",
     "networkError": "Error de red. Por favor intenta nuevamente.",

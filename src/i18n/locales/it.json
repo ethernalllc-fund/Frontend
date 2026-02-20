@@ -17,7 +17,6 @@
     "optional": "Opzionale",
     "required": "Obbligatorio"
   },
-
   "nav": {
     "home": "Home",
     "calculator": "Calcolatore",
@@ -27,7 +26,6 @@
     "connectWallet": "Collega Wallet",
     "disconnect": "Disconnetti"
   },
-
   "wallet": {
     "connectedWallet": "Wallet Connesso",
     "balance": "Saldo",
@@ -42,14 +40,12 @@
     "yourWallet": "Il tuo Wallet",
     "language": "Lingua"
   },
-
   "hero": {
     "title": "Libertà Finanziaria nelle Tue Mani",
     "subtitle": "Assicura il Tuo Domani con la Decisione che Prendi Oggi",
     "ctaConnected": "Vai al Calcolatore",
     "ctaDisconnected": "Collega Wallet e Inizia"
   },
-
   "survey": {
     "title": "Aiutaci a Conoscerti Meglio",
     "subtitle": "La tua opinione è preziosa. Rispondi a queste domande e aiutaci a creare il miglior sistema pensionistico per te.",
@@ -82,7 +78,6 @@
     "selectAge": "Seleziona la tua fascia d'età",
     "answerAll": "Rispondi a tutte le domande"
   },
-
   "followUp": {
     "successTitle": "Sondaggio inviato con successo!",
     "successMessage": "Grazie per il tuo tempo. Ancora due domande e abbiamo finito.",
@@ -98,7 +93,6 @@
     "pleaseIndicate": "Indica se desideri ricevere ulteriori informazioni",
     "enterEmail": "Inserisci la tua email per ricevere informazioni"
   },
-
   "features": {
     "title": "Perchè Sceglierci?",
     "security": {
@@ -114,17 +108,15 @@
       "description": "Struttura tariffaria semplice senza costi nascosti. Commissioni chiare, trasparenti e basse per ottimizzare i tuoi risparmi e massimizzare i tuoi guadagni."
     }
   },
-
   "about": {
     "title": "Chi è Ethernal",
     "description": "Ci dedichiamo ad aiutarti a CALCOLARE, CREARE e AUTO-GESTIRE il tuo Fondo Pensione Personale Decentralizzato, affinchè tu possa costruire un futuro finanziario solido, sicuro e su misura. Con focus su privacy, sicurezza e autogestione, i nostri Smart Contract sono progettati per darti tranquillità e trasparenza. I tuoi dati sono protetti con metodologia Zero-Knowledge, garantendo che le tue informazioni personali, sensibili e finanziarie rimangano PRIVATE."
   },
-
   "calculator": {
     "title": "Calcolatore Pensionistico",
     "subtitle": "Pianifica il tuo futuro finanziario con il nostro calcolatore avanzato",
     "currentAge": "Età Attuale",
-    "retirementAge": "Età di Pensionamento",
+    "retirementAge": "Età Pensionistica",
     "monthlyContribution": "Contributo Mensile",
     "expectedReturn": "Rendimento Annuo Atteso",
     "inflationRate": "Tasso di Inflazione",
@@ -140,11 +132,43 @@
     "validation": {
       "ageRequired": "Inserisci la tua età attuale",
       "retirementAgeRequired": "Inserisci la tua età di pensionamento",
-      "retirementAgeTooLow": "L'età di pensionamento deve essere maggiore dell'età attuale",
-      "contributionRequired": "Inserisci un contributo mensile"
-    }
+      "retirementAgeTooLow": "L'età pensionistica deve essere maggiore dell'età attuale",
+      "contributionRequired": "Inserisci un contributo mensile",
+      "ageTooHigh": "L'età deve essere inferiore all'età pensionistica",
+      "minYears": "Hai bisogno di almeno 1 anno alla pensione",
+      "rateRange": "Il tasso di rendimento deve essere tra 0% e 50%"
+    },
+    "titleFull": "Calcolatore Pensionistico",
+    "titleShort": "Calcolatore",
+    "ageLabel": "Età",
+    "initialCapital": "Capitale Iniziale",
+    "yearsReceivingIncome": "Anni di Pensione",
+    "frequency": "Frequenza dei Contributi",
+    "frequencyMonthly": "Mensile",
+    "frequencyQuarterly": "Trimestrale",
+    "frequencyAnnual": "Annuale",
+    "monthlySavingsRequired": "Risparmio Mensile Necessario",
+    "growthProjection": "Proiezione di Crescita",
+    "depositSummary": "Riepilogo Deposito",
+    "totalDeposit": "Totale da Depositare",
+    "daoFee": "Commissione DAO (3%)",
+    "netToFund": "Netto al Tuo Fondo",
+    "forDefi": "Per DeFi",
+    "goesToTreasury": "Va al Tesoro",
+    "configurePlan": "Configura il Tuo Piano",
+    "howToStart": "Come Iniziare",
+    "lastStep": "Ultimo Passo",
+    "fundReady": "Il Tuo Fondo è Pronto",
+    "walletWillOpen": "Il wallet si aprirà per firmare la transazione",
+    "createContract": "Crea Contratto",
+    "createOnArbitrum": "Crea su Arbitrum Sepolia",
+    "testnetOnly": "Solo Testnet",
+    "testnetOnlyDesc": "Questa app funziona sulla testnet di Arbitrum Sepolia. Non vengono utilizzati fondi reali.",
+    "getTestTokens": "Ottieni Token di Test",
+    "getTestTokensDesc": "Hai bisogno di USDC di test. Clicca per ottenere token dal faucet.",
+    "fillFormToSeeChart": "Compila il modulo per vedere il grafico delle proiezioni",
+    "dataError": "Errore nel caricamento dei dati. Riprova."
   },
-
   "contact": {
     "title": "Contattaci",
     "subtitle": "Comunica con il nostro team. Siamo qui per aiutarti.",
@@ -160,10 +184,24 @@
       "nameRequired": "Inserisci il tuo nome",
       "emailRequired": "Inserisci la tua email",
       "emailInvalid": "Inserisci un indirizzo email valido",
-      "messageRequired": "Inserisci un messaggio"
-    }
+      "messageRequired": "Inserisci un messaggio",
+      "nameTooShort": "Il nome deve avere almeno 2 caratteri",
+      "messageTooShort": "Il messaggio deve avere almeno 10 caratteri",
+      "formErrors": "Correggi gli errori prima di inviare"
+    },
+    "namePlaceholder": "Il tuo nome completo",
+    "subjectPlaceholder": "Di cosa si tratta?",
+    "messagePlaceholder": "Scrivi il tuo messaggio qui...",
+    "messageHint": "Minimo 10 caratteri",
+    "walletConnected": "Wallet connesso",
+    "walletIncluded": "Il tuo indirizzo wallet sarà incluso:",
+    "requiredFields": "* Campi obbligatori",
+    "successDetail": "Ti risponderemo il prima possibile.",
+    "otherWays": "Altri modi per contattarci",
+    "emailLabel": "Email",
+    "responseTime": "Tempo di risposta",
+    "responseTimeValue": "24-48 ore"
   },
-
   "dashboard": {
     "title": "Dashboard",
     "welcome": "Bentornato",
@@ -227,7 +265,6 @@
     "noContracts": "Non hai ancora nessun contratto",
     "getStarted": "Inizia creando il tuo primo contratto pensionistico"
   },
-
   "createContract": {
     "title": "Crea Contratto Pensionistico",
     "subtitle": "Configura il tuo piano di risparmio personalizzato per la pensione",
@@ -290,7 +327,6 @@
     "success": "Contratto creato con successo!",
     "error": "Errore nella creazione del contratto. Riprova."
   },
-
   "contractCreated": {
     "title": "Contratto Creato con Successo!",
     "subtitle": "Il tuo contratto pensionistico è ora attivo",
@@ -328,7 +364,6 @@
     "step3": "Configura contributi mensili automatici",
     "viewContract": "Visualizza Dettagli Contratto"
   },
-
   "investmentSelector": {
     "selectInvestmentType": "Seleziona Tipo di Investimento",
     "selectProvider": "Seleziona Provider",
@@ -360,7 +395,6 @@
     "apiFirstTrading": "Trading orientato alle API",
     "automatedInvesting": "Investimento automatizzato"
   },
-
   "backendStatus": {
     "connected": "Backend connesso",
     "wakingUp": "Il backend si sta svegliando...",
@@ -370,7 +404,6 @@
     "offlineMode": "L'app funzionerà in modalità offline. Alcune funzionalità potrebbero essere limitate.",
     "connecting": "Connessione al backend..."
   },
-
   "footer": {
     "copyright": "© 2025 Ethernal. Tutti i diritti riservati.",
     "privacy": "Informativa sulla Privacy",
@@ -380,7 +413,6 @@
     "community": "Comunità",
     "followUs": "Seguici"
   },
-
   "errors": {
     "walletNotConnected": "Collega il tuo wallet",
     "networkError": "Errore di rete. Riprova.",

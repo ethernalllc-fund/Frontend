@@ -17,7 +17,6 @@
     "optional": "Opcional",
     "required": "Obrigatório"
   },
-
   "nav": {
     "home": "Início",
     "calculator": "Calculadora",
@@ -27,7 +26,6 @@
     "connectWallet": "Conectar Carteira",
     "disconnect": "Desconectar"
   },
-
   "wallet": {
     "connectedWallet": "Carteira Conectada",
     "balance": "Saldo",
@@ -42,14 +40,12 @@
     "yourWallet": "Sua Carteira",
     "language": "Idioma"
   },
-
   "hero": {
     "title": "Liberdade Financeira nas Suas Mãos",
     "subtitle": "Garanta Seu Amanhã com a Decisão que Você Toma Hoje",
     "ctaConnected": "Ir para a Calculadora",
     "ctaDisconnected": "Conectar Carteira e Começar"
   },
-
   "survey": {
     "title": "Ajude-nos a Conhecer Você Melhor",
     "subtitle": "Sua opinião é valiosa. Responda estas perguntas e ajude-nos a criar o melhor sistema de aposentadoria para você.",
@@ -82,7 +78,6 @@
     "selectAge": "Por favor selecione sua faixa etária",
     "answerAll": "Por favor responda todas as perguntas"
   },
-
   "followUp": {
     "successTitle": "Pesquisa enviada com sucesso!",
     "successMessage": "Obrigado pelo seu tempo. Mais duas perguntas e terminamos.",
@@ -98,7 +93,6 @@
     "pleaseIndicate": "Por favor indique se deseja receber mais informações",
     "enterEmail": "Por favor insira seu e-mail para receber informações"
   },
-
   "features": {
     "title": "Por Que Escolher-nos?",
     "security": {
@@ -114,12 +108,10 @@
       "description": "Estrutura de taxa simples sem custos ocultos. Taxas claras, transparentes e baixas para otimizar suas economias e maximizar seus ganhos."
     }
   },
-
   "about": {
     "title": "Sobre a Ethernal",
     "description": "Nós nos dedicamos a ajudar você a CALCULAR, CRIAR e AUTO-GERIR seu Fundo Pessoal Descentralizado de Aposentadoria, para que você possa construir um futuro financeiro sólido, seguro e sob medida. Com foco em privacidade, segurança e autogestão, nossos Smart Contracts foram projetados para lhe dar tranquilidade e transparência. Seus dados são protegidos com metodologia Zero-Knowledge, garantindo que suas informações pessoais, sensíveis e financeiras permaneçam PRIVADAS."
   },
-
   "calculator": {
     "title": "Calculadora de Aposentadoria",
     "subtitle": "Planeje seu futuro financeiro com nossa calculadora avançada",
@@ -141,10 +133,42 @@
       "ageRequired": "Por favor insira sua idade atual",
       "retirementAgeRequired": "Por favor insira sua idade de aposentadoria",
       "retirementAgeTooLow": "A idade de aposentadoria deve ser maior que a idade atual",
-      "contributionRequired": "Por favor insira uma contribuição mensal"
-    }
+      "contributionRequired": "Por favor insira uma contribuição mensal",
+      "ageTooHigh": "A idade deve ser menor que a idade de aposentadoria",
+      "minYears": "Você precisa de pelo menos 1 ano até a aposentadoria",
+      "rateRange": "A taxa de retorno deve estar entre 0% e 50%"
+    },
+    "titleFull": "Calculadora de Aposentadoria",
+    "titleShort": "Calculadora",
+    "ageLabel": "Idade",
+    "initialCapital": "Capital Inicial",
+    "yearsReceivingIncome": "Anos Recebendo Renda",
+    "frequency": "Frequência de Contribuição",
+    "frequencyMonthly": "Mensal",
+    "frequencyQuarterly": "Trimestral",
+    "frequencyAnnual": "Anual",
+    "monthlySavingsRequired": "Poupança Mensal Necessária",
+    "growthProjection": "Projeção de Crescimento",
+    "depositSummary": "Resumo do Depósito",
+    "totalDeposit": "Total a Depositar",
+    "daoFee": "Taxa DAO (3%)",
+    "netToFund": "Líquido para Seu Fundo",
+    "forDefi": "Para DeFi",
+    "goesToTreasury": "Vai para o Tesouro",
+    "configurePlan": "Configure Seu Plano",
+    "howToStart": "Como Começar",
+    "lastStep": "Último Passo",
+    "fundReady": "Seu Fundo Está Pronto",
+    "walletWillOpen": "A carteira será aberta para assinar a transação",
+    "createContract": "Criar Contrato",
+    "createOnArbitrum": "Criar na Arbitrum Sepolia",
+    "testnetOnly": "Apenas Testnet",
+    "testnetOnlyDesc": "Este app roda na testnet da Arbitrum Sepolia. Nenhum fundo real é utilizado.",
+    "getTestTokens": "Obter Tokens de Teste",
+    "getTestTokensDesc": "Você precisa de USDC de teste. Clique para obter tokens do faucet.",
+    "fillFormToSeeChart": "Preencha o formulário para ver o gráfico de projeção",
+    "dataError": "Erro ao carregar os dados. Tente novamente."
   },
-
   "contact": {
     "title": "Entre em Contato",
     "subtitle": "Fale com nossa equipe. Estamos aqui para ajudar.",
@@ -160,10 +184,24 @@
       "nameRequired": "Por favor insira seu nome",
       "emailRequired": "Por favor insira seu e-mail",
       "emailInvalid": "Por favor insira um e-mail válido",
-      "messageRequired": "Por favor insira uma mensagem"
-    }
+      "messageRequired": "Por favor insira uma mensagem",
+      "nameTooShort": "O nome deve ter pelo menos 2 caracteres",
+      "messageTooShort": "A mensagem deve ter pelo menos 10 caracteres",
+      "formErrors": "Por favor corrija os erros antes de enviar"
+    },
+    "namePlaceholder": "Seu nome completo",
+    "subjectPlaceholder": "Sobre o que é?",
+    "messagePlaceholder": "Escreva sua mensagem aqui...",
+    "messageHint": "Mínimo 10 caracteres",
+    "walletConnected": "Carteira conectada",
+    "walletIncluded": "Seu endereço de carteira será incluído:",
+    "requiredFields": "* Campos obrigatórios",
+    "successDetail": "Responderemos o mais rápido possível.",
+    "otherWays": "Outras formas de contato",
+    "emailLabel": "E-mail",
+    "responseTime": "Tempo de resposta",
+    "responseTimeValue": "24-48 horas"
   },
-
   "dashboard": {
     "title": "Painel de Controle",
     "welcome": "Bem-vindo de volta",
@@ -227,7 +265,6 @@
     "noContracts": "Você ainda não tem nenhum contrato",
     "getStarted": "Comece criando seu primeiro contrato de aposentadoria"
   },
-
   "createContract": {
     "title": "Criar Contrato de Aposentadoria",
     "subtitle": "Configure seu plano de poupança personalizado para aposentadoria",
@@ -290,7 +327,6 @@
     "success": "Contrato criado com sucesso!",
     "error": "Erro ao criar o contrato. Tente novamente."
   },
-
   "contractCreated": {
     "title": "Contrato Criado com Sucesso!",
     "subtitle": "Seu contrato de aposentadoria está agora ativo",
@@ -328,7 +364,6 @@
     "step3": "Configure contribuições mensais automáticas",
     "viewContract": "Ver Detalhes do Contrato"
   },
-
   "investmentSelector": {
     "selectInvestmentType": "Selecionar Tipo de Investimento",
     "selectProvider": "Selecionar Provedor",
@@ -360,7 +395,6 @@
     "apiFirstTrading": "Negociação orientada por API",
     "automatedInvesting": "Investimento automatizado"
   },
-
   "backendStatus": {
     "connected": "Backend conectado",
     "wakingUp": "O backend está acordando...",
@@ -370,7 +404,6 @@
     "offlineMode": "O aplicativo funcionará em modo offline. Alguns recursos podem estar limitados.",
     "connecting": "Conectando ao backend..."
   },
-
   "footer": {
     "copyright": "© 2025 Ethernal. Todos os direitos reservados.",
     "privacy": "Política de Privacidade",
@@ -380,7 +413,6 @@
     "community": "Comunidade",
     "followUs": "Siga-nos"
   },
-
   "errors": {
     "walletNotConnected": "Por favor conecte sua carteira",
     "networkError": "Erro de rede. Tente novamente.",

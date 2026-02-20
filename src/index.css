@@ -1,4 +1,5 @@
-@import "tailwindcss";
+@import "tailwindcss/theme";
+@import "tailwindcss/utilities";
 
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -18,7 +19,7 @@
   /* Brand Colors */
   --color-forest-green: #1B5E20;
   --color-dark-blue:    #1f2937;
-  --color-gold:         #8a7d07;   
+  --color-gold:         #8a7d07;
 
   /* Background & Neutrals */
   --color-background-light: #f8fafc;
@@ -56,31 +57,86 @@
   --gradient-primary: linear-gradient(135deg, #1f2937, #1B5E20);
   --gradient-gold:    linear-gradient(135deg, #fbbf24, #8a7d07);
 
-  /* Animations — referencian los @keyframes del nivel raíz */
+  /* Animations */
   --animate-fade-in:  fadeIn  0.5s ease-in;
   --animate-slide-up: slideUp 0.6s ease-out;
+
+  --default-ring-width: 2px;
+  --default-ring-color: #3b82f6;
 }
 
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  border: 0;
+  border-color: #e5e7eb; 
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+  line-height: inherit;
 }
 
 html {
+  line-height: 1.5;
+  tab-size: 4;
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: var(--color-background-light);
   color: var(--color-black);
   line-height: 1.6;
   overflow-x: hidden;
+  min-height: 100vh;
+}
+
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+
+ol, ul {
+  list-style: none;
+}
+
+blockquote, q {
+  quotes: none;
+}
+
+blockquote::before, blockquote::after,
+q::before, q::after {
+  content: '';
+  content: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+input, button, textarea, select {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+}
+
+button {
+  cursor: pointer;
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
 }
 
 @layer base {
@@ -88,7 +144,6 @@ body {
     @apply font-bold text-gray-800 mb-3 leading-tight;
   }
 
-  /* Mobile → Tablet → Desktop */
   h1 { @apply text-2xl sm:text-3xl md:text-4xl lg:text-5xl; }
   h2 { @apply text-xl  sm:text-2xl md:text-3xl lg:text-4xl; }
   h3 { @apply text-lg  sm:text-xl  md:text-2xl lg:text-3xl; }
@@ -103,6 +158,7 @@ body {
   a {
     @apply underline-offset-2 transition-colors duration-200;
     color: var(--color-forest-green);
+    text-decoration: none;
   }
 
   a:hover {
@@ -117,11 +173,20 @@ body {
 
 @layer components {
 
-  /* Layout */
   .container-app {
     @apply w-full mx-auto px-4 sm:px-6 lg:px-8;
     max-width: min(100%, 80rem);
   }
+
+  .container {
+    width: 100%;
+    max-width: min(100%, 80rem);
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+
+  @media (min-width: 640px)  { .container { padding-inline: 1.5rem; } }
+  @media (min-width: 1024px) { .container { padding-inline: 2rem; } }
 
   .section {
     @apply py-8 sm:py-12 lg:py-16;
@@ -134,11 +199,15 @@ body {
            py-3 sm:py-2.5
            rounded-lg font-medium
            transition-all duration-200
-           focus:outline-none focus:ring-2 focus:ring-offset-2
+           focus:outline-none
            disabled:opacity-60 disabled:cursor-not-allowed
            text-sm sm:text-base
            select-none;
     min-height: 44px;
+  }
+
+  .btn:focus-visible {
+    @apply ring-2 ring-offset-2;
   }
 
   .btn-primary {
@@ -146,24 +215,33 @@ body {
     background: var(--gradient-primary);
   }
 
-  .btn-primary:focus {
+  .btn-primary:focus-visible {
     --tw-ring-color: var(--color-forest-green);
   }
 
   .btn-secondary {
-    @apply bg-gray-200 text-gray-800 hover:bg-gray-300
-           active:bg-gray-400 focus:ring-gray-400;
+    @apply bg-gray-200 text-gray-800 hover:bg-gray-300 active:bg-gray-400;
+  }
+
+  .btn-secondary:focus-visible {
+    @apply ring-gray-400;
   }
 
   .btn-gold {
-    @apply text-black font-bold hover:shadow-xl
-           active:scale-95 focus:ring-yellow-500;
+    @apply text-black font-bold hover:shadow-xl active:scale-95;
     background: var(--gradient-gold);
   }
 
+  .btn-gold:focus-visible {
+    @apply ring-yellow-500;
+  }
+
   .btn-danger {
-    @apply text-white bg-red-600 hover:bg-red-700
-           active:scale-95 focus:ring-red-500;
+    @apply text-white bg-red-600 hover:bg-red-700 active:scale-95;
+  }
+
+  .btn-danger:focus-visible {
+    @apply ring-red-500;
   }
 
   .btn-sm {
@@ -176,7 +254,6 @@ body {
     min-height: 52px;
   }
 
-  /* ── Cards ── */
   .card {
     @apply bg-white rounded-xl border border-gray-200
            p-4 sm:p-6
@@ -185,15 +262,10 @@ body {
   }
 
   @media (min-width: 640px) {
-    .card {
-      box-shadow: var(--shadow-md);
-    }
-    .card:hover {
-      box-shadow: var(--shadow-lg);
-    }
+    .card       { box-shadow: var(--shadow-md); }
+    .card:hover { box-shadow: var(--shadow-lg); }
   }
 
-  /* ── Inputs ── */
   .input {
     @apply w-full
            px-4 py-3 sm:py-2
@@ -208,7 +280,7 @@ body {
   }
 
   .input:focus {
-    @apply border-transparent ring-2;
+    @apply border-transparent ring-2 ring-offset-0;
     --tw-ring-color: var(--color-forest-green);
   }
 
@@ -216,7 +288,6 @@ body {
     @apply border-red-400 ring-2 ring-red-200;
   }
 
-  /* ── Badges ── */
   .badge {
     @apply inline-flex items-center
            px-2.5 sm:px-3
@@ -231,7 +302,6 @@ body {
   .badge-error   { @apply bg-red-100 text-red-800; }
   .badge-info    { @apply bg-blue-100 text-blue-800; }
 
-  /* ── Grids responsivos ── */
   .grid-responsive-2 {
     @apply grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6;
   }
@@ -244,7 +314,6 @@ body {
     @apply grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6;
   }
 
-  /* ── Nav ── */
   .nav-link {
     @apply block sm:inline-flex items-center
            px-3 py-2 sm:py-1
@@ -253,7 +322,6 @@ body {
     min-height: 44px;
   }
 
-  /* ── Feedback / alertas ── */
   .alert {
     @apply flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium;
   }

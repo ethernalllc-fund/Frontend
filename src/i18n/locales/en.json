@@ -17,7 +17,6 @@
     "optional": "Optional",
     "required": "Required"
   },
-
   "nav": {
     "home": "Home",
     "calculator": "Calculator",
@@ -29,7 +28,6 @@
     "openMenu": "Open menu",
     "closeMenu": "Close menu"
   },
-
   "wallet": {
     "connectedWallet": "Connected Wallet",
     "balance": "Balance",
@@ -45,7 +43,6 @@
     "language": "Language",
     "unknownNetwork": "Unknown"
   },
-
   "table": {
     "search": "Search...",
     "noResults": "No results found",
@@ -54,7 +51,6 @@
     "next": "Next",
     "showing": "Showing {{from}} to {{to}} of {{total}} entries"
   },
-
   "admin": {
     "brand": "Ethernal",
     "panel": "Admin Panel",
@@ -74,7 +70,6 @@
       "adminLabel": "Admin"
     }
   },
-
   "access": {
     "goHome": "Go to Home",
     "walletRequired": {
@@ -88,7 +83,6 @@
       "goDashboard": "Go to Dashboard"
     }
   },
-
   "protectedRoute": {
     "checkingPermissions": "Verifying access permissions...",
     "checkingFund": "Verifying your retirement fund...",
@@ -103,7 +97,6 @@
     "adminDescription": "This section is exclusively reserved for members of the Treasury Team.",
     "adminDetail": "Only authorized administrators can manage the treasury and proposals."
   },
-
   "footer": {
     "tagline": "Secure your financial future with blockchain-powered retirement savings.",
     "quickLinks": "Quick Links",
@@ -115,16 +108,14 @@
     "documentation": "Documentation",
     "support": "Support",
     "community": "Community",
-    "builtOn": "Built on Arbitrum Sepolia \u2022 Secured by Blockchain Technology"
+    "builtOn": "Built on Arbitrum Sepolia • Secured by Blockchain Technology"
   },
-
   "hero": {
     "title": "Financial Freedom in Your Hands",
     "subtitle": "Secure Your Tomorrow with the Decision You Make Today",
     "ctaConnected": "Go to Calculator",
     "ctaDisconnected": "Connect Wallet & Get Started"
   },
-
   "survey": {
     "title": "Help Us Get to Know You Better",
     "subtitle": "Your opinion matters. Answer these questions and help us build the best retirement system for you.",
@@ -157,7 +148,6 @@
     "selectAge": "Please select your age range",
     "answerAll": "Please answer all questions"
   },
-
   "followUp": {
     "successTitle": "Survey submitted successfully!",
     "successMessage": "Thank you for your time. Just two more questions and we're done.",
@@ -173,7 +163,6 @@
     "pleaseIndicate": "Please indicate if you wish to receive more information",
     "enterEmail": "Please enter your email to receive information"
   },
-
   "features": {
     "title": "Why Choose Us?",
     "security": {
@@ -189,7 +178,6 @@
       "description": "Simple fee structure with no hidden costs. Clear, transparent and low fees to optimize your savings and maximize your returns."
     }
   },
-
   "about": {
     "title": "About Ethernal",
     "description": "We are dedicated to helping you CALCULATE, CREATE and SELF-MANAGE your Personal Decentralized Retirement Fund, so you can build a solid, secure future tailored to your needs. With a focus on privacy, security and self-management, our Smart Contracts are designed to give you peace of mind and transparency. Your data is protected with Zero-Knowledge methodology, ensuring your personal, sensitive and financial information remains PRIVATE.",
@@ -203,7 +191,6 @@
       "calculator": "Retirement Calculator — plan your future contributions and projections"
     }
   },
-
   "calculator": {
     "title": "Retirement Calculator",
     "subtitle": "Plan your financial future with our advanced calculator",
@@ -225,10 +212,42 @@
       "ageRequired": "Please enter your current age",
       "retirementAgeRequired": "Please enter your retirement age",
       "retirementAgeTooLow": "Retirement age must be greater than current age",
-      "contributionRequired": "Please enter a monthly contribution"
-    }
+      "contributionRequired": "Please enter a monthly contribution",
+      "ageTooHigh": "Age must be less than retirement age",
+      "minYears": "You need at least 1 year until retirement",
+      "rateRange": "Return rate must be between 0% and 50%"
+    },
+    "titleFull": "Retirement Calculator",
+    "titleShort": "Calculator",
+    "ageLabel": "Age",
+    "initialCapital": "Initial Capital",
+    "yearsReceivingIncome": "Years Receiving Income",
+    "frequency": "Contribution Frequency",
+    "frequencyMonthly": "Monthly",
+    "frequencyQuarterly": "Quarterly",
+    "frequencyAnnual": "Annual",
+    "monthlySavingsRequired": "Monthly Savings Required",
+    "growthProjection": "Growth Projection",
+    "depositSummary": "Deposit Summary",
+    "totalDeposit": "Total to Deposit",
+    "daoFee": "DAO Fee (3%)",
+    "netToFund": "Net to Your Fund",
+    "forDefi": "For DeFi",
+    "goesToTreasury": "Goes to Treasury",
+    "configurePlan": "Configure Your Plan",
+    "howToStart": "How to Get Started",
+    "lastStep": "Last Step",
+    "fundReady": "Your Fund is Ready",
+    "walletWillOpen": "Wallet will open to sign the transaction",
+    "createContract": "Create Contract",
+    "createOnArbitrum": "Create on Arbitrum Sepolia",
+    "testnetOnly": "Testnet Only",
+    "testnetOnlyDesc": "This app runs on Arbitrum Sepolia testnet. No real funds are used.",
+    "getTestTokens": "Get Test Tokens",
+    "getTestTokensDesc": "You need test USDC to use the app. Click to get tokens from the faucet.",
+    "fillFormToSeeChart": "Fill in the form to see your projection chart",
+    "dataError": "Error loading data. Please try again."
   },
-
   "contact": {
     "title": "Contact Us",
     "subtitle": "Get in touch with our team. We're here to help.",
@@ -244,10 +263,24 @@
       "nameRequired": "Please enter your name",
       "emailRequired": "Please enter your email",
       "emailInvalid": "Please enter a valid email address",
-      "messageRequired": "Please enter a message"
-    }
+      "messageRequired": "Please enter a message",
+      "nameTooShort": "Name must be at least 2 characters",
+      "messageTooShort": "Message must be at least 10 characters",
+      "formErrors": "Please fix the errors before submitting"
+    },
+    "namePlaceholder": "Your full name",
+    "subjectPlaceholder": "What is this about?",
+    "messagePlaceholder": "Write your message here...",
+    "messageHint": "Minimum 10 characters",
+    "walletConnected": "Wallet connected",
+    "walletIncluded": "Your wallet address will be included:",
+    "requiredFields": "* Required fields",
+    "successDetail": "We will get back to you as soon as possible.",
+    "otherWays": "Other ways to contact us",
+    "emailLabel": "Email",
+    "responseTime": "Response time",
+    "responseTimeValue": "24-48 hours"
   },
-
   "dashboard": {
     "title": "Dashboard",
     "welcome": "Welcome back",
@@ -311,7 +344,6 @@
     "noContracts": "You don't have any contracts yet",
     "getStarted": "Get started by creating your first retirement contract"
   },
-
   "createContract": {
     "title": "Create Retirement Contract",
     "subtitle": "Set up your personalized savings plan for retirement",
@@ -374,7 +406,6 @@
     "success": "Contract created successfully!",
     "error": "Error creating contract. Please try again."
   },
-
   "contractCreated": {
     "title": "Contract Created Successfully!",
     "subtitle": "Your retirement contract is now active",
@@ -412,7 +443,6 @@
     "step3": "Set up automatic monthly contributions",
     "viewContract": "View Contract Details"
   },
-
   "investmentSelector": {
     "selectInvestmentType": "Select Investment Type",
     "selectProvider": "Select Provider",
@@ -444,7 +474,6 @@
     "apiFirstTrading": "API-first trading",
     "automatedInvesting": "Automated investing"
   },
-
   "backendStatus": {
     "connected": "Backend connected",
     "wakingUp": "Backend is waking up...",
@@ -454,7 +483,6 @@
     "offlineMode": "The app will work in offline mode. Some features may be limited.",
     "connecting": "Connecting to backend..."
   },
-
   "errors": {
     "walletNotConnected": "Please connect your wallet",
     "networkError": "Network error. Please try again.",

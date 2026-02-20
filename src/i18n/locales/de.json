@@ -17,7 +17,6 @@
     "optional": "Optional",
     "required": "Erforderlich"
   },
-
   "nav": {
     "home": "Startseite",
     "calculator": "Rechner",
@@ -27,7 +26,6 @@
     "connectWallet": "Wallet verbinden",
     "disconnect": "Trennen"
   },
-
   "wallet": {
     "connectedWallet": "Verbundenes Wallet",
     "balance": "Guthaben",
@@ -42,14 +40,12 @@
     "yourWallet": "Dein Wallet",
     "language": "Sprache"
   },
-
   "hero": {
     "title": "Finanzielle Freiheit in deinen Händen",
     "subtitle": "Sichere deine Zukunft mit der Entscheidung, die du heute triffst",
     "ctaConnected": "Zum Rechner gehen",
     "ctaDisconnected": "Wallet verbinden & Loslegen"
   },
-
   "survey": {
     "title": "Hilf uns, dich besser kennenzulernen",
     "subtitle": "Deine Meinung ist uns wichtig. Beantworte diese Fragen und hilf uns, das beste Rentensystem für dich zu schaffen.",
@@ -82,7 +78,6 @@
     "selectAge": "Bitte wähle deine Altersgruppe aus",
     "answerAll": "Bitte beantworte alle Fragen"
   },
-
   "followUp": {
     "successTitle": "Umfrage erfolgreich gesendet!",
     "successMessage": "Vielen Dank für deine Zeit. Noch zwei Fragen und wir sind fertig.",
@@ -98,7 +93,6 @@
     "pleaseIndicate": "Bitte gib an, ob du weitere Informationen erhalten möchtest",
     "enterEmail": "Bitte gib deine E-Mail ein, um Informationen zu erhalten"
   },
-
   "features": {
     "title": "Warum uns wählen?",
     "security": {
@@ -114,19 +108,17 @@
       "description": "Einfache Gebührenstruktur ohne versteckte Kosten. Klare, transparente und niedrige Gebühren, um deine Ersparnisse zu optimieren und deine Erträge zu maximieren."
     }
   },
-
   "about": {
     "title": "Über Ethernal",
     "description": "Wir widmen uns dabei, dir zu helfen, deinen persönlichen dezentralen Rentenfonds zu BERECHNEN, ZU ERSTELLEN und SELBST ZU VERWALTEN, damit du eine solide, sichere und maßgeschneiderte finanzielle Zukunft aufbauen kannst. Mit Fokus auf Datenschutz, Sicherheit und Selbstverwaltung sind unsere Smart Contracts so gestaltet, dass sie dir Ruhe und Transparenz bieten. Deine Daten sind durch Zero-Knowledge-Methodik geschützt, sodass deine persönlichen, sensiblen und finanziellen Informationen PRIVAT bleiben."
   },
-
   "calculator": {
     "title": "Rentenrechner",
     "subtitle": "Plane deine finanzielle Zukunft mit unserem fortschrittlichen Rechner",
     "currentAge": "Aktuelles Alter",
-    "retirementAge": "Renteneintrittsalter",
+    "retirementAge": "Rentenalter",
     "monthlyContribution": "Monatlicher Beitrag",
-    "expectedReturn": "Erwartete jährliche Rendite",
+    "expectedReturn": "Erwartete Jahresrendite",
     "inflationRate": "Inflationsrate",
     "calculate": "Berechnen",
     "reset": "Zurücksetzen",
@@ -140,11 +132,43 @@
     "validation": {
       "ageRequired": "Bitte gib dein aktuelles Alter ein",
       "retirementAgeRequired": "Bitte gib dein Renteneintrittsalter ein",
-      "retirementAgeTooLow": "Das Renteneintrittsalter muss höher als das aktuelle Alter sein",
-      "contributionRequired": "Bitte gib einen monatlichen Beitrag ein"
-    }
+      "retirementAgeTooLow": "Das Rentenalter muss größer als das aktuelle Alter sein",
+      "contributionRequired": "Bitte gib einen monatlichen Beitrag ein",
+      "ageTooHigh": "Das Alter muss kleiner als das Rentenalter sein",
+      "minYears": "Du brauchst mindestens 1 Jahr bis zur Rente",
+      "rateRange": "Die Rendite muss zwischen 0% und 50% liegen"
+    },
+    "titleFull": "Rentenrechner",
+    "titleShort": "Rechner",
+    "ageLabel": "Alter",
+    "initialCapital": "Startkapital",
+    "yearsReceivingIncome": "Jahre mit Rentenbezug",
+    "frequency": "Beitragsfrequenz",
+    "frequencyMonthly": "Monatlich",
+    "frequencyQuarterly": "Vierteljährlich",
+    "frequencyAnnual": "Jährlich",
+    "monthlySavingsRequired": "Erforderliche monatliche Ersparnisse",
+    "growthProjection": "Wachstumsprognose",
+    "depositSummary": "Einlagenzusammenfassung",
+    "totalDeposit": "Gesamteinlage",
+    "daoFee": "DAO-Gebühr (3%)",
+    "netToFund": "Netto in deinen Fonds",
+    "forDefi": "Für DeFi",
+    "goesToTreasury": "Geht in die Schatzkammer",
+    "configurePlan": "Plan konfigurieren",
+    "howToStart": "Wie man anfängt",
+    "lastStep": "Letzter Schritt",
+    "fundReady": "Dein Fonds ist bereit",
+    "walletWillOpen": "Wallet öffnet sich zum Unterschreiben der Transaktion",
+    "createContract": "Vertrag erstellen",
+    "createOnArbitrum": "Auf Arbitrum Sepolia erstellen",
+    "testnetOnly": "Nur Testnetz",
+    "testnetOnlyDesc": "Diese App läuft auf dem Arbitrum Sepolia Testnetz. Es werden keine echten Gelder verwendet.",
+    "getTestTokens": "Test-Token holen",
+    "getTestTokensDesc": "Du brauchst Test-USDC. Klicke, um Token vom Faucet zu erhalten.",
+    "fillFormToSeeChart": "Fülle das Formular aus, um dein Projektionsdiagramm zu sehen",
+    "dataError": "Fehler beim Laden der Daten. Bitte versuche es erneut."
   },
-
   "contact": {
     "title": "Kontaktiere uns",
     "subtitle": "Nimm Kontakt mit unserem Team auf. Wir sind für dich da.",
@@ -160,10 +184,24 @@
       "nameRequired": "Bitte gib deinen Namen ein",
       "emailRequired": "Bitte gib deine E-Mail ein",
       "emailInvalid": "Bitte gib eine gültige E-Mail-Adresse ein",
-      "messageRequired": "Bitte gib eine Nachricht ein"
-    }
+      "messageRequired": "Bitte gib eine Nachricht ein",
+      "nameTooShort": "Der Name muss mindestens 2 Zeichen haben",
+      "messageTooShort": "Die Nachricht muss mindestens 10 Zeichen haben",
+      "formErrors": "Bitte korrigiere die Fehler vor dem Absenden"
+    },
+    "namePlaceholder": "Dein vollständiger Name",
+    "subjectPlaceholder": "Worum geht es?",
+    "messagePlaceholder": "Schreibe deine Nachricht hier...",
+    "messageHint": "Mindestens 10 Zeichen",
+    "walletConnected": "Wallet verbunden",
+    "walletIncluded": "Deine Wallet-Adresse wird beigefügt:",
+    "requiredFields": "* Pflichtfelder",
+    "successDetail": "Wir werden uns so schnell wie möglich bei dir melden.",
+    "otherWays": "Andere Kontaktmöglichkeiten",
+    "emailLabel": "E-Mail",
+    "responseTime": "Antwortzeit",
+    "responseTimeValue": "24-48 Stunden"
   },
-
   "dashboard": {
     "title": "Dashboard",
     "welcome": "Willkommen zurück",
@@ -227,7 +265,6 @@
     "noContracts": "Du hast noch keinen Vertrag",
     "getStarted": "Starte, indem du deinen ersten Rentenvertrag erstellst"
   },
-
   "createContract": {
     "title": "Rentenvertrag erstellen",
     "subtitle": "Konfiguriere deinen personalisierten Sparplan für die Rente",
@@ -290,7 +327,6 @@
     "success": "Vertrag erfolgreich erstellt!",
     "error": "Fehler beim Erstellen des Vertrags. Bitte versuche es erneut."
   },
-
   "contractCreated": {
     "title": "Vertrag erfolgreich erstellt!",
     "subtitle": "Dein Rentenvertrag ist jetzt aktiv",
@@ -328,7 +364,6 @@
     "step3": "Richte automatische monatliche Beiträge ein",
     "viewContract": "Vertragsdetails anzeigen"
   },
-
   "investmentSelector": {
     "selectInvestmentType": "Investitionsart Auswählen",
     "selectProvider": "Anbieter Auswählen",
@@ -360,7 +395,6 @@
     "apiFirstTrading": "API-orientierter Handel",
     "automatedInvesting": "Automatisiertes Investieren"
   },
-
   "backendStatus": {
     "connected": "Backend verbunden",
     "wakingUp": "Das Backend wacht auf...",
@@ -370,7 +404,6 @@
     "offlineMode": "Die App wird im Offline-Modus funktionieren. Einige Funktionen können eingeschränkt sein.",
     "connecting": "Verbinde mit Backend..."
   },
-
   "footer": {
     "copyright": "© 2025 Ethernal. Alle Rechte vorbehalten.",
     "privacy": "Datenschutzrichtlinie",
@@ -380,7 +413,6 @@
     "community": "Community",
     "followUs": "Folge uns"
   },
-
   "errors": {
     "walletNotConnected": "Bitte verbinde dein Wallet",
     "networkError": "Netzwerkfehler. Bitte versuche es erneut.",
