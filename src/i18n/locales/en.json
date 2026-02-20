@@ -146,7 +146,9 @@
     "required": "All questions are required. Your responses are anonymous.",
     "errorTitle": "Error",
     "selectAge": "Please select your age range",
-    "answerAll": "Please answer all questions"
+    "answerAll": "Please answer all questions",
+    "bannerText": "Help us improve! Answer our anonymous survey.",
+    "bannerCta": "Answer the survey"
   },
   "followUp": {
     "successTitle": "Survey submitted successfully!",

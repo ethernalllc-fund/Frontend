@@ -24,7 +24,9 @@
     "contact": "Contato",
     "about": "Sobre",
     "connectWallet": "Conectar Carteira",
-    "disconnect": "Desconectar"
+    "disconnect": "Desconectar",
+    "openMenu": "Abrir menu",
+    "closeMenu": "Fechar menu"
   },
   "wallet": {
     "connectedWallet": "Carteira Conectada",
@@ -38,7 +40,8 @@
     "disconnect": "Desconectar Carteira",
     "needTestEth": "Precisa de ETH de teste? Obter do faucet",
     "yourWallet": "Sua Carteira",
-    "language": "Idioma"
+    "language": "Idioma",
+    "unknownNetwork": "Desconhecida"
   },
   "hero": {
     "title": "Liberdade Financeira nas Suas Mãos",
@@ -76,7 +79,9 @@
     "required": "Todas as perguntas são obrigatórias. Suas respostas são anônimas.",
     "errorTitle": "Erro",
     "selectAge": "Por favor selecione sua faixa etária",
-    "answerAll": "Por favor responda todas as perguntas"
+    "answerAll": "Por favor responda todas as perguntas",
+    "bannerText": "Ajude-nos a melhorar! Responda nossa pesquisa anônima.",
+    "bannerCta": "Responder a pesquisa"
   },
   "followUp": {
     "successTitle": "Pesquisa enviada com sucesso!",
@@ -110,7 +115,16 @@
   },
   "about": {
     "title": "Sobre a Ethernal",
-    "description": "Nós nos dedicamos a ajudar você a CALCULAR, CRIAR e AUTO-GERIR seu Fundo Pessoal Descentralizado de Aposentadoria, para que você possa construir um futuro financeiro sólido, seguro e sob medida. Com foco em privacidade, segurança e autogestão, nossos Smart Contracts foram projetados para lhe dar tranquilidade e transparência. Seus dados são protegidos com metodologia Zero-Knowledge, garantindo que suas informações pessoais, sensíveis e financeiras permaneçam PRIVADAS."
+    "description": "Nós nos dedicamos a ajudar você a CALCULAR, CRIAR e AUTO-GERIR seu Fundo Pessoal Descentralizado de Aposentadoria, para que você possa construir um futuro financeiro sólido, seguro e sob medida. Com foco em privacidade, segurança e autogestão, nossos Smart Contracts foram projetados para lhe dar tranquilidade e transparência. Seus dados são protegidos com metodologia Zero-Knowledge, garantindo que suas informações pessoais, sensíveis e financeiras permaneçam PRIVADAS.",
+    "protocolDescription": "Ethernal Fund é um protocolo descentralizado que permite a qualquer pessoa criar e autogerenciar um fundo de aposentadoria pessoal na blockchain. Construído com uma filosofia de privacidade em primeiro lugar usando metodologia zero-knowledge — sua carteira é sua identidade, sem registro ou dados pessoais necessários.",
+    "keyPrinciples": "Princípios chave:",
+    "principles": {
+      "zeroKnowledge": "Segurança Zero-Knowledge — nenhum dado pessoal armazenado, a carteira é seu método de acesso",
+      "selfManaged": "Fundos Autogerenciados — implante seu próprio contrato inteligente PersonalFund",
+      "transparentFees": "Taxas Transparentes — estrutura de taxas simples, baixa e visível on-chain",
+      "multiLanguage": "Multilíngue — Inglês, Espanhol, Português, Italiano, Alemão",
+      "calculator": "Calculadora de Aposentadoria — planeje suas contribuições futuras e projeções"
+    }
   },
   "calculator": {
     "title": "Calculadora de Aposentadoria",
@@ -411,7 +425,11 @@
     "documentation": "Documentação",
     "support": "Suporte",
     "community": "Comunidade",
-    "followUs": "Siga-nos"
+    "followUs": "Siga-nos",
+    "tagline": "Proteja seu futuro financeiro com poupança para aposentadoria baseada em blockchain.",
+    "quickLinks": "Links Rápidos",
+    "disclaimer": "Aviso Legal",
+    "builtOn": "Construído na Arbitrum Sepolia • Protegido pela Tecnologia Blockchain"
   },
   "errors": {
     "walletNotConnected": "Por favor conecte sua carteira",
@@ -420,5 +438,59 @@
     "insufficientFunds": "Saldo insuficiente",
     "userRejected": "Transação rejeitada pelo usuário",
     "somethingWrong": "Algo deu errado. Tente novamente."
+  },
+  "access": {
+    "goHome": "Ir para Home",
+    "walletRequired": {
+      "title": "Conexão de Carteira Necessária",
+      "description": "Conecte sua carteira para acessar esta página."
+    },
+    "unauthorized": {
+      "title": "Acesso Negado",
+      "description": "Você não tem permissão para acessar esta página.",
+      "adminRequired": "Privilégios de administrador são necessários.",
+      "goDashboard": "Ir para o Dashboard"
+    }
+  },
+  "admin": {
+    "brand": "Ethernal",
+    "panel": "Painel Admin",
+    "nav": {
+      "overview": "Visão Geral",
+      "overviewDesc": "Estatísticas da plataforma",
+      "contracts": "Contratos",
+      "contractsDesc": "Lista de contratos dos usuários",
+      "settings": "Configurações",
+      "settingsDesc": "Configuração da plataforma",
+      "backToHome": "Voltar para Home"
+    },
+    "header": {
+      "title": "Dashboard Admin",
+      "subtitle": "Gerencie contratos e usuários da plataforma",
+      "notifications": "Notificações",
+      "adminLabel": "Admin"
+    }
+  },
+  "protectedRoute": {
+    "checkingPermissions": "Verificando permissões de acesso...",
+    "checkingFund": "Verificando seu fundo de aposentadoria...",
+    "connectTitle": "Conecte sua Carteira",
+    "connectDescription": "Você precisa conectar sua carteira para acessar esta seção e criar seu fundo de aposentadoria personalizado.",
+    "backToCalculator": "Voltar para Calculadora",
+    "noFundTitle": "Fundo de Aposentadoria Não Encontrado",
+    "noFundDescription": "Você precisa criar seu Fundo de Aposentadoria antes de acessar o Dashboard.",
+    "noFundDetail": "O Dashboard permitirá que você gerencie seus depósitos, acompanhe seu progresso e gerencie seus investimentos DeFi.",
+    "createFundCta": "Criar Meu Fundo de Aposentadoria",
+    "adminTitle": "Acesso Restrito",
+    "adminDescription": "Esta seção é reservada exclusivamente para membros da Equipe do Treasury.",
+    "adminDetail": "Apenas administradores autorizados podem gerenciar o treasury e as propostas."
+  },
+  "table": {
+    "search": "Pesquisar...",
+    "noResults": "Nenhum resultado encontrado",
+    "noData": "Nenhum dado disponível",
+    "previous": "Anterior",
+    "next": "Próximo",
+    "showing": "Mostrando {{from}} a {{to}} de {{total}} entradas"
   }
 }

@@ -24,7 +24,9 @@
     "contact": "Kontakt",
     "about": "Über uns",
     "connectWallet": "Wallet verbinden",
-    "disconnect": "Trennen"
+    "disconnect": "Trennen",
+    "openMenu": "Menü öffnen",
+    "closeMenu": "Menü schließen"
   },
   "wallet": {
     "connectedWallet": "Verbundenes Wallet",
@@ -38,7 +40,8 @@
     "disconnect": "Wallet trennen",
     "needTestEth": "Brauchst du Test-ETH? Vom Faucet holen",
     "yourWallet": "Dein Wallet",
-    "language": "Sprache"
+    "language": "Sprache",
+    "unknownNetwork": "Unbekannt"
   },
   "hero": {
     "title": "Finanzielle Freiheit in deinen Händen",
@@ -76,7 +79,9 @@
     "required": "Alle Fragen sind erforderlich. Deine Antworten sind anonym.",
     "errorTitle": "Fehler",
     "selectAge": "Bitte wähle deine Altersgruppe aus",
-    "answerAll": "Bitte beantworte alle Fragen"
+    "answerAll": "Bitte beantworte alle Fragen",
+    "bannerText": "Hilf uns zu verbessern! Beantworte unsere anonyme Umfrage.",
+    "bannerCta": "Umfrage beantworten"
   },
   "followUp": {
     "successTitle": "Umfrage erfolgreich gesendet!",
@@ -110,7 +115,16 @@
   },
   "about": {
     "title": "Über Ethernal",
-    "description": "Wir widmen uns dabei, dir zu helfen, deinen persönlichen dezentralen Rentenfonds zu BERECHNEN, ZU ERSTELLEN und SELBST ZU VERWALTEN, damit du eine solide, sichere und maßgeschneiderte finanzielle Zukunft aufbauen kannst. Mit Fokus auf Datenschutz, Sicherheit und Selbstverwaltung sind unsere Smart Contracts so gestaltet, dass sie dir Ruhe und Transparenz bieten. Deine Daten sind durch Zero-Knowledge-Methodik geschützt, sodass deine persönlichen, sensiblen und finanziellen Informationen PRIVAT bleiben."
+    "description": "Wir widmen uns dabei, dir zu helfen, deinen persönlichen dezentralen Rentenfonds zu BERECHNEN, ZU ERSTELLEN und SELBST ZU VERWALTEN, damit du eine solide, sichere und maßgeschneiderte finanzielle Zukunft aufbauen kannst. Mit Fokus auf Datenschutz, Sicherheit und Selbstverwaltung sind unsere Smart Contracts so gestaltet, dass sie dir Ruhe und Transparenz bieten. Deine Daten sind durch Zero-Knowledge-Methodik geschützt, sodass deine persönlichen, sensiblen und finanziellen Informationen PRIVAT bleiben.",
+    "protocolDescription": "Ethernal Fund ist ein dezentrales Protokoll, das es jedem ermöglicht, einen persönlichen Rentenfonds auf der Blockchain zu erstellen und selbst zu verwalten. Mit einer Privacy-First-Philosophie und Zero-Knowledge-Methodik — deine Wallet ist deine Identität, keine Registrierung oder persönliche Daten erforderlich.",
+    "keyPrinciples": "Grundprinzipien:",
+    "principles": {
+      "zeroKnowledge": "Zero-Knowledge-Sicherheit — keine persönlichen Daten gespeichert, Wallet ist deine Zugangsmethode",
+      "selfManaged": "Selbstverwaltete Fonds — eigenen PersonalFund-Smart-Contract deployen",
+      "transparentFees": "Transparente Gebühren — einfache, niedrige und on-chain sichtbare Gebührenstruktur",
+      "multiLanguage": "Mehrsprachig — Englisch, Spanisch, Portugiesisch, Italienisch, Deutsch",
+      "calculator": "Rentenrechner — plane deine zukünftigen Beiträge und Projektionen"
+    }
   },
   "calculator": {
     "title": "Rentenrechner",
@@ -411,7 +425,11 @@
     "documentation": "Dokumentation",
     "support": "Support",
     "community": "Community",
-    "followUs": "Folge uns"
+    "followUs": "Folge uns",
+    "tagline": "Sichern Sie Ihre finanzielle Zukunft mit blockchain-basierten Rentenersparnissen.",
+    "quickLinks": "Schnelllinks",
+    "disclaimer": "Haftungsausschluss",
+    "builtOn": "Gebaut auf Arbitrum Sepolia • Gesichert durch Blockchain-Technologie"
   },
   "errors": {
     "walletNotConnected": "Bitte verbinde dein Wallet",
@@ -420,5 +438,59 @@
     "insufficientFunds": "Unzureichendes Guthaben",
     "userRejected": "Transaktion vom Benutzer abgelehnt",
     "somethingWrong": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+  },
+  "access": {
+    "goHome": "Zur Startseite",
+    "walletRequired": {
+      "title": "Wallet-Verbindung erforderlich",
+      "description": "Bitte verbinde deine Wallet, um auf diese Seite zuzugreifen."
+    },
+    "unauthorized": {
+      "title": "Zugriff verweigert",
+      "description": "Du hast keine Berechtigung, auf diese Seite zuzugreifen.",
+      "adminRequired": "Administratorrechte sind erforderlich.",
+      "goDashboard": "Zum Dashboard"
+    }
+  },
+  "admin": {
+    "brand": "Ethernal",
+    "panel": "Admin-Panel",
+    "nav": {
+      "overview": "Übersicht",
+      "overviewDesc": "Plattformstatistiken",
+      "contracts": "Verträge",
+      "contractsDesc": "Liste der Benutzerverträge",
+      "settings": "Einstellungen",
+      "settingsDesc": "Plattformkonfiguration",
+      "backToHome": "Zurück zur Startseite"
+    },
+    "header": {
+      "title": "Admin-Dashboard",
+      "subtitle": "Plattformverträge und Benutzer verwalten",
+      "notifications": "Benachrichtigungen",
+      "adminLabel": "Admin"
+    }
+  },
+  "protectedRoute": {
+    "checkingPermissions": "Zugriffsberechtigungen werden überprüft...",
+    "checkingFund": "Dein Rentenfonds wird überprüft...",
+    "connectTitle": "Verbinde deine Wallet",
+    "connectDescription": "Du musst deine Wallet verbinden, um auf diesen Bereich zuzugreifen und deinen persönlichen Rentenfonds zu erstellen.",
+    "backToCalculator": "Zurück zum Rechner",
+    "noFundTitle": "Rentenfonds nicht gefunden",
+    "noFundDescription": "Du musst deinen Rentenfonds erstellen, bevor du auf das Dashboard zugreifen kannst.",
+    "noFundDetail": "Das Dashboard ermöglicht dir, deine Einlagen zu verwalten, deinen Fortschritt zu verfolgen und deine DeFi-Investitionen zu verwalten.",
+    "createFundCta": "Meinen Rentenfonds erstellen",
+    "adminTitle": "Eingeschränkter Zugang",
+    "adminDescription": "Dieser Bereich ist ausschließlich für Mitglieder des Treasury-Teams reserviert.",
+    "adminDetail": "Nur autorisierte Administratoren können die Schatzkammer und Vorschläge verwalten."
+  },
+  "table": {
+    "search": "Suchen...",
+    "noResults": "Keine Ergebnisse gefunden",
+    "noData": "Keine Daten verfügbar",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "showing": "Zeige {{from}} bis {{to}} von {{total}} Einträgen"
   }
 }

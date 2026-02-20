@@ -24,7 +24,9 @@
     "contact": "Contatti",
     "about": "Chi siamo",
     "connectWallet": "Collega Wallet",
-    "disconnect": "Disconnetti"
+    "disconnect": "Disconnetti",
+    "openMenu": "Apri menu",
+    "closeMenu": "Chiudi menu"
   },
   "wallet": {
     "connectedWallet": "Wallet Connesso",
@@ -38,7 +40,8 @@
     "disconnect": "Disconnetti Wallet",
     "needTestEth": "Hai bisogno di ETH di test? Ottienilo dal faucet",
     "yourWallet": "Il tuo Wallet",
-    "language": "Lingua"
+    "language": "Lingua",
+    "unknownNetwork": "Sconosciuta"
   },
   "hero": {
     "title": "Libertà Finanziaria nelle Tue Mani",
@@ -76,7 +79,9 @@
     "required": "Tutte le domande sono obbligatorie. Le tue risposte sono anonime.",
     "errorTitle": "Errore",
     "selectAge": "Seleziona la tua fascia d'età",
-    "answerAll": "Rispondi a tutte le domande"
+    "answerAll": "Rispondi a tutte le domande",
+    "bannerText": "Aiutaci a migliorare! Rispondi al nostro sondaggio anonimo.",
+    "bannerCta": "Rispondi al sondaggio"
   },
   "followUp": {
     "successTitle": "Sondaggio inviato con successo!",
@@ -110,7 +115,16 @@
   },
   "about": {
     "title": "Chi è Ethernal",
-    "description": "Ci dedichiamo ad aiutarti a CALCOLARE, CREARE e AUTO-GESTIRE il tuo Fondo Pensione Personale Decentralizzato, affinchè tu possa costruire un futuro finanziario solido, sicuro e su misura. Con focus su privacy, sicurezza e autogestione, i nostri Smart Contract sono progettati per darti tranquillità e trasparenza. I tuoi dati sono protetti con metodologia Zero-Knowledge, garantendo che le tue informazioni personali, sensibili e finanziarie rimangano PRIVATE."
+    "description": "Ci dedichiamo ad aiutarti a CALCOLARE, CREARE e AUTO-GESTIRE il tuo Fondo Pensione Personale Decentralizzato, affinchè tu possa costruire un futuro finanziario solido, sicuro e su misura. Con focus su privacy, sicurezza e autogestione, i nostri Smart Contract sono progettati per darti tranquillità e trasparenza. I tuoi dati sono protetti con metodologia Zero-Knowledge, garantendo che le tue informazioni personali, sensibili e finanziarie rimangano PRIVATE.",
+    "protocolDescription": "Ethernal Fund è un protocollo decentralizzato che permette a chiunque di creare e autogestire un fondo pensionistico personale sulla blockchain. Costruito con una filosofia privacy-first utilizzando la metodologia zero-knowledge — il tuo wallet è la tua identità, nessuna registrazione o dati personali richiesti.",
+    "keyPrinciples": "Principi chiave:",
+    "principles": {
+      "zeroKnowledge": "Sicurezza Zero-Knowledge — nessun dato personale memorizzato, il wallet è il tuo metodo di accesso",
+      "selfManaged": "Fondi Autogestiti — distribuisci il tuo contratto intelligente PersonalFund",
+      "transparentFees": "Commissioni Trasparenti — struttura commissioni semplice, bassa e visibile on-chain",
+      "multiLanguage": "Multilingue — Inglese, Spagnolo, Portoghese, Italiano, Tedesco",
+      "calculator": "Calcolatore Pensionistico — pianifica i tuoi contributi futuri e le proiezioni"
+    }
   },
   "calculator": {
     "title": "Calcolatore Pensionistico",
@@ -411,7 +425,11 @@
     "documentation": "Documentazione",
     "support": "Supporto",
     "community": "Comunità",
-    "followUs": "Seguici"
+    "followUs": "Seguici",
+    "tagline": "Proteggi il tuo futuro finanziario con risparmi pensionistici basati su blockchain.",
+    "quickLinks": "Link Rapidi",
+    "disclaimer": "Disclaimer",
+    "builtOn": "Costruito su Arbitrum Sepolia • Protetto dalla Tecnologia Blockchain"
   },
   "errors": {
     "walletNotConnected": "Collega il tuo wallet",
@@ -420,5 +438,59 @@
     "insufficientFunds": "Fondi insufficienti",
     "userRejected": "Transazione rifiutata dall'utente",
     "somethingWrong": "Qualcosa è andato storto. Riprova."
+  },
+  "access": {
+    "goHome": "Vai alla Home",
+    "walletRequired": {
+      "title": "Connessione Wallet Richiesta",
+      "description": "Connetti il tuo wallet per accedere a questa pagina."
+    },
+    "unauthorized": {
+      "title": "Accesso Negato",
+      "description": "Non hai il permesso di accedere a questa pagina.",
+      "adminRequired": "Sono richiesti privilegi di amministratore.",
+      "goDashboard": "Vai alla Dashboard"
+    }
+  },
+  "admin": {
+    "brand": "Ethernal",
+    "panel": "Pannello Admin",
+    "nav": {
+      "overview": "Panoramica",
+      "overviewDesc": "Statistiche della piattaforma",
+      "contracts": "Contratti",
+      "contractsDesc": "Lista contratti utenti",
+      "settings": "Impostazioni",
+      "settingsDesc": "Configurazione piattaforma",
+      "backToHome": "Torna alla Home"
+    },
+    "header": {
+      "title": "Dashboard Admin",
+      "subtitle": "Gestisci contratti e utenti della piattaforma",
+      "notifications": "Notifiche",
+      "adminLabel": "Admin"
+    }
+  },
+  "protectedRoute": {
+    "checkingPermissions": "Verifica permessi di accesso...",
+    "checkingFund": "Verifica del tuo fondo pensionistico...",
+    "connectTitle": "Connetti il tuo Wallet",
+    "connectDescription": "Devi connettere il tuo wallet per accedere a questa sezione e creare il tuo fondo pensionistico personalizzato.",
+    "backToCalculator": "Torna al Calcolatore",
+    "noFundTitle": "Fondo Pensionistico Non Trovato",
+    "noFundDescription": "Devi creare il tuo Fondo Pensionistico prima di accedere alla Dashboard.",
+    "noFundDetail": "La Dashboard ti permetterà di gestire i tuoi depositi, monitorare i progressi e gestire i tuoi investimenti DeFi.",
+    "createFundCta": "Crea il Mio Fondo Pensionistico",
+    "adminTitle": "Accesso Limitato",
+    "adminDescription": "Questa sezione è riservata esclusivamente ai membri del Team Treasury.",
+    "adminDetail": "Solo gli amministratori autorizzati possono gestire il treasury e le proposte."
+  },
+  "table": {
+    "search": "Cerca...",
+    "noResults": "Nessun risultato trovato",
+    "noData": "Nessun dato disponibile",
+    "previous": "Precedente",
+    "next": "Successivo",
+    "showing": "Mostrando {{from}} a {{to}} di {{total}} voci"
   }
 }

@@ -24,7 +24,9 @@
     "contact": "Contacto",
     "about": "Acerca de",
     "connectWallet": "Conectar Billetera",
-    "disconnect": "Desconectar"
+    "disconnect": "Desconectar",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú"
   },
   "wallet": {
     "connectedWallet": "Billetera Conectada",
@@ -38,7 +40,8 @@
     "disconnect": "Desconectar Billetera",
     "needTestEth": "¿Necesitas ETH de prueba? Obtener del faucet",
     "yourWallet": "Tu Billetera",
-    "language": "Idioma"
+    "language": "Idioma",
+    "unknownNetwork": "Desconocida"
   },
   "hero": {
     "title": "Libertad Financiera en tus Manos",
@@ -76,7 +79,9 @@
     "required": "Todas las preguntas son obligatorias. Tus respuestas son anónimas.",
     "errorTitle": "Error",
     "selectAge": "Por favor selecciona tu rango de edad",
-    "answerAll": "Por favor responde todas las preguntas"
+    "answerAll": "Por favor responde todas las preguntas",
+    "bannerText": "¡Ayudanos a mejorar! Respondé nuestra encuesta anónima.",
+    "bannerCta": "Responder la encuesta"
   },
   "followUp": {
     "successTitle": "¡Encuesta enviada exitosamente!",
@@ -110,7 +115,16 @@
   },
   "about": {
     "title": "Acerca de Ethernal",
-    "description": "Nos dedicamos a ayudarte a CALCULAR, CREAR y AUTO-GESTIONAR tu Fondo Personal Descentralizado de Retiro, para que puedas construir un futuro financiero solido, seguro y a tu medida. Con enfoque en la Privacidad, la Seguridad y la Autogestion, nuestros Smart Contracts están diseñados para darte Tranquilidad y Transparencia. Tus datos están protegidos con Metodologia Zero-knowledge, asegurando que tu Información Personal, Sensible y Financiera permanezca PRIVADA."
+    "description": "Nos dedicamos a ayudarte a CALCULAR, CREAR y AUTO-GESTIONAR tu Fondo Personal Descentralizado de Retiro, para que puedas construir un futuro financiero solido, seguro y a tu medida. Con enfoque en la Privacidad, la Seguridad y la Autogestion, nuestros Smart Contracts están diseñados para darte Tranquilidad y Transparencia. Tus datos están protegidos con Metodologia Zero-knowledge, asegurando que tu Información Personal, Sensible y Financiera permanezca PRIVADA.",
+    "protocolDescription": "Ethernal Fund es un protocolo descentralizado que permite a cualquier persona crear y autogestionar un fondo de retiro personal en la blockchain. Construido con una filosofía de privacidad primero usando metodología zero-knowledge — tu wallet es tu identidad, sin registro ni datos personales requeridos.",
+    "keyPrinciples": "Principios clave:",
+    "principles": {
+      "zeroKnowledge": "Seguridad Zero-Knowledge — sin datos personales almacenados, la wallet es tu método de acceso",
+      "selfManaged": "Fondos Autogestionados — desplegá tu propio contrato inteligente PersonalFund",
+      "transparentFees": "Comisiones Transparentes — estructura de comisiones simple, baja y visible on-chain",
+      "multiLanguage": "Multi-idioma — Inglés, Español, Portugués, Italiano, Alemán",
+      "calculator": "Calculadora de Retiro — planificá tus aportes futuros y proyecciones"
+    }
   },
   "calculator": {
     "title": "Calculadora de Retiro",
@@ -411,7 +425,11 @@
     "documentation": "Documentación",
     "support": "Soporte",
     "community": "Comunidad",
-    "followUs": "Síguenos"
+    "followUs": "Síguenos",
+    "tagline": "Asegurá tu futuro financiero con ahorros de retiro impulsados por blockchain.",
+    "quickLinks": "Enlaces Rápidos",
+    "disclaimer": "Aviso Legal",
+    "builtOn": "Construido en Arbitrum Sepolia • Asegurado por Tecnología Blockchain"
   },
   "errors": {
     "walletNotConnected": "Por favor conecta tu billetera",
@@ -420,5 +438,59 @@
     "insufficientFunds": "Fondos insuficientes",
     "userRejected": "Transacción rechazada por el usuario",
     "somethingWrong": "Algo salió mal. Por favor intenta nuevamente."
+  },
+  "access": {
+    "goHome": "Ir al Inicio",
+    "walletRequired": {
+      "title": "Se Requiere Conexión de Wallet",
+      "description": "Por favor conectá tu wallet para acceder a esta página."
+    },
+    "unauthorized": {
+      "title": "Acceso Denegado",
+      "description": "No tenés permiso para acceder a esta página.",
+      "adminRequired": "Se requieren privilegios de administrador.",
+      "goDashboard": "Ir al Dashboard"
+    }
+  },
+  "admin": {
+    "brand": "Ethernal",
+    "panel": "Panel de Admin",
+    "nav": {
+      "overview": "Resumen",
+      "overviewDesc": "Estadísticas de la plataforma",
+      "contracts": "Contratos",
+      "contractsDesc": "Lista de contratos de usuarios",
+      "settings": "Configuración",
+      "settingsDesc": "Configuración de la plataforma",
+      "backToHome": "Volver al Inicio"
+    },
+    "header": {
+      "title": "Panel de Administración",
+      "subtitle": "Gestioná contratos y usuarios de la plataforma",
+      "notifications": "Notificaciones",
+      "adminLabel": "Admin"
+    }
+  },
+  "protectedRoute": {
+    "checkingPermissions": "Verificando permisos de acceso...",
+    "checkingFund": "Verificando tu fondo de retiro...",
+    "connectTitle": "Conectá tu Wallet",
+    "connectDescription": "Necesitás conectar tu wallet para acceder a esta sección y crear tu fondo de retiro personalizado.",
+    "backToCalculator": "Volver a la Calculadora",
+    "noFundTitle": "Fondo de Retiro No Encontrado",
+    "noFundDescription": "Necesitás crear tu Fondo de Retiro antes de acceder al Dashboard.",
+    "noFundDetail": "El Dashboard te permitirá gestionar tus depósitos, seguir tu progreso y administrar tus inversiones DeFi.",
+    "createFundCta": "Crear Mi Fondo de Retiro",
+    "adminTitle": "Acceso Restringido",
+    "adminDescription": "Esta sección está reservada exclusivamente para miembros del Equipo de Tesorería.",
+    "adminDetail": "Solo los administradores autorizados pueden gestionar la tesorería y las propuestas."
+  },
+  "table": {
+    "search": "Buscar...",
+    "noResults": "No se encontraron resultados",
+    "noData": "No hay datos disponibles",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "showing": "Mostrando {{from}} a {{to}} de {{total}} entradas"
   }
 }
