@@ -8,6 +8,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 const HomePage           = lazy(() => import('./pages/public/HomePage'));
 const CalculatorPage     = lazy(() => import('./pages/public/CalculatorPage'));
 const ContactPage        = lazy(() => import('./pages/public/ContactPage'));
+const SurveyPage         = lazy(() => import('./pages/public/SurveyPage'));
 const DashboardPage      = lazy(() => import('./pages/user/DashboardPage'));
 const CreateContractPage = lazy(() => import('./pages/user/CreateContractPage'));
 const ContractCreatedPage= lazy(() => import('./pages/user/ContractCreatedPage'));
@@ -26,7 +27,6 @@ function App() {
 }
 
 function AppContent() {
-
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
@@ -37,6 +37,7 @@ function AppContent() {
             <Route path="/"           element={<HomePage />} />
             <Route path="/calculator" element={<CalculatorPage />} />
             <Route path="/contact"    element={<ContactPage />} />
+            <Route path="/survey"     element={<SurveyPage />} />
 
             {/* User */}
             <Route
@@ -89,7 +90,7 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
-          
+
             {/* Redirects & 404 */}
             <Route path="/governance" element={<Navigate to="/dashboard"       replace />} />
             <Route path="/fund"       element={<Navigate to="/create-contract" replace />} />

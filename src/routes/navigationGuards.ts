@@ -45,6 +45,11 @@ const guardsMap: Record<string, NavigationGuard> = {
     requiresCorrectNetwork: false,
     redirectTo: PUBLIC_PATHS.HOME,
   },
+  [PUBLIC_PATHS.SURVEY]: {
+    requiresWallet: false,
+    requiresCorrectNetwork: false,
+    redirectTo: PUBLIC_PATHS.HOME,
+  },
   /*
   [PUBLIC_PATHS.WALLET_TEST]: {
     requiresWallet: false,
@@ -57,7 +62,7 @@ const guardsMap: Record<string, NavigationGuard> = {
     requiresCorrectNetwork: true,
     redirectTo: PUBLIC_PATHS.HOME,
   },
-  [USER_PATHS.CREATE_CONTRACT]: { 
+  [USER_PATHS.CREATE_CONTRACT]: {
     requiresWallet: true,
     requiresCorrectNetwork: true,
     redirectTo: PUBLIC_PATHS.CALCULATOR,
@@ -76,21 +81,21 @@ const guardsMap: Record<string, NavigationGuard> = {
     requiredRole: 'admin',
     redirectTo: ADMIN_PATHS.ADMIN_DASHBOARD,
   },
-  [ADMIN_PATHS.CONTRACTS]: { 
+  [ADMIN_PATHS.CONTRACTS]: {
     requiresWallet: true,
     requiresCorrectNetwork: true,
     requiresAdmin: true,
     requiredRole: 'admin',
     redirectTo: ADMIN_PATHS.ADMIN_DASHBOARD,
   },
-  [ADMIN_PATHS.TOKENS]: { 
+  [ADMIN_PATHS.TOKENS]: {
     requiresWallet: true,
     requiresCorrectNetwork: true,
     requiresAdmin: true,
     requiredRole: 'admin',
     redirectTo: ADMIN_PATHS.ADMIN_DASHBOARD,
   },
-  [ADMIN_PATHS.ADMIN_CONTACT]: { 
+  [ADMIN_PATHS.ADMIN_CONTACT]: {
     requiresWallet: true,
     requiresCorrectNetwork: true,
     requiresAdmin: true,
@@ -121,7 +126,7 @@ export const requiresCorrectNetwork = (path: string): boolean => {
 export const getNavigationGuards = (path: string) => {
   const guard = getGuard(path);
   const routeType = getRouteType(path);
-  
+
   return {
     ...guard,
     routeType,
@@ -139,7 +144,6 @@ export const useNavigationGuard = () => {
     adminCheck?: { hasAccess: boolean | null; loading: boolean }
   ): ValidationResult => {
     const guard = getGuard(targetPath);
-
     if (guard.requiresWallet && !isConnected) {
       return {
         allowed: false,
@@ -151,7 +155,7 @@ export const useNavigationGuard = () => {
     if (guard.requiresCorrectNetwork && !isCorrectNetwork) {
       const currentChainName = getChainName(chainId);
       const supportedNames = ACTIVE_CHAINS.map(c => c.name).join(', ');
-      
+
       return {
         allowed: false,
         reason: `Wrong network. Current: ${currentChainName}. Please switch to: ${supportedNames}`,
@@ -161,12 +165,11 @@ export const useNavigationGuard = () => {
 
     if (guard.requiresAdmin) {
       if (adminCheck?.loading) {
-        return { 
-          allowed: false, 
-          reason: 'Checking admin access...' 
+        return {
+          allowed: false,
+          reason: 'Checking admin access...',
         };
       }
-      
       if (!adminCheck?.hasAccess) {
         return {
           allowed: false,
@@ -175,13 +178,12 @@ export const useNavigationGuard = () => {
         };
       }
     }
-
     return { allowed: true };
   };
 
-  return { 
-    validate, 
-    isConnected, 
+  return {
+    validate,
+    isConnected,
     isCorrectNetwork,
     address,
     chainId,
@@ -196,19 +198,18 @@ export const validateNavigation = (
   adminCheck?: { hasAccess: boolean | null; loading: boolean }
 ): ValidationResult => {
   const guard = getGuard(targetPath);
-
   if (guard.requiresWallet && !wallet.isConnected) {
-    return { 
-      allowed: false, 
-      reason: 'Wallet required', 
-      redirectTo: guard.redirectTo 
+    return {
+      allowed: false,
+      reason: 'Wallet required',
+      redirectTo: guard.redirectTo,
     };
   }
   if (guard.requiresCorrectNetwork && !wallet.isCorrectNetwork) {
-    return { 
-      allowed: false, 
-      reason: 'Wrong network', 
-      redirectTo: guard.redirectTo 
+    return {
+      allowed: false,
+      reason: 'Wrong network',
+      redirectTo: guard.redirectTo,
     };
   }
   if (guard.requiresAdmin && adminCheck) {
@@ -216,10 +217,10 @@ export const validateNavigation = (
       return { allowed: false, reason: 'Loading...' };
     }
     if (!adminCheck.hasAccess) {
-      return { 
-        allowed: false, 
-        reason: 'Admin access denied', 
-        redirectTo: guard.redirectTo 
+      return {
+        allowed: false,
+        reason: 'Admin access denied',
+        redirectTo: guard.redirectTo,
       };
     }
   }
@@ -228,7 +229,6 @@ export const validateNavigation = (
 
 export const getNavigationErrorMessage = (validation: ValidationResult): string => {
   if (validation.allowed) return '';
-  
   const messages: Record<string, string> = {
     'Wallet connection required': '🔗 Please connect your wallet to continue',
     'Wallet required': '🔗 Connect your wallet to access this page',
@@ -241,7 +241,7 @@ export const getNavigationErrorMessage = (validation: ValidationResult): string 
   if (validation.reason?.includes('Wrong network')) {
     return `🌐 ${validation.reason}`;
   }
-  
+
   return messages[validation.reason || ''] || validation.reason || 'Access denied';
 };
 
