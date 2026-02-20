@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, startTransition } from 'react';
+import { useEffect, useState, useMemo, useCallback, startTransition } from 'react';
 import { useNavigate }               from 'react-router-dom';
 import { useAuth }                   from '@/hooks/auth/useAuth';
 import { useRetirementPlan }         from '@/components/context/RetirementContext';
@@ -7,6 +7,7 @@ import { useHasFund }                from '@/hooks/funds/useHasFund';
 import { getContractAddress }        from '@/config';
 import { VerificationStep }          from '@/components/retirement/VerificationStep';
 import { InvestmentSelector }        from '@/components/retirement/InvestmentSelector';
+import type { InvestmentSelection }  from '@/components/retirement/InvestmentSelector';
 import {
   ArrowLeft, ArrowRight, Sparkles, Edit3,
   AlertCircle, CheckCircle, Info, Briefcase,
@@ -16,13 +17,6 @@ import { derivePlanValues }          from '@/types/retirement_types';
 
 const EXPECTED_CHAIN_ID = 421614;
 const ZERO_ADDRESS      = '0x0000000000000000000000000000000000000000';
-
-type InvestmentMethod = 'bank' | 'defi' | 'broker' | 'stockAgent';
-
-interface InvestmentSelection {
-  method:   InvestmentMethod;
-  provider: string;
-}
 
 function getFactoryAddress(chainId: number): `0x${string}` | undefined {
   return getContractAddress(chainId, 'personalFundFactory');
@@ -43,10 +37,12 @@ const CreateContractPage = () => {
   const [isEditing,           setIsEditing]           = useState(false);
   const [verificationPassed,  setVerificationPassed]  = useState(false);
   const [needsApproval,       setNeedsApproval]       = useState(true);
+  // FIX: usamos el tipo completo de InvestmentSelector que incluye protocolAddress
   const [investmentSelection, setInvestmentSelection] = useState<InvestmentSelection | null>(null);
   const [validationError,     setValidationError]     = useState<string | null>(null);
 
   const factoryAddress = getFactoryAddress(chainId);
+
   useEffect(() => {
     if (!planData || !authConnected) {
       void navigate('/calculator', { replace: true });
@@ -79,12 +75,12 @@ const CreateContractPage = () => {
   }, [formData]);
 
   const planDerived = retirementPlan ? derivePlanValues(retirementPlan) : null;
-  const handleVerificationComplete = (requiresApproval: boolean) => {
+  const handleVerificationComplete = useCallback((requiresApproval: boolean) => {
     setVerificationPassed(true);
     setNeedsApproval(requiresApproval);
-  };
+  }, []);
 
-  const handleContinueToConfirmation = () => {
+  const handleContinueToConfirmation = useCallback(() => {
     setValidationError(null);
     if (!formData || !factoryAddress || !retirementPlan) return;
     if (!investmentSelection) {
@@ -100,12 +96,17 @@ const CreateContractPage = () => {
         planData:         retirementPlan,
         factoryAddress,
         needsApproval,
-        investmentMethod: investmentSelection,
+        selectedProtocol: investmentSelection.protocolAddress,
+        investmentMethod: {
+          method:   investmentSelection.method,
+          provider: investmentSelection.provider,
+        },
       },
     });
-  };
+  }, [formData, factoryAddress, retirementPlan, investmentSelection, hasFund, needsApproval, navigate]);
 
   if (!formData || isLoadingFund) return null;
+
   if (!factoryAddress || factoryAddress === ZERO_ADDRESS) {
     return (
       <div className="min-h-screen bg-linear-to-br from-red-50 to-orange-50 flex items-center justify-center px-4">
@@ -270,7 +271,7 @@ const CreateContractPage = () => {
                       </div>
                     </div>
                   </div>
-                )}
+                )}l-to-br 
               </div>
 
               {/* Columna derecha — verificación e inversión */}

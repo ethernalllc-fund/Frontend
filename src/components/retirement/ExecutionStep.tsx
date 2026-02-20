@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagmi';
 import { Loader2, CheckCircle, AlertCircle, ExternalLink } from 'lucide-react';
 import { parseUnits } from 'viem';
@@ -10,9 +10,9 @@ import { PERSONAL_FUND_FACTORY_ABI } from '@/contracts/abis';
 
 const ERC20_APPROVE_ABI = [
   {
-    name:             'approve',
-    type:             'function',
-    stateMutability:  'nonpayable',
+    name:            'approve',
+    type:            'function',
+    stateMutability: 'nonpayable',
     inputs: [
       { name: 'spender', type: 'address' },
       { name: 'amount',  type: 'uint256' },
@@ -104,6 +104,10 @@ export function ExecutionStep({
   const [step,         setStep        ] = useState<TransactionStep>('idle');
   const [errorDisplay, setErrorDisplay] = useState<ErrorDisplay | null>(null);
 
+  // Ref para evitar que onSuccess se dispare más de una vez aunque el effect
+  // se re-ejecute (por ejemplo si el padre no memoizó la función).
+  const successFiredRef = useRef(false);
+
   const chainId     = chain?.id ?? 421614;
   const addresses   = getContractAddresses(chainId);
   const usdcAddress = addresses?.usdc;
@@ -113,8 +117,9 @@ export function ExecutionStep({
 
   const principalWei      = parseUSDC(plan.principal);
   const monthlyDepositWei = parseUSDC(plan.monthlyDeposit);
-  const approvalAmountWei = initialDepositAmount(plan); // principal + mes1
+  const approvalAmountWei = initialDepositAmount(plan);
 
+  // ─── Approval tx ────────────────────────────────────────────────────────────
   const {
     writeContract: writeApproval,
     data:          approvalHash,
@@ -122,10 +127,9 @@ export function ExecutionStep({
     error:         approvalWriteError,
   } = useWriteContract();
 
-  const {
-    isSuccess: isApprovalSuccess,
-  } = useWaitForTransactionReceipt({ hash: approvalHash });
+  const { isSuccess: isApprovalSuccess } = useWaitForTransactionReceipt({ hash: approvalHash });
 
+  // ─── Create fund tx ─────────────────────────────────────────────────────────
   const {
     writeContract: writeCreateFund,
     data:          txHash,
@@ -139,53 +143,9 @@ export function ExecutionStep({
     error:     receiptError,
   } = useWaitForTransactionReceipt({ hash: txHash });
 
-  useEffect(() => {
-    if (isApprovalSuccess && approvalHash && step === 'approving') {
-      setStep('approved');
-    }
-  }, [isApprovalSuccess, approvalHash, step]);
+  // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-  useEffect(() => {
-    if (isTxSuccess && receipt && step === 'confirming') {
-      if (!Array.isArray(receipt.logs)) {
-        setErrorDisplay({
-          title:       'Error de Receipt',
-          message:     'Error procesando la confirmación de la transacción',
-          suggestions: ['Recarga la página y verifica en el explorador de bloques'],
-        });
-        setStep('error');
-        return;
-      }
-      setStep('success');
-      onSuccess(txHash as `0x${string}`);
-    }
-  }, [isTxSuccess, receipt, step, txHash, onSuccess]);
-
-  useEffect(() => {
-    if (approvalWriteError && step === 'approving') {
-      const display = enrichGasError(formatErrorForUI(approvalWriteError), approvalWriteError);
-      setErrorDisplay(display);
-      setStep('error');
-    }
-  }, [approvalWriteError, step]);
-
-  useEffect(() => {
-    if (createWriteError && (step === 'creating' || step === 'approved')) {
-      const display = enrichGasError(formatErrorForUI(createWriteError), createWriteError);
-      setErrorDisplay(display);
-      setStep('error');
-    }
-  }, [createWriteError, step]);
-
-  useEffect(() => {
-    if (receiptError && step === 'confirming') {
-      const display = enrichGasError(formatErrorForUI(receiptError), receiptError);
-      setErrorDisplay(display);
-      setStep('error');
-    }
-  }, [receiptError, step]);
-
-  const handleCreateFund = () => {
+  const handleCreateFund = useCallback(() => {
     if (!account || !chain) {
       setErrorDisplay({
         title:       'Wallet no conectada',
@@ -223,19 +183,95 @@ export function ExecutionStep({
         BigInt(Math.round(plan.desiredMonthlyIncome)),
         BigInt(plan.yearsPayments),
         BigInt(Math.round(plan.interestRate * 100)),
-        BigInt(plan.timelockYears === 0
-          ? 15 // defaultTimelockYears
-          : plan.timelockYears),
+        BigInt(plan.timelockYears === 0 ? 15 : plan.timelockYears),
         selectedProtocol,
       ],
       account,
       chain,
       gas: 500_000n,
     });
-  };
+  }, [
+    account, chain, factoryAddress, selectedProtocol,
+    plan, principalWei, monthlyDepositWei, writeCreateFund,
+  ]);
+
+  // ─── Effects ─────────────────────────────────────────────────────────────────
+
+  // Approval confirmed → move to 'approved' step
+  useEffect(() => {
+    if (isApprovalSuccess && approvalHash && step === 'approving') {
+      setStep('approved');
+    }
+  }, [isApprovalSuccess, approvalHash, step]);
+
+  // TX confirmed → success
+  // FIX: usamos queueMicrotask para asegurarnos que React termine el render actual
+  // antes de llamar onSuccess, que puede navegar y desmontar este componente.
+  useEffect(() => {
+    if (!isTxSuccess || !receipt || step !== 'confirming') return;
+    if (successFiredRef.current) return;
+
+    if (!Array.isArray(receipt.logs)) {
+      setErrorDisplay({
+        title:       'Error de Receipt',
+        message:     'Error procesando la confirmación de la transacción',
+        suggestions: ['Recarga la página y verifica en el explorador de bloques'],
+      });
+      setStep('error');
+      return;
+    }
+
+    successFiredRef.current = true;
+    setStep('success');
+
+    // Diferimos onSuccess para que React termine de commitear el estado 'success'
+    // antes de que el padre navegue/desmonte este componente.
+    // Esto elimina el "Node cannot be found in the current page".
+    const hash = txHash as `0x${string}`;
+    queueMicrotask(() => {
+      onSuccess(hash);
+    });
+  }, [isTxSuccess, receipt, step, txHash, onSuccess]);
+
+  // Approval write error
+  useEffect(() => {
+    if (approvalWriteError && step === 'approving') {
+      const display = enrichGasError(formatErrorForUI(approvalWriteError), approvalWriteError);
+      setErrorDisplay(display);
+      setStep('error');
+    }
+  }, [approvalWriteError, step]);
+
+  // Create write error
+  useEffect(() => {
+    if (createWriteError && (step === 'creating' || step === 'approved')) {
+      const display = enrichGasError(formatErrorForUI(createWriteError), createWriteError);
+      setErrorDisplay(display);
+      setStep('error');
+    }
+  }, [createWriteError, step]);
+
+  // Receipt error
+  useEffect(() => {
+    if (receiptError && step === 'confirming') {
+      const display = enrichGasError(formatErrorForUI(receiptError), receiptError);
+      setErrorDisplay(display);
+      setStep('error');
+    }
+  }, [receiptError, step]);
+
+  // Cuando writeCreateFund setea isPending=false y hay hash, pasamos a 'confirming'
+  useEffect(() => {
+    if (txHash && step === 'creating' && !isCreatePending) {
+      setStep('confirming');
+    }
+  }, [txHash, step, isCreatePending]);
+
+  // ─── Handlers ────────────────────────────────────────────────────────────────
 
   const handleStart = () => {
     setErrorDisplay(null);
+    successFiredRef.current = false;
 
     if (!account || !chain) {
       setErrorDisplay({
@@ -287,10 +323,13 @@ export function ExecutionStep({
   const reset = () => {
     setStep('idle');
     setErrorDisplay(null);
+    successFiredRef.current = false;
   };
 
-  const showApprovedPanel  = step === 'approved';
-  const showProgressPanel  = step !== 'idle' && step !== 'approved' && step !== 'error';
+  // ─── Render ──────────────────────────────────────────────────────────────────
+
+  const showApprovedPanel = step === 'approved';
+  const showProgressPanel = step !== 'idle' && step !== 'approved' && step !== 'error';
 
   return (
     <div className="space-y-6">
@@ -309,9 +348,17 @@ export function ExecutionStep({
               </p>
               <button
                 onClick={handleCreateFund}
-                className="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-6 rounded-lg transition"
+                disabled={isCreatePending}
+                className="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-6 rounded-lg transition disabled:opacity-50"
               >
-                Crear Contrato Ahora
+                {isCreatePending ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="animate-spin" size={16} />
+                    Procesando...
+                  </span>
+                ) : (
+                  'Crear Contrato Ahora'
+                )}
               </button>
             </div>
           </div>

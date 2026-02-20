@@ -5,16 +5,17 @@ import Footer from './components/layout/Footer';
 import LoadingScreen from './components/common/LoadingScreen';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
-const HomePage           = lazy(() => import('./pages/public/HomePage'));
-const CalculatorPage     = lazy(() => import('./pages/public/CalculatorPage'));
-const ContactPage        = lazy(() => import('./pages/public/ContactPage'));
-const SurveyPage         = lazy(() => import('./pages/public/SurveyPage'));
-const DashboardPage      = lazy(() => import('./pages/user/DashboardPage'));
-const CreateContractPage = lazy(() => import('./pages/user/CreateContractPage'));
-const ContractCreatedPage= lazy(() => import('./pages/user/ContractCreatedPage'));
-const AdminDashboard     = lazy(() => import('./pages/admin/AdminDashboard'));
-const ContactMessages    = lazy(() => import('./pages/admin/ContactMessages'));
-const AdminTreasury      = lazy(() => import('./pages/admin/AdminTreasury'));
+const HomePage            = lazy(() => import('./pages/public/HomePage'));
+const CalculatorPage      = lazy(() => import('./pages/public/CalculatorPage'));
+const ContactPage         = lazy(() => import('./pages/public/ContactPage'));
+const SurveyPage          = lazy(() => import('./pages/public/SurveyPage'));
+const DashboardPage       = lazy(() => import('./pages/user/DashboardPage'));
+const CreateContractPage  = lazy(() => import('./pages/user/CreateContractPage'));
+const ContractCreatedPage = lazy(() => import('./pages/user/ContractCreatedPage'));
+const AdminDashboard      = lazy(() => import('./pages/admin/AdminDashboard'));
+const ContactMessages     = lazy(() => import('./pages/admin/ContactMessages'));
+const AdminTreasury       = lazy(() => import('./pages/admin/AdminTreasury'));
+const ContractsManagement = lazy(() => import('./pages/admin/ContractsManagement'));
 
 function App() {
   return (
@@ -30,7 +31,7 @@ function AppContent() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
-      <main className="flex-grow">
+      <main className="grow">
         <Suspense fallback={<LoadingScreen />}>
           <Routes>
             {/* Public */}
@@ -87,6 +88,14 @@ function AppContent() {
               element={
                 <ProtectedRoute requireAuth requireAdmin>
                   <AdminTreasury />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/contracts"
+              element={
+                <ProtectedRoute requireAuth requireAdmin>
+                  <ContractsManagement />
                 </ProtectedRoute>
               }
             />

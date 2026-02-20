@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAccount, useSignMessage, usePublicClient } from 'wagmi';
 import { z } from 'zod';
@@ -15,8 +15,9 @@ const AdminSessionSchema = z.object({
 
 type AdminSession = z.infer<typeof AdminSessionSchema>;
 
-const ADMIN_SESSION_KEY  = 'admin_session';
-const SESSION_DURATION   = 24 * 60 * 60 * 1000; // 24 horas
+const ADMIN_SESSION_KEY = 'admin_session';
+const SESSION_DURATION  = 24 * 60 * 60 * 1000; // 24 horas
+const ON_CHAIN_TIMEOUT_MS = 6_000;
 
 function getStoredSession(): AdminSession | null {
   try {
@@ -27,7 +28,6 @@ function getStoredSession(): AdminSession | null {
       localStorage.removeItem(ADMIN_SESSION_KEY);
       return null;
     }
-
     return validated;
   } catch {
     localStorage.removeItem(ADMIN_SESSION_KEY);
@@ -36,7 +36,7 @@ function getStoredSession(): AdminSession | null {
 }
 
 function saveSession(session: AdminSession): void {
-  AdminSessionSchema.parse(session); // lanza si es inválida
+  AdminSessionSchema.parse(session);
   localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(session));
 }
 
@@ -79,10 +79,11 @@ interface UseSecureAdminResult {
 
 export const useSecureAdmin = (): UseSecureAdminResult => {
   const [isAdmin,         setIsAdmin        ] = useState<boolean>(false);
-  const [isLoading,       setIsLoading      ] = useState<boolean>(true);
+  const [isLoading,       setIsLoading      ] = useState<boolean>(false);
   const [error,           setError          ] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const navigate        = useNavigate();
+  const onChainTimedOut = useRef<boolean>(false);
+  const navigate                        = useNavigate();
   const { address, isConnected, chain } = useAccount();
   const { signMessageAsync }            = useSignMessage();
   const publicClient                    = usePublicClient();
@@ -92,18 +93,28 @@ export const useSecureAdmin = (): UseSecureAdminResult => {
     isError:   onChainCheckFailed,
   } = useOnChainAdminRole(address);
 
-  const checkStoredSession = useCallback((): boolean => {
+  const applyStoredSession = useCallback((session: AdminSession | null) => {
+    if (session) {
+      setIsAdmin(true);
+      setIsAuthenticated(true);
+    } else {
+      setIsAdmin(false);
+      setIsAuthenticated(false);
+    }
+  }, []);
+
+  const checkStoredSession = useCallback((): AdminSession | null => {
     if (!address || !isConnected) {
       setIsAdmin(false);
       setIsAuthenticated(false);
-      return false;
+      return null;
     }
 
     const session = getStoredSession();
     if (!session) {
       setIsAdmin(false);
       setIsAuthenticated(false);
-      return false;
+      return null;
     }
 
     if (session.address.toLowerCase() !== address.toLowerCase()) {
@@ -111,10 +122,9 @@ export const useSecureAdmin = (): UseSecureAdminResult => {
       clearSession();
       setIsAdmin(false);
       setIsAuthenticated(false);
-      return false;
+      return null;
     }
-
-    return true;
+    return session;
   }, [address, isConnected]);
 
   const login = useCallback(async () => {
@@ -170,8 +180,8 @@ export const useSecureAdmin = (): UseSecureAdminResult => {
 
       if (import.meta.env.DEV) {
         console.log('[useSecureAdmin] ✅ Admin login successful', {
-          address: `${address.slice(0, 6)}...${address.slice(-4)}`,
-          chainId: chain.id,
+          address:   `${address.slice(0, 6)}...${address.slice(-4)}`,
+          chainId:   chain.id,
           expiresAt: new Date(session.expiresAt).toISOString(),
         });
       }
@@ -179,16 +189,16 @@ export const useSecureAdmin = (): UseSecureAdminResult => {
       void navigate('/admin/dashboard');
 
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to login. Please try again.';
+      const msg = err instanceof Error ? err.message : 'Failed to login. Please try again.';
 
-      if (message.includes('User rejected') || message.includes('user rejected')) {
+      if (msg.includes('User rejected') || msg.includes('user rejected')) {
         setError('Signature rejected. Please approve the signature to login.');
-      } else if (message.includes('not authorized')) {
+      } else if (msg.includes('not authorized')) {
         setError('Your address is not authorized as admin.');
-      } else if (message.includes('not configured')) {
+      } else if (msg.includes('not configured')) {
         setError('Admin login is not available on this network.');
       } else {
-        setError(message);
+        setError(msg);
       }
 
       setIsAdmin(false);
@@ -211,41 +221,60 @@ export const useSecureAdmin = (): UseSecureAdminResult => {
       console.log('[useSecureAdmin] 🔓 Admin logout');
     }
   }, [navigate]);
-
   const clearError = useCallback(() => setError(null), []);
 
   useEffect(() => {
-    setIsLoading(true);
+    onChainTimedOut.current = false;
     checkStoredSession();
-    setIsLoading(false);
   }, [address, isConnected, checkStoredSession]);
 
   useEffect(() => {
-    if (isCheckingOnChain) return;
+    if (!isCheckingOnChain) return;
 
+    const timer = setTimeout(() => {
+      if (isCheckingOnChain) {
+        onChainTimedOut.current = true;
+        console.warn(
+          `[useSecureAdmin] ⏱️ On-chain check timed out after ${ON_CHAIN_TIMEOUT_MS}ms — falling back to stored session`,
+        );
+        const session = checkStoredSession();
+        applyStoredSession(session);
+      }
+    }, ON_CHAIN_TIMEOUT_MS);
+
+    return () => clearTimeout(timer);
+  }, [isCheckingOnChain, checkStoredSession, applyStoredSession]);
+
+  useEffect(() => {
+    if (isCheckingOnChain) return;
+    if (onChainTimedOut.current) return;
     if (onChainCheckFailed) {
       if (import.meta.env.DEV) {
-        console.warn('[useSecureAdmin] ⚠️ On-chain role check failed — keeping current session');
+        console.warn('[useSecureAdmin] ⚠️ On-chain role check failed — falling back to stored session');
       }
+      const session = checkStoredSession();
+      applyStoredSession(session);
       return;
     }
 
-    const hasStoredSession = !!getStoredSession();
+    const session = getStoredSession();
 
-    if (hasStoredSession && !isOnChainAdmin) {
+    if (session && !isOnChainAdmin) {
       console.warn('[useSecureAdmin] ⚠️ Admin role revoked on-chain — clearing session');
       clearSession();
       setIsAdmin(false);
       setIsAuthenticated(false);
-    } else if (hasStoredSession && isOnChainAdmin) {
+    } else if (session && isOnChainAdmin) {
       setIsAdmin(true);
       setIsAuthenticated(true);
+    } else {
+      setIsAdmin(false);
+      setIsAuthenticated(false);
     }
-  }, [isOnChainAdmin, isCheckingOnChain, onChainCheckFailed]);
+  }, [isOnChainAdmin, isCheckingOnChain, onChainCheckFailed, checkStoredSession, applyStoredSession]);
 
   useEffect(() => {
     if (isLoading || isCheckingOnChain) return;
-
     if (!isAdmin) {
       const currentPath = window.location.pathname;
       if (currentPath.startsWith('/admin') && currentPath !== '/admin/login') {

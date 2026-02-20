@@ -1,4 +1,4 @@
-# ── Logs ────────────────────────────────────────────────────────────────────
+# ── Logs
 logs
 *.log
 npm-debug.log*
@@ -7,19 +7,25 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# ── Build outputs ─────────────────────────────────────────────────────────
+# Storybook
+storybook-static/
+.storybook/storybook.log
+*stories.js.snap
+__snapshots__/
+
+# ── Build outputs 
 dist
 dist-ssr
 build
 
-# ── TypeScript build cache ────────────────────────────────────────────────
+# ── TypeScript build cache 
 *.tsbuildinfo
 node_modules/.tmp/
 
-# ── Dependencies ─────────────────────────────────────────────────────────
+# ── Dependencies 
 node_modules
 
-# ── Environment variables ─────────────────────────────────────────────────
+# ── Environment variables 
 # NUNCA COMMITEAR .ENV CON CLAVES REALES, SIEMPRE USAR VARIABLES DE ENTORNO EN EL SERVIDOR O UN ARCHIVO .ENV DE EJEMPLO
 .env
 .env.local
@@ -29,11 +35,11 @@ node_modules
 .env.test
 *.local
 
-# ── Test coverage ─────────────────────────────────────────────────────────
+# ── Test coverage 
 coverage
 .nyc_output
 
-# ── Editor ───────────────────────────────────────────────────────────────
+# ── Editor 
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
@@ -44,6 +50,6 @@ coverage
 *.sln
 *.sw?
 
-# ── OS ────────────────────────────────────────────────────────────────────
+# ── OS 
 .DS_Store
 Thumbs.db

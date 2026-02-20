@@ -1,11 +1,11 @@
 import React, { lazy, Suspense } from 'react';
 import { Navigate } from 'react-router-dom';
 
-const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard'));
-const AdminTreasury = lazy(() => import('../pages/admin/AdminTreasury'));
-// const ContractsManagement = lazy(() => import('../../docs/stand-by-docs/ContractsManagement'));
-// const TokenManagement = lazy(() => import('../../docs/stand-by-docs/TokenManagement'));
+const AdminDashboard  = lazy(() => import('../pages/admin/AdminDashboard'));
+const AdminTreasury   = lazy(() => import('../pages/admin/AdminTreasury'));
 const ContactMessages = lazy(() => import('../pages/admin/ContactMessages'));
+const ContractsManagement = lazy(() => import('../pages/admin/ContractsManagement'));
+// const TokenManagement     = lazy(() => import('../../docs/stand-by-docs/TokenManagement'));
 
 interface AdminRoute {
   path: string;
@@ -18,60 +18,60 @@ interface AdminRoute {
 }
 
 export const ADMIN_PATHS = {
-  ADMIN_DASHBOARD: '/admin_dashboard',
-  TREASURY: '/admin/treasury',
-  CONTRACTS: '/admin/contracts',
-  TOKENS: '/admin/tokens',
-  ADMIN_CONTACT: '/admin/admin_contact',
+  ADMIN_DASHBOARD: '/admin',
+  TREASURY:        '/admin/treasury',
+  CONTRACTS:       '/admin/contracts',
+  TOKENS:          '/admin/tokens',
+  ADMIN_CONTACT:   '/admin/contact',
 } as const;
 
 export const adminRoutes: AdminRoute[] = [
   {
-    path: ADMIN_PATHS.ADMIN_DASHBOARD,
-    component: AdminDashboard,
-    title: 'Admin Dashboard',
-    description: 'Manage and monitor the PersonalFund protocol on the Ethernal Fund ecosystem',
-    requiresAuth: true,
+    path:          ADMIN_PATHS.ADMIN_DASHBOARD,
+    component:     AdminDashboard,
+    title:         'Admin Dashboard',
+    description:   'Manage and monitor the PersonalFund protocol on the Ethernal Fund ecosystem',
+    requiresAuth:  true,
     requiresAdmin: true,
-    requiredRole: 'admin',
+    requiredRole:  'admin',
   },
   {
-    path: ADMIN_PATHS.TREASURY,
-    component: AdminTreasury,
-    title: 'Admin Treasury',
-    description: 'Manage Ethernaltreasury and fees',
-    requiresAuth: true,
+    path:          ADMIN_PATHS.TREASURY,
+    component:     AdminTreasury,
+    title:         'Admin Treasury',
+    description:   'Manage Ethernal treasury and fees',
+    requiresAuth:  true,
     requiresAdmin: true,
-    requiredRole: 'admin',
+    requiredRole:  'admin',
+  },
+  {
+    path:          ADMIN_PATHS.CONTRACTS,
+    component:     ContractsManagement,
+    title:         'Contracts Management',
+    description:   'View and manage PersonalFund contracts',
+    requiresAuth:  true,
+    requiresAdmin: true,
+    requiredRole:  'admin',
   },
   /*
   {
-    path: ADMIN_PATHS.CONTRACTS,
-    component: ContractsManagement,
-    title: 'Contracts Management',
-    description: 'View and manage PersonalFund contracts',
-    requiresAuth: true,
+    path:          ADMIN_PATHS.TOKENS,
+    component:     TokenManagement,
+    title:         'Token Management',
+    description:   'Manage Geras token supply and cycles',
+    requiresAuth:  true,
     requiresAdmin: true,
-    requiredRole: 'admin',
-  },
-  {
-    path: ADMIN_PATHS.TOKENS,
-    component: TokenManagement,
-    title: 'Token Management',
-    description: 'Manage Geras token supply and cycles',
-    requiresAuth: true,
-    requiresAdmin: true,
-    requiredRole: 'admin',
+    requiredRole:  'admin',
   },
   */
   {
-    path: ADMIN_PATHS.ADMIN_CONTACT,
-    component: ContactMessages,
-    title: 'Contact Messages',
-    description: 'View and respond to user messages',
-    requiresAuth: true,
+    path:          ADMIN_PATHS.ADMIN_CONTACT,
+    component:     ContactMessages,
+    title:         'Contact Messages',
+    description:   'View and respond to user messages',
+    requiresAuth:  true,
     requiresAdmin: true,
-    requiredRole: 'admin',
+    requiredRole:  'admin',
   },
 ];
 
@@ -84,19 +84,13 @@ export const isValidAdminRoute = (path: string): boolean => {
 };
 
 export type AdminTab = 'admin_dashboard' | 'treasury' | 'contracts' | 'tokens' | 'admin_contact';
-
 export const getAdminTabFromPath = (path: string): AdminTab => {
   switch (path) {
-    case ADMIN_PATHS.TREASURY:
-      return 'treasury';
-    case ADMIN_PATHS.CONTRACTS:
-      return 'contracts';
-    case ADMIN_PATHS.TOKENS:
-      return 'tokens';
-    case ADMIN_PATHS.ADMIN_CONTACT:
-      return 'admin_contact';
-    default:
-      return 'admin_dashboard';
+    case ADMIN_PATHS.TREASURY:      return 'treasury';
+    case ADMIN_PATHS.CONTRACTS:     return 'contracts';
+    case ADMIN_PATHS.TOKENS:        return 'tokens';
+    case ADMIN_PATHS.ADMIN_CONTACT: return 'admin_contact';
+    default:                        return 'admin_dashboard';
   }
 };
 
@@ -104,7 +98,6 @@ export const useAdminAuth = () => {
   const hasAdminAccess = (walletAddress?: string): boolean => {
     return !!walletAddress;
   };
-
   return { hasAdminAccess };
 };
 
@@ -159,7 +152,7 @@ export const AdminRouter: React.FC<AdminRouterProps> = ({ currentPage, wallet, c
       fallback={
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <div className="w-16 h-16 border-4 border-green-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <div className="w-16 h-16 border-4 border-green-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
             <p className="text-gray-600">Loading...</p>
           </div>
         </div>
@@ -171,11 +164,11 @@ export const AdminRouter: React.FC<AdminRouterProps> = ({ currentPage, wallet, c
 };
 
 export default {
-  routes: adminRoutes,
-  paths: ADMIN_PATHS,
-  getRoute: getAdminRoute,
-  isValid: isValidAdminRoute,
-  Router: AdminRouter,
+  routes:         adminRoutes,
+  paths:          ADMIN_PATHS,
+  getRoute:       getAdminRoute,
+  isValid:        isValidAdminRoute,
+  Router:         AdminRouter,
   getTabFromPath: getAdminTabFromPath,
-  useAuth: useAdminAuth,
+  useAuth:        useAdminAuth,
 };
