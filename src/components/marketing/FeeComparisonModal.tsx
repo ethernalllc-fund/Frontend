@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { X } from 'lucide-react';
 
-const ETHERNAL_FEE = 0.05;
+const ETHERNAL_FEE = 0.03;
 const CORPORATE_FEES = {
   management:  0.015,
   entry:       0.03,
@@ -118,6 +118,7 @@ function FeeComparisonContent() {
 
   const eth  = simulate(monthly, years, true);
   const corp = simulate(monthly, years, false);
+
   const advantage  = eth.balance - corp.balance;
   const feesSaved  = corp.totalFeesPaid - eth.totalFeesPaid;
   const ethEff     = (eth.balance / eth.totalDeposited - 1) * 100;
