@@ -4,7 +4,7 @@ import { Navigate } from "react-router-dom";
 const HomePage = lazy(() => import("../pages/public/HomePage"));
 const Calculator = lazy(() => import("../pages/public/CalculatorPage"));
 const ContactPage = lazy(() => import("../pages/public/ContactPage"));
-// const WalletTestPage = lazy(() => import("../pages/public/WalletTestPage"));
+const SurveyPage = lazy(() => import("../pages/public/SurveyPage"));
 
 interface PublicRoute {
   path: string;
@@ -19,7 +19,8 @@ export const PUBLIC_PATHS = {
   HOME: "/",
   CALCULATOR: "/calculator",
   CONTACT: "/contact",
-  // WALLET_TEST: '/wallet-test',
+  SURVEY: "/survey",
+  // W: '/wallet-test',
 } as const;
 
 export const publicRoutes: PublicRoute[] = [
@@ -41,14 +42,12 @@ export const publicRoutes: PublicRoute[] = [
     title: "Contact Us",
     description: "Get in touch with the team",
   },
-  /*
   {
-    path: PUBLIC_PATHS.WALLET_TEST,
-    component: WalletTestPage,
-    title: "Wallet Connection Test",
-    description: "Test wallet connectivity and contract integration",
+    path: PUBLIC_PATHS.SURVEY,
+    component: SurveyPage,
+    title: "Survey",
+    description: "Take our anonymous survey",
   },
-  */
 ];
 
 export const getPublicRoute = (path: string): PublicRoute | undefined => {
