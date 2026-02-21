@@ -9,12 +9,14 @@ interface FaucetButtonProps {
 }
 
 type Status = 'idle' | 'loading' | 'success' | 'error';
+
 const EXPLORER_URL = import.meta.env.VITE_EXPLORER_URL || 'https://sepolia.arbiscan.io';
 
 export function FaucetButton({ className = '' }: FaucetButtonProps) {
   const { address, isConnected } = useAccount();
   const chainId                  = useChainId();
   const { requestTokens, loading, error: faucetError, clearError } = useFaucet();
+
   const [status,   setStatus]   = useState<Status>('idle');
   const [result,   setResult]   = useState<FaucetResponse | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -167,10 +169,17 @@ export function FaucetButton({ className = '' }: FaucetButtonProps) {
       </div>
 
       {/* What you'll receive */}
-      <div className="bg-white/70 rounded-xl p-3 border border-blue-100 text-center">
-        <p className="text-xs text-gray-500 mb-0.5">MockUSDC</p>
-        <p className="font-black text-emerald-700 text-lg">100</p>
-        <p className="text-xs text-gray-400">para tu fondo</p>
+      <div className="grid grid-cols-2 gap-2">
+        <div className="bg-white/70 rounded-xl p-3 border border-blue-100 text-center">
+          <p className="text-xs text-gray-500 mb-0.5">MockUSDC</p>
+          <p className="font-black text-emerald-700 text-lg">~5,000</p>
+          <p className="text-xs text-gray-400">para tu fondo</p>
+        </div>
+        <div className="bg-white/70 rounded-xl p-3 border border-blue-100 text-center">
+          <p className="text-xs text-gray-500 mb-0.5">ETH gas</p>
+          <p className="font-black text-indigo-700 text-lg">~0.01</p>
+          <p className="text-xs text-gray-400">para transacciones</p>
+        </div>
       </div>
 
       {/* Main CTA */}
