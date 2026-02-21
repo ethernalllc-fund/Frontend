@@ -1,44 +1,31 @@
 import { useAccount, useBalance, useReadContract } from 'wagmi';
+import { useState, useEffect } from 'react';
 import { erc20Abi } from 'viem';
 import { useUSDCAddress } from '@/hooks/usdc/usdcUtils';
 import { PERSONAL_FUND_FACTORY_ADDRESS } from '@/contracts/addresses';
 import type { RetirementPlan } from '@/types/retirement_types';
 import { initialDepositAmount, calcFee } from '@/types/retirement_types';
 
-/** Minimum ETH/native gas required (0.005 ETH ~= enough for 2 tx on Arbitrum) */
 const REQUIRED_GAS = 5_000_000_000_000_000n; // 0.005 ether in wei
 
 export interface BalanceVerification {
-  /** USDC balance of the connected wallet */
   usdcBalance:        bigint;
-  /** Native gas balance */
   gasBalance:         bigint;
-  /** Current USDC allowance granted to the factory */
   allowance:          bigint;
-  /** Total USDC needed (deposit + fee) */
   requiredUSDC:       bigint;
-  /** Minimum native gas needed */
   requiredGas:        bigint;
-  /** True when usdcBalance >= requiredUSDC */
   hasEnoughUSDC:      boolean;
-  /** True when gasBalance >= requiredGas */
   hasEnoughGas:       boolean;
-  /** True when allowance >= requiredUSDC */
   hasEnoughAllowance: boolean;
-  /** True while any query is still loading */
   isLoading:          boolean;
 }
 
 export function useBalanceVerification(plan: RetirementPlan): BalanceVerification {
   const { address } = useAccount();
   const usdcAddress = useUSDCAddress();
-
-  // Required USDC: principal + first month deposit + protocol fee
   const depositWei   = initialDepositAmount(plan);   // bigint
   const feeWei       = calcFee(depositWei);           // bigint
   const requiredUSDC = depositWei + feeWei;
-
-  // ── USDC balance ────────────────────────────────────────────────────────────
   const {
     data:      usdcBalanceRaw,
     isLoading: loadingUSDC,
@@ -54,7 +41,6 @@ export function useBalanceVerification(plan: RetirementPlan): BalanceVerificatio
     },
   });
 
-  // ── USDC allowance to factory ───────────────────────────────────────────────
   const {
     data:      allowanceRaw,
     isLoading: loadingAllowance,
@@ -70,7 +56,6 @@ export function useBalanceVerification(plan: RetirementPlan): BalanceVerificatio
     },
   });
 
-  // ── Native gas balance ──────────────────────────────────────────────────────
   const {
     data:      gasData,
     isLoading: loadingGas,
@@ -82,10 +67,18 @@ export function useBalanceVerification(plan: RetirementPlan): BalanceVerificatio
     },
   });
 
-  const usdcBalance = (usdcBalanceRaw) ?? 0n;
-  const allowance   = (allowanceRaw) ?? 0n;
+  const usdcBalance = (usdcBalanceRaw as bigint | undefined) ?? 0n;
+  const allowance   = (allowanceRaw   as bigint | undefined) ?? 0n;
   const gasBalance  = gasData?.value ?? 0n;
-  const isLoading   = loadingUSDC || loadingAllowance || loadingGas;
+
+  const [timedOut, setTimedOut] = useState(false);
+  const rawLoading = loadingUSDC || loadingAllowance || loadingGas;
+  useEffect(() => {
+    if (!rawLoading) { setTimedOut(false); return; }
+    const t = setTimeout(() => setTimedOut(true), 8_000);
+    return () => clearTimeout(t);
+  }, [rawLoading]);
+  const isLoading = rawLoading && !timedOut;
 
   return {
     usdcBalance,

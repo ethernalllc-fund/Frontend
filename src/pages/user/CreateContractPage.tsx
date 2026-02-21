@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, useCallback, startTransition } from 'react';
 import { useNavigate }               from 'react-router-dom';
-import { useAuth }                   from '@/hooks/auth/useAuth';
+import { useWallet }                 from '@/hooks/web3/useWallet';
 import { useRetirementPlan }         from '@/components/context/RetirementContext';
 import { useChainId }                from 'wagmi';
 import { useHasFund }                from '@/hooks/funds/useHasFund';
@@ -28,7 +28,7 @@ function formatNumber(num: string | number): string {
 
 const CreateContractPage = () => {
   const navigate                              = useNavigate();
-  const { isConnected: authConnected }        = useAuth();
+  const { isConnected: authConnected }        = useWallet();
   const chainId                               = useChainId();
   const { planData }                          = useRetirementPlan();
   const { hasFund, fundAddress, isLoading: isLoadingFund } = useHasFund();
@@ -44,9 +44,12 @@ const CreateContractPage = () => {
   const factoryAddress = getFactoryAddress(chainId);
 
   useEffect(() => {
-    if (!planData || !authConnected) {
+    // Wait for wagmi hydration before redirecting — avoids false redirect on mount
+    if (!planData) {
       void navigate('/calculator', { replace: true });
-    } else {
+      return;
+    }
+    if (authConnected) {
       startTransition(() => {
         setFormData(planData);
       });
