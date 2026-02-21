@@ -6,22 +6,15 @@ import type { FaucetResponse } from '@/services/faucet/faucet-client';
 
 interface FaucetButtonProps {
   className?: string;
-  calculatorValues?: {
-    currentAge:           number;
-    retirementAge:        number;
-    desiredMonthlyIncome: number;
-    monthlyDeposit:       number;
-    initialAmount:        number;
-  };
 }
 
 type Status = 'idle' | 'loading' | 'success' | 'error';
+const EXPLORER_URL = import.meta.env.VITE_EXPLORER_URL || 'https://sepolia.arbiscan.io';
 
-export function FaucetButton({ className = '', calculatorValues }: FaucetButtonProps) {
+export function FaucetButton({ className = '' }: FaucetButtonProps) {
   const { address, isConnected } = useAccount();
   const chainId                  = useChainId();
   const { requestTokens, loading, error: faucetError, clearError } = useFaucet();
-
   const [status,   setStatus]   = useState<Status>('idle');
   const [result,   setResult]   = useState<FaucetResponse | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -31,7 +24,7 @@ export function FaucetButton({ className = '', calculatorValues }: FaucetButtonP
     setResult(null);
     setErrorMsg(null);
     clearError();
-  }, [address, chainId]); 
+  }, [address, chainId]);
 
   const handleRequest = async () => {
     if (!address || !isConnected) return;
@@ -42,14 +35,7 @@ export function FaucetButton({ className = '', calculatorValues }: FaucetButtonP
     clearError();
 
     try {
-      const res = await requestTokens({
-        wallet_address:           address,
-        current_age:              calculatorValues?.currentAge           ?? 30,
-        retirement_age:           calculatorValues?.retirementAge        ?? 65,
-        desired_monthly_payment:  calculatorValues?.desiredMonthlyIncome ?? 4000,
-        monthly_deposit:          calculatorValues?.monthlyDeposit       ?? 500,
-        initial_amount:           calculatorValues?.initialAmount        ?? 5000,
-      });
+      const res = await requestTokens({ address });
 
       if (res.success) {
         setStatus('success');
@@ -88,49 +74,42 @@ export function FaucetButton({ className = '', calculatorValues }: FaucetButtonP
   }
 
   if (status === 'success' && result) {
+    const explorerUrl = result.tx_hash
+      ? `${EXPLORER_URL}/tx/${result.tx_hash}`
+      : null;
+
     return (
       <div className={`bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-5 ${className}`}>
         <div className="flex items-start gap-3 mb-4">
           <CheckCircle className="text-emerald-600 shrink-0 mt-0.5" size={24} />
           <div>
             <p className="font-bold text-emerald-800 text-base">{result.message}</p>
-            {result.usdc_amount_sent && (
+            {result.amount && (
               <p className="text-emerald-700 text-sm mt-1">
-                MockUSDC recibido: <strong>{result.usdc_amount_sent} USDC</strong>
+                MockUSDC recibido: <strong>{result.amount.toLocaleString()} USDC</strong>
               </p>
             )}
-            {result.eth_amount_sent && (
-              <p className="text-emerald-700 text-sm">
-                ETH para gas: <strong>{result.eth_amount_sent} ETH</strong>
+            {result.balance !== null && result.balance !== undefined && (
+              <p className="text-emerald-600 text-xs mt-0.5">
+                Balance actual: {result.balance.toLocaleString()} USDC
               </p>
             )}
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2 mb-3">
-          {result.explorer_usdc_url && (
+        {explorerUrl && (
+          <div className="flex flex-wrap gap-2 mb-3">
             <a
-              href={result.explorer_usdc_url}
+              href={explorerUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-3 py-1.5 rounded-lg transition"
             >
               <ExternalLink size={12} />
-              Ver tx USDC
+              Ver transacción
             </a>
-          )}
-          {result.explorer_eth_url && (
-            <a
-              href={result.explorer_eth_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-3 py-1.5 rounded-lg transition"
-            >
-              <ExternalLink size={12} />
-              Ver tx ETH
-            </a>
-          )}
-        </div>
+          </div>
+        )}
 
         <button
           onClick={handleReset}
@@ -144,10 +123,12 @@ export function FaucetButton({ className = '', calculatorValues }: FaucetButtonP
   }
 
   if (status === 'error') {
-    const isRateLimit = errorMsg?.toLowerCase().includes('rate') ||
-                        errorMsg?.toLowerCase().includes('limit') ||
-                        errorMsg?.toLowerCase().includes('espera') ||
-                        errorMsg?.toLowerCase().includes('24');
+    const isRateLimit =
+      errorMsg?.toLowerCase().includes('rate') ||
+      errorMsg?.toLowerCase().includes('limit') ||
+      errorMsg?.toLowerCase().includes('espera') ||
+      errorMsg?.toLowerCase().includes('24');
+
     return (
       <div className={`bg-red-50 border-2 border-red-200 rounded-2xl p-5 ${className}`}>
         <div className="flex items-start gap-3 mb-3">
@@ -186,17 +167,10 @@ export function FaucetButton({ className = '', calculatorValues }: FaucetButtonP
       </div>
 
       {/* What you'll receive */}
-      <div className="grid grid-cols-2 gap-2">
-        <div className="bg-white/70 rounded-xl p-3 border border-blue-100 text-center">
-          <p className="text-xs text-gray-500 mb-0.5">MockUSDC</p>
-          <p className="font-black text-emerald-700 text-lg">~5,000</p>
-          <p className="text-xs text-gray-400">para tu fondo</p>
-        </div>
-        <div className="bg-white/70 rounded-xl p-3 border border-blue-100 text-center">
-          <p className="text-xs text-gray-500 mb-0.5">ETH gas</p>
-          <p className="font-black text-indigo-700 text-lg">~0.01</p>
-          <p className="text-xs text-gray-400">para transacciones</p>
-        </div>
+      <div className="bg-white/70 rounded-xl p-3 border border-blue-100 text-center">
+        <p className="text-xs text-gray-500 mb-0.5">MockUSDC</p>
+        <p className="font-black text-emerald-700 text-lg">100</p>
+        <p className="text-xs text-gray-400">para tu fondo</p>
       </div>
 
       {/* Main CTA */}
