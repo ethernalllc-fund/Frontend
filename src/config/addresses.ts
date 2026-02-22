@@ -46,15 +46,15 @@ const getUSDCAddress = (chainId: number): `0x${string}` => {
 export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
   // ARBITRUM SEPOLIA — DEPLOYED
   421614: {
-    personalFundFactory: '0x50bcc3E1583F8fc7D00d7050a3Bc2E3035fD5495',
-    usdc:                getUSDCAddress(421614),
-    treasury:            '0xaED0b89de18B03f1eAea92CA5e0dc6CFCD2E9A7b',
-    governance:          '0xd311d1B9D13F70edF7af352A751A2786AD332AF5',
-    token:               '0x3a7253e65efF8624C77848A2A49B1966C682BD82',
-    protocolRegistry:    '0x639818C51fb56827fAc0a446c886F8fAa11f86d1',
-    userPreferences:     '0xd591be275DF02Fd49685A9aEEf89C5a6dCF49D25',
-    dateTime:            '0x5BAF1093f814933A57fEc03369b096298b254ffc',
-    personalFund:        '0x92A9454c3Db04C73ADdae8029023Ab47782a29Cb',
+    personalFundFactory: '0x8101f50Abef13511eAbA87469A51B5106A54CA92',
+    usdc:                getUSDCAddress(421614), // sin cambios
+    treasury:            '0x045F8Ff2387813778DBc9ce93677669891a92909',
+    governance:          '0x28E37450297593B621eecD1Ad069D2748354184E',
+    token:               '0x853B2e3D6e26183DDDedA90A45Ff3C639873899c',
+    protocolRegistry:    '0xb215948f03959F61d0ca918f02F1d0789Af8a0BC',
+    userPreferences:     '0x1ed2B6bD2124D322c42985a072DB6751634DDCFF',
+    dateTime:            '0xeb91ef08F65b6BFE4753db429e8d82A28a1970c5',
+    personalFund:        '0x078d0457165c85bf566FB4E8511F1CFa64674f92',
   },
 
   // 🟡 POLYGON AMOY — READY TO DEPLOY
