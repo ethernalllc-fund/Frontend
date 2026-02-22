@@ -105,7 +105,7 @@ export function ExecutionStep({
   const [errorDisplay, setErrorDisplay] = useState<ErrorDisplay | null>(null);
 
   // Ref para evitar que onSuccess se dispare más de una vez aunque el effect
-  // se re-ejecute (por ejemplo si el padre no memoizó la función).
+  // se re-ejecute (por ejemplo si el padre no memorizó la función).
   const successFiredRef = useRef(false);
 
   const chainId     = chain?.id ?? 421614;
@@ -142,8 +142,6 @@ export function ExecutionStep({
     data:      receipt,
     error:     receiptError,
   } = useWaitForTransactionReceipt({ hash: txHash });
-
-  // ─── Helpers ─────────────────────────────────────────────────────────────────
 
   const handleCreateFund = useCallback(() => {
     if (!account || !chain) {
@@ -195,22 +193,15 @@ export function ExecutionStep({
     plan, principalWei, monthlyDepositWei, writeCreateFund,
   ]);
 
-  // ─── Effects ─────────────────────────────────────────────────────────────────
-
-  // Approval confirmed → move to 'approved' step
   useEffect(() => {
     if (isApprovalSuccess && approvalHash && step === 'approving') {
       setStep('approved');
     }
   }, [isApprovalSuccess, approvalHash, step]);
 
-  // TX confirmed → success
-  // FIX: usamos queueMicrotask para asegurarnos que React termine el render actual
-  // antes de llamar onSuccess, que puede navegar y desmontar este componente.
   useEffect(() => {
     if (!isTxSuccess || !receipt || step !== 'confirming') return;
     if (successFiredRef.current) return;
-
     if (!Array.isArray(receipt.logs)) {
       setErrorDisplay({
         title:       'Error de Receipt',
@@ -224,16 +215,12 @@ export function ExecutionStep({
     successFiredRef.current = true;
     setStep('success');
 
-    // Diferimos onSuccess para que React termine de commitear el estado 'success'
-    // antes de que el padre navegue/desmonte este componente.
-    // Esto elimina el "Node cannot be found in the current page".
     const hash = txHash as `0x${string}`;
     queueMicrotask(() => {
       onSuccess(hash);
     });
   }, [isTxSuccess, receipt, step, txHash, onSuccess]);
 
-  // Approval write error
   useEffect(() => {
     if (approvalWriteError && step === 'approving') {
       const display = enrichGasError(formatErrorForUI(approvalWriteError), approvalWriteError);
@@ -242,7 +229,6 @@ export function ExecutionStep({
     }
   }, [approvalWriteError, step]);
 
-  // Create write error
   useEffect(() => {
     if (createWriteError && (step === 'creating' || step === 'approved')) {
       const display = enrichGasError(formatErrorForUI(createWriteError), createWriteError);
@@ -251,7 +237,6 @@ export function ExecutionStep({
     }
   }, [createWriteError, step]);
 
-  // Receipt error
   useEffect(() => {
     if (receiptError && step === 'confirming') {
       const display = enrichGasError(formatErrorForUI(receiptError), receiptError);
@@ -260,19 +245,15 @@ export function ExecutionStep({
     }
   }, [receiptError, step]);
 
-  // Cuando writeCreateFund setea isPending=false y hay hash, pasamos a 'confirming'
   useEffect(() => {
     if (txHash && step === 'creating' && !isCreatePending) {
       setStep('confirming');
     }
   }, [txHash, step, isCreatePending]);
 
-  // ─── Handlers ────────────────────────────────────────────────────────────────
-
   const handleStart = () => {
     setErrorDisplay(null);
     successFiredRef.current = false;
-
     if (!account || !chain) {
       setErrorDisplay({
         title:       'Wallet no conectada',
@@ -313,7 +294,7 @@ export function ExecutionStep({
         args:         [factoryAddress, approvalAmountWei],
         account,
         chain,
-        gas:          100_000n,
+        gas:          300_000n,
       });
     } else {
       handleCreateFund();
@@ -325,8 +306,6 @@ export function ExecutionStep({
     setErrorDisplay(null);
     successFiredRef.current = false;
   };
-
-  // ─── Render ──────────────────────────────────────────────────────────────────
 
   const showApprovedPanel = step === 'approved';
   const showProgressPanel = step !== 'idle' && step !== 'approved' && step !== 'error';
