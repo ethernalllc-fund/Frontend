@@ -31,39 +31,39 @@ interface ContractGasParams {
   account?: Address
 }
 
-const DEFAULT_GAS_LIMIT_BUFFER = 20
-const DEFAULT_MAX_FEE_BUFFER = 20
-const MIN_PRIORITY_FEE = parseGwei('0.001')
+const DEFAULT_GAS_LIMIT_BUFFER = 40
+const DEFAULT_MAX_FEE_BUFFER = 40
+const MIN_PRIORITY_FEE = parseGwei('0.003')
 const CHAIN_CONFIGS = {
   421614: { // Arbitrum Sepolia
     isArbitrum: true,
-    defaultGasLimit: 30_000_000n,
+    defaultGasLimit: 50_000_000n,
     minMaxFee: parseGwei('0.1'),
   },
   42161: { // Arbitrum One
     isArbitrum: true,
-    defaultGasLimit: 30_000_000n,
-    minMaxFee: parseGwei('0.1'),
+    defaultGasLimit: 50_000_000n,
+    minMaxFee: parseGwei('0.3'),
   },
   80002: { // Polygon Amoy
     isArbitrum: false,
-    defaultGasLimit: 500_000n,
-    minMaxFee: parseGwei('30'),
+    defaultGasLimit: 900_000n,
+    minMaxFee: parseGwei('50'),
   },
   137: { // Polygon
     isArbitrum: false,
-    defaultGasLimit: 500_000n,
-    minMaxFee: parseGwei('30'),
+    defaultGasLimit: 900_000n,
+    minMaxFee: parseGwei('50'),
   },
   1: { // Ethereum
     isArbitrum: false,
-    defaultGasLimit: 300_000n,
-    minMaxFee: parseGwei('20'),
+    defaultGasLimit: 500_000n,
+    minMaxFee: parseGwei('35'),
   },
   11155111: { // Sepolia
     isArbitrum: false,
-    defaultGasLimit: 300_000n,
-    minMaxFee: parseGwei('5'),
+    defaultGasLimit: 30_000_000n,
+    minMaxFee: parseGwei('7'),
   },
 } as const
 
