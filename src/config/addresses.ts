@@ -2,7 +2,6 @@ export interface ContractAddresses {
   personalFundFactory: `0x${string}`
   usdc:                `0x${string}`
   treasury:            `0x${string}`
-  governance:          `0x${string}`
   token:               `0x${string}`
   protocolRegistry?:   `0x${string}`
   userPreferences?:    `0x${string}`
@@ -44,17 +43,16 @@ const getUSDCAddress = (chainId: number): `0x${string}` => {
 }
 
 export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
-  // ARBITRUM SEPOLIA — DEPLOYED
+  // ✅ ARBITRUM SEPOLIA — DEPLOYED 2026-02-23
   421614: {
-    personalFundFactory: '0x8101f50Abef13511eAbA87469A51B5106A54CA92',
-    usdc:                getUSDCAddress(421614), // sin cambios
-    treasury:            '0x045F8Ff2387813778DBc9ce93677669891a92909',
-    governance:          '0x28E37450297593B621eecD1Ad069D2748354184E',
-    token:               '0x853B2e3D6e26183DDDedA90A45Ff3C639873899c',
-    protocolRegistry:    '0xb215948f03959F61d0ca918f02F1d0789Af8a0BC',
-    userPreferences:     '0x1ed2B6bD2124D322c42985a072DB6751634DDCFF',
-    dateTime:            '0xeb91ef08F65b6BFE4753db429e8d82A28a1970c5',
-    personalFund:        '0x078d0457165c85bf566FB4E8511F1CFa64674f92',
+    personalFundFactory: '0x817E46C53D1F185B9A8b38614527D398e043baf1',
+    usdc:                getUSDCAddress(421614),
+    treasury:            '0xAFEFd36D0911c503f44768aef721162444ADeA1b',
+    token:               '0x1E6c5a53c8705c485476a44E1017B2bF76c8F60D',
+    protocolRegistry:    '0x9c65A8baE28B663fc4613137C6c27F4300860f72',
+    userPreferences:     '0x8BEc849AB22bf570b5E7C92abC666c385635C4e9',
+    dateTime:            '0xE02b954494Ea690B54Ba63ED7E722C89C8926de5',
+    personalFund:        '0x8988d2f73d172Bd8Be60A2e3E658d24561ad31cC',
   },
 
   // 🟡 POLYGON AMOY — READY TO DEPLOY
@@ -62,7 +60,6 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     personalFundFactory: ZERO_ADDRESS,
     usdc:                getUSDCAddress(80002),
     treasury:            ZERO_ADDRESS,
-    governance:          ZERO_ADDRESS,
     token:               ZERO_ADDRESS,
     protocolRegistry:    ZERO_ADDRESS,
     userPreferences:     ZERO_ADDRESS,
@@ -75,7 +72,6 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     personalFundFactory: ZERO_ADDRESS,
     usdc:                getUSDCAddress(84532),
     treasury:            ZERO_ADDRESS,
-    governance:          ZERO_ADDRESS,
     token:               ZERO_ADDRESS,
     protocolRegistry:    ZERO_ADDRESS,
     userPreferences:     ZERO_ADDRESS,
@@ -88,7 +84,6 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     personalFundFactory: ZERO_ADDRESS,
     usdc:                getUSDCAddress(11155420),
     treasury:            ZERO_ADDRESS,
-    governance:          ZERO_ADDRESS,
     token:               ZERO_ADDRESS,
     protocolRegistry:    ZERO_ADDRESS,
     userPreferences:     ZERO_ADDRESS,
@@ -101,7 +96,6 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     personalFundFactory: ZERO_ADDRESS,
     usdc:                getUSDCAddress(11155111),
     treasury:            ZERO_ADDRESS,
-    governance:          ZERO_ADDRESS,
     token:               ZERO_ADDRESS,
     protocolRegistry:    ZERO_ADDRESS,
     userPreferences:     ZERO_ADDRESS,
@@ -114,7 +108,6 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     personalFundFactory: ZERO_ADDRESS,
     usdc:                getUSDCAddress(42161),
     treasury:            ZERO_ADDRESS,
-    governance:          ZERO_ADDRESS,
     token:               ZERO_ADDRESS,
   },
 
@@ -123,7 +116,6 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     personalFundFactory: ZERO_ADDRESS,
     usdc:                getUSDCAddress(137),
     treasury:            ZERO_ADDRESS,
-    governance:          ZERO_ADDRESS,
     token:               ZERO_ADDRESS,
   },
 
@@ -132,7 +124,6 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     personalFundFactory: ZERO_ADDRESS,
     usdc:                getUSDCAddress(8453),
     treasury:            ZERO_ADDRESS,
-    governance:          ZERO_ADDRESS,
     token:               ZERO_ADDRESS,
   },
 
@@ -141,7 +132,6 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     personalFundFactory: ZERO_ADDRESS,
     usdc:                getUSDCAddress(10),
     treasury:            ZERO_ADDRESS,
-    governance:          ZERO_ADDRESS,
     token:               ZERO_ADDRESS,
   },
 
@@ -150,7 +140,6 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     personalFundFactory: ZERO_ADDRESS,
     usdc:                getUSDCAddress(1),
     treasury:            ZERO_ADDRESS,
-    governance:          ZERO_ADDRESS,
     token:               ZERO_ADDRESS,
   },
 }
@@ -160,7 +149,6 @@ const _arb = CONTRACT_ADDRESSES[421614] as ContractAddresses
 export const TREASURY_ADDRESS          = _arb.treasury
 export const FACTORY_ADDRESS           = _arb.personalFundFactory
 export const USDC_ADDRESS              = _arb.usdc
-export const GOVERNANCE_ADDRESS        = _arb.governance
 export const TOKEN_ADDRESS             = _arb.token
 export const PROTOCOL_REGISTRY_ADDRESS = _arb.protocolRegistry!
 export const USER_PREFERENCES_ADDRESS  = _arb.userPreferences!
@@ -210,7 +198,7 @@ export const areMainContractsDeployed = (chainId: number): boolean => {
   const addresses = CONTRACT_ADDRESSES[chainId]
   if (!addresses) return false
   const main: (keyof ContractAddresses)[] = [
-    'personalFundFactory', 'usdc', 'treasury', 'governance', 'token',
+    'personalFundFactory', 'usdc', 'treasury', 'token',
   ]
   return main.every(c => isContractDeployed(chainId, c))
 }
@@ -272,7 +260,7 @@ export const getDeploymentStatus = (chainId: number) =>
   }
 
 export const CONTRACT_CATEGORIES = {
-  core:     ['personalFundFactory', 'usdc', 'treasury', 'governance', 'token'] as const,
+  core:     ['personalFundFactory', 'usdc', 'treasury', 'token'] as const,
   optional: ['protocolRegistry', 'userPreferences', 'dateTime'] as const,
 } as const
 
@@ -308,7 +296,7 @@ export const updateChainAddresses = (
 }
 
 export const DEPLOYMENT_STATUS = {
-  421614:   { status: 'deployed' as const, date: '2024-12-14', deployer: '0x2c81Af5Ca0663Ef8aa73b498c0E5BeC54EB24C15', verified: true  },
+  421614:   { status: 'deployed' as const, date: '2026-02-23', deployer: '0x2c81Af5Ca0663Ef8aa73b498c0E5BeC54EB24C15', verified: true  },
   80002:    { status: 'pending'  as const, date: null,          deployer: null,                                           verified: false },
   84532:    { status: 'pending'  as const, date: null,          deployer: null,                                           verified: false },
   11155420: { status: 'pending'  as const, date: null,          deployer: null,                                           verified: false },

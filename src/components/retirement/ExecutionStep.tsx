@@ -104,10 +104,7 @@ export function ExecutionStep({
   const [step,         setStep        ] = useState<TransactionStep>('idle');
   const [errorDisplay, setErrorDisplay] = useState<ErrorDisplay | null>(null);
 
-  // Ref para evitar que onSuccess se dispare más de una vez aunque el effect
-  // se re-ejecute (por ejemplo si el padre no memorizó la función).
   const successFiredRef = useRef(false);
-
   const chainId     = chain?.id ?? 421614;
   const addresses   = getContractAddresses(chainId);
   const usdcAddress = addresses?.usdc;
@@ -119,7 +116,6 @@ export function ExecutionStep({
   const monthlyDepositWei = parseUSDC(plan.monthlyDeposit);
   const approvalAmountWei = initialDepositAmount(plan);
 
-  // ─── Approval tx ────────────────────────────────────────────────────────────
   const {
     writeContract: writeApproval,
     data:          approvalHash,
@@ -128,8 +124,6 @@ export function ExecutionStep({
   } = useWriteContract();
 
   const { isSuccess: isApprovalSuccess } = useWaitForTransactionReceipt({ hash: approvalHash });
-
-  // ─── Create fund tx ─────────────────────────────────────────────────────────
   const {
     writeContract: writeCreateFund,
     data:          txHash,
@@ -155,7 +149,6 @@ export function ExecutionStep({
     }
 
     setStep('creating');
-
     if (import.meta.env.DEV) {
       console.log('[ExecutionStep] createPersonalFund params:', {
         principal:            `${plan.principal} USDC → ${principalWei} wei`,
