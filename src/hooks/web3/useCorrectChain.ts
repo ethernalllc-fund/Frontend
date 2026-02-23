@@ -3,19 +3,7 @@ import { DEFAULT_CHAIN } from '@/config/chains';
 import { getContractAddresses } from '@/config/addresses';
 import type { Address } from 'viem';
 
-const ACCESS_CONTROL_ABI = [
-  {
-    name: 'hasRole',
-    type: 'function',
-    stateMutability: 'view',
-    inputs: [
-      { name: 'role', type: 'bytes32' },
-      { name: 'account', type: 'address' },
-    ],
-    outputs: [{ name: '', type: 'bool' }],
-  },
-] as const;
-
+// DEFAULT_ADMIN_ROLE mantenido por compatibilidad con imports existentes
 export const DEFAULT_ADMIN_ROLE =
   '0x0000000000000000000000000000000000000000000000000000000000000000' as const;
 
@@ -37,6 +25,17 @@ export function useCorrectChain() {
   };
 }
 
+// Treasury (Vyper) usa admin simple, no AccessControl con hasRole
+const TREASURY_ADMIN_ABI = [
+  {
+    name:            'admin',
+    type:            'function',
+    stateMutability: 'view',
+    inputs:          [],
+    outputs:         [{ name: '', type: 'address' }],
+  },
+] as const;
+
 export function useOnChainAdminRole(address: Address | undefined) {
   const { chain } = useAccount();
   const chainId = chain?.id ?? DEFAULT_CHAIN.id;
@@ -44,27 +43,29 @@ export function useOnChainAdminRole(address: Address | undefined) {
   const treasuryAddress = addresses?.treasury;
 
   const {
-    data: isAdmin,
+    data: adminAddress,
     isLoading,
     isError,
     refetch,
   } = useReadContract({
-    address: treasuryAddress,
-    abi: ACCESS_CONTROL_ABI,
-    functionName: 'hasRole',
-    args: address && treasuryAddress
-      ? [DEFAULT_ADMIN_ROLE, address]
-      : undefined,
+    address:      treasuryAddress,
+    abi:          TREASURY_ADMIN_ABI,
+    functionName: 'admin',
     query: {
-      enabled: !!address && !!treasuryAddress,
-      staleTime: 10 * 60 * 1000,   // 10 minutos
-      gcTime:    30 * 60 * 1000,   // 30 minutos en cache
+      enabled:   !!treasuryAddress,
+      staleTime: 10 * 60 * 1000,  // 10 minutos
+      gcTime:    30 * 60 * 1000,  // 30 minutos en cache
       retry: 2,
     },
   });
 
+  const isAdmin =
+    !!address &&
+    typeof adminAddress === 'string' &&
+    adminAddress.toLowerCase() === address.toLowerCase();
+
   return {
-    isAdmin:   !!isAdmin,
+    isAdmin,
     isLoading,
     isError,
     refetch,

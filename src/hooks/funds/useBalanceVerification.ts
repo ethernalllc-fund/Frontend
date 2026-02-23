@@ -1,8 +1,8 @@
-import { useAccount, useBalance, useReadContract } from 'wagmi';
+import { useAccount, useBalance, useReadContract, useChainId } from 'wagmi';
 import { useState, useEffect } from 'react';
 import { erc20Abi } from 'viem';
 import { useUSDCAddress } from '@/hooks/usdc/usdcUtils';
-import { PERSONAL_FUND_FACTORY_ADDRESS } from '@/contracts/addresses';
+import { getContractAddresses } from '@/config/addresses';
 import type { RetirementPlan } from '@/types/retirement_types';
 import { initialDepositAmount, calcFee } from '@/types/retirement_types';
 
@@ -22,9 +22,12 @@ export interface BalanceVerification {
 
 export function useBalanceVerification(plan: RetirementPlan): BalanceVerification {
   const { address } = useAccount();
+  const chainId     = useChainId();
   const usdcAddress = useUSDCAddress();
-  const depositWei   = initialDepositAmount(plan);   // bigint
-  const feeWei       = calcFee(depositWei);           // bigint
+  const factoryAddress = getContractAddresses(chainId)?.personalFundFactory;
+
+  const depositWei   = initialDepositAmount(plan);
+  const feeWei       = calcFee(depositWei);
   const requiredUSDC = depositWei + feeWei;
   const {
     data:      usdcBalanceRaw,
@@ -48,9 +51,9 @@ export function useBalanceVerification(plan: RetirementPlan): BalanceVerificatio
     address:      usdcAddress,
     abi:          erc20Abi,
     functionName: 'allowance',
-    args:         address ? [address, PERSONAL_FUND_FACTORY_ADDRESS] : undefined,
+    args:         address && factoryAddress ? [address, factoryAddress] : undefined,
     query: {
-      enabled:         Boolean(address && usdcAddress),
+      enabled:         Boolean(address && usdcAddress && factoryAddress),
       refetchInterval: 15_000,
       staleTime:       10_000,
     },
