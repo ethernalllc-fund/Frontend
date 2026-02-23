@@ -1,9 +1,9 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useWriteContract, useWaitForTransactionReceipt, usePublicClient, useAccount } from 'wagmi';
+import { useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagmi';
 import { type Address, parseAbi } from 'viem';
 
 const factoryABI = parseAbi([
-  'function createRetirementContract(uint256 monthlyAmount, uint256 retirementAge) returns (address)'
+  'function createPersonalFund(uint256 _principal, uint256 _monthlyDeposit, uint256 _currentAge, uint256 _retirementAge, uint256 _desiredMonthlyIncome, uint256 _yearsPayments, uint256 _interestRate, uint256 _timelockYears, address _protocol) returns (address)'
 ]);
 const MIN_RETIREMENT_AGE = 18;
 const MAX_RETIREMENT_AGE = 120;
@@ -92,7 +92,6 @@ export function useCreateContract({
   enabled = true,
 }: UseCreateContractProps = {}): UseCreateContractReturn {
   const { address: userAddress } = useAccount();
-  const publicClient = usePublicClient();
   const [error, setError] = useState<Error | null>(null);
   const {
     writeContract,
@@ -126,7 +125,7 @@ export function useCreateContract({
         throw err;
       }
 
-      console.log('🏗️ Creating retirement contract...', {
+      console.log('🏗️ Creating personal fund...', {
         factory: `${factoryAddress.slice(0, 6)}...${factoryAddress.slice(-4)}`,
         monthlyAmount: monthlyAmount.toString(),
         retirementAge,
@@ -138,59 +137,36 @@ export function useCreateContract({
         console.log('📋 Validating inputs...');
         validateInputs(factoryAddress, monthlyAmount, retirementAge);
         console.log('✅ Inputs validated');
-        if (publicClient) {
-          try {
-            console.log('🧪 Simulating transaction...');
-            
-            const { result } = await publicClient.simulateContract({
-              address: factoryAddress,
-              abi: factoryABI,
-              functionName: 'createRetirementContract',
-              args: [monthlyAmount, BigInt(retirementAge)],
-              account: userAddress,
-            });
-
-            console.log('✅ Simulation successful');
-            console.log('📄 Expected contract address:', result);
-
-          } catch (simulationError: any) {
-            console.error('❌ Simulation failed:', simulationError);
-            const userMessage = parseContractError(simulationError);
-            const err = new Error(userMessage);
-            
-            setError(err);
-            onError?.(err);
-            throw err;
-          }
-        } else {
-          console.warn('⚠️ Public client not available, skipping simulation');
-        }
-
         console.log('🚀 Executing transaction...');
-        
         writeContract({
-          address: factoryAddress,
-          abi: factoryABI,
-          functionName: 'createRetirementContract',
-          args: [monthlyAmount, BigInt(retirementAge)],
+          address:      factoryAddress,
+          abi:          factoryABI,
+          functionName: 'createPersonalFund',
+          args: [
+            0n,                                                                        // _principal
+            monthlyAmount,                                                             // _monthlyDeposit
+            18n,                                                                       // _currentAge (placeholder)
+            BigInt(retirementAge),                                                     // _retirementAge
+            0n,                                                                        // _desiredMonthlyIncome
+            20n,                                                                       // _yearsPayments
+            700n,                                                                      // _interestRate (7%)
+            15n,                                                                       // _timelockYears
+            '0x0000000000000000000000000000000000000000',                              // _protocol
+          ],
           gas: GAS_LIMIT,
         });
 
       } catch (err) {
         console.error('❌ Contract creation failed:', err);
-        if (!(err instanceof Error && err.message.includes('simulation'))) {
-          const error = err as Error;
-          const userMessage = parseContractError(error);
-          const enhancedError = new Error(userMessage);
-          
-          setError(enhancedError);
-          onError?.(enhancedError);
-        }
-
+        const error = err as Error;
+        const userMessage = parseContractError(error);
+        const enhancedError = new Error(userMessage);
+        setError(enhancedError);
+        onError?.(enhancedError);
         throw err;
       }
     },
-    [userAddress, publicClient, writeContract, enabled, onError]
+    [userAddress, writeContract, enabled, onError]
   );
 
   const reset = useCallback(() => {

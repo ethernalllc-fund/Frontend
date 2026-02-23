@@ -12,7 +12,6 @@ import { useUSDC }                from './usdc/useUSDC';
 export function useEthernal() {
   const chainId   = useChainId();
   const addresses = getContractAddresses(chainId);
-
   const isConfigured = useMemo(() => {
     if (!addresses) return false;
     return [
@@ -22,9 +21,6 @@ export function useEthernal() {
     ].every(addr => isValidAddress(addr));
   }, [addresses]);
 
-  // Each hook receives the chain-specific address.
-  // Falls back to the hardcoded Arbitrum Sepolia constant when undefined,
-  // so components that call these hooks directly (without useEthernal) still work.
   const token            = useToken(addresses?.token);
   const treasury         = useTreasury(addresses?.treasury);
   const factory          = usePersonalFundFactory(addresses?.personalFundFactory);
@@ -63,7 +59,7 @@ export function useEthernal() {
 
     if (import.meta.env.DEV) {
       const contractNames = [
-        'token', 'treasury', 'governance', 'factory',
+        'token', 'treasury', 'factory',
         'personalFund', 'protocolRegistry', 'userPreferences',
       ];
       results.forEach((result, i) => {

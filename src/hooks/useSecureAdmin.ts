@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAccount, useSignMessage, usePublicClient } from 'wagmi';
 import { z } from 'zod';
-import { useOnChainAdminRole, DEFAULT_ADMIN_ROLE } from './web3/useCorrectChain';
+import { useOnChainAdminRole } from './web3/useCorrectChain';
 import { getContractAddresses } from './../config/addresses';
 
 const AdminSessionSchema = z.object({
@@ -142,25 +142,25 @@ export const useSecureAdmin = (): UseSecureAdminResult => {
         throw new Error('Treasury contract not configured for this network');
       }
 
-      const hasRole = await publicClient?.readContract({
+      // Treasury (Vyper) usa admin simple, no AccessControl con hasRole
+      const adminAddress = await publicClient?.readContract({
         address: addresses.treasury,
         abi: [
           {
-            name: 'hasRole',
-            type: 'function',
+            name:            'admin',
+            type:            'function',
             stateMutability: 'view',
-            inputs: [
-              { name: 'role',    type: 'bytes32' },
-              { name: 'account', type: 'address' },
-            ],
-            outputs: [{ name: '', type: 'bool' }],
+            inputs:          [],
+            outputs:         [{ name: '', type: 'address' }],
           },
         ] as const,
-        functionName: 'hasRole',
-        args: [DEFAULT_ADMIN_ROLE, address],
+        functionName: 'admin',
       });
 
-      if (!hasRole) {
+      const isAdmin = typeof adminAddress === 'string' &&
+        adminAddress.toLowerCase() === address.toLowerCase();
+
+      if (!isAdmin) {
         throw new Error('Address is not authorized as admin');
       }
 

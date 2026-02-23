@@ -50,14 +50,7 @@ export interface ContactStats {
   read_percentage: number;
 }
 
-/**
- * Contact Service
- * Maneja todos los endpoints relacionados con mensajes de contacto
- */
 export const contactService = {
-  /**
-   * Enviar mensaje de contacto (público)
-   */
   async submitContact(data: ContactCreate): Promise<ContactResponse> {
     return apiClient.post<ContactResponse>(
       API_ENDPOINTS.CONTACT.BASE,
@@ -65,10 +58,6 @@ export const contactService = {
     );
   },
 
-  /**
-   * Obtener todos los mensajes (Admin)
-   * @requires Authentication
-   */
   async getAllMessages(
     skip: number = 0,
     limit: number = 100,
@@ -80,20 +69,12 @@ export const contactService = {
     );
   },
 
-  /**
-   * Obtener mensaje específico (Admin)
-   * @requires Authentication
-   */
   async getMessage(contactId: number): Promise<ContactAdmin> {
     return apiClient.get<ContactAdmin>(
       API_ENDPOINTS.CONTACT.MESSAGE(contactId)
     );
   },
 
-  /**
-   * Marcar mensaje como leído/no leído (Admin)
-   * @requires Authentication
-   */
   async markAsRead(
     contactId: number,
     isRead: boolean
@@ -104,20 +85,12 @@ export const contactService = {
     );
   },
 
-  /**
-   * Eliminar mensaje (Admin)
-   * @requires Authentication
-   */
   async deleteMessage(contactId: number): Promise<void> {
     return apiClient.delete<void>(
       API_ENDPOINTS.CONTACT.MESSAGE(contactId)
     );
   },
 
-  /**
-   * Responder a un mensaje (Admin)
-   * @requires Authentication
-   */
   async replyToContact(
     contactId: number,
     replyContent: string,
@@ -129,10 +102,6 @@ export const contactService = {
     );
   },
 
-  /**
-   * Obtener estadísticas de contacto (Admin)
-   * @requires Authentication
-   */
   async getStats(): Promise<ContactStats> {
     return apiClient.get<ContactStats>(
       API_ENDPOINTS.CONTACT.STATS
