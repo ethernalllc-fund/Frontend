@@ -3,7 +3,6 @@ import { useChainId } from 'wagmi';
 import { getContractAddresses, isValidAddress } from './../config/addresses';
 import { useToken }               from './core/useToken';
 import { useTreasury }            from './core/useTreasury';
-import { useGovernance }          from './core/useGovernance';
 import { usePersonalFundFactory } from './funds/usePersonalFundFactory';
 import { usePersonalFund }        from './funds/usePersonalFund';
 import { useProtocolRegistry }    from './defi/useProtocolRegistry';
@@ -28,7 +27,6 @@ export function useEthernal() {
   // so components that call these hooks directly (without useEthernal) still work.
   const token            = useToken(addresses?.token);
   const treasury         = useTreasury(addresses?.treasury);
-  const governance       = useGovernance(addresses?.governance);
   const factory          = usePersonalFundFactory(addresses?.personalFundFactory);
   const personalFund     = usePersonalFund(factory.userFund);
   const protocolRegistry = useProtocolRegistry(addresses?.protocolRegistry);
@@ -38,7 +36,6 @@ export function useEthernal() {
   const isLoading = useMemo(() => (
     token.isLoading            ||
     treasury.isLoading         ||
-    governance.isLoading       ||
     factory.isLoading          ||
     personalFund.isLoading     ||
     protocolRegistry.isLoading ||
@@ -47,7 +44,6 @@ export function useEthernal() {
   ), [
     token.isLoading,
     treasury.isLoading,
-    governance.isLoading,
     factory.isLoading,
     personalFund.isLoading,
     protocolRegistry.isLoading,
@@ -59,7 +55,6 @@ export function useEthernal() {
     const results = await Promise.allSettled([
       token.refetch?.(),
       treasury.refetch?.(),
-      governance.refetch?.(),
       factory.refetch?.(),
       personalFund.refetch?.(),
       protocolRegistry.refetch?.(),
@@ -92,7 +87,6 @@ export function useEthernal() {
   return {
     token,
     treasury,
-    governance,
     factory,
     personalFund,
     protocolRegistry,
