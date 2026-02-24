@@ -37,6 +37,12 @@ const CreateContractPage = () => {
   const [isEditing,           setIsEditing]           = useState(false);
   const [verificationPassed,  setVerificationPassed]  = useState(false);
   const [needsApproval,       setNeedsApproval]       = useState(true);
+
+  // Resetear verificación cuando cambia el plan para no arrastrar estado viejo
+  useEffect(() => {
+    setVerificationPassed(false);
+    setNeedsApproval(true);
+  }, [planData]);
   // FIX: usamos el tipo completo de InvestmentSelector que incluye protocolAddress
   const [investmentSelection, setInvestmentSelection] = useState<InvestmentSelection | null>(null);
   const [validationError,     setValidationError]     = useState<string | null>(null);
@@ -274,7 +280,7 @@ const CreateContractPage = () => {
                       </div>
                     </div>
                   </div>
-                )}l-to-br 
+                )}
               </div>
 
               {/* Columna derecha — verificación e inversión */}

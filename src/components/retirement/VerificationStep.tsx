@@ -53,7 +53,6 @@ export function VerificationStep({ plan, onVerificationComplete }: VerificationS
 
   const allChecksPass = hasEnoughUSDC && hasEnoughGas;
   const gasToken      = chainId === 421614 ? 'ETH' : 'POL';
-
   const depositAmountWei = initialDepositAmount(plan);
   const feeAmountWei     = calcFee(depositAmountWei);
 
@@ -111,7 +110,6 @@ export function VerificationStep({ plan, onVerificationComplete }: VerificationS
                 <div className="mt-3 bg-red-100 rounded-lg p-3">
                   <p className="text-red-800 font-semibold text-xs mb-2">⚠ Balance insuficiente</p>
                   <p className="text-red-700 text-xs mb-3">
-                    {/* Fix TS2345: both operands are bigint from the hook */}
                     Te faltan {formatUnits(requiredUSDC - usdcBalance, 6)} USDC
                   </p>
                   <a
@@ -128,7 +126,6 @@ export function VerificationStep({ plan, onVerificationComplete }: VerificationS
             </div>
           </CheckItem>
 
-          {/* Check 2: Balance Gas */}
           <CheckItem passed={hasEnoughGas} title={`Balance de Gas (${gasToken})`}>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between items-center">
@@ -166,7 +163,6 @@ export function VerificationStep({ plan, onVerificationComplete }: VerificationS
             </div>
           </CheckItem>
 
-          {/* Check 3: Allowance */}
           <CheckItem passed={hasEnoughAllowance} title="Aprobación USDC">
             <div className="space-y-2 text-sm">
               {hasEnoughAllowance ? (

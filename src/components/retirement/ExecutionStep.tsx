@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagmi';
+import { useWriteContract, useWaitForTransactionReceipt, useAccount, usePublicClient } from 'wagmi';
 import { Loader2, CheckCircle, AlertCircle, ExternalLink } from 'lucide-react';
-import { parseUnits } from 'viem';
+import { parseUnits, erc20Abi } from 'viem';
 import type { Abi } from 'viem';
 import type { RetirementPlan } from '@/types/retirement_types';
 import { initialDepositAmount, calcFee, buildCreateFundArgs } from '@/types/retirement_types';
@@ -148,8 +148,10 @@ export function ExecutionStep({
   onSuccess,
 }: ExecutionStepProps) {
   const { address: account, chain } = useAccount();
-  const [step,         setStep        ] = useState<TransactionStep>('idle');
-  const [errorDisplay, setErrorDisplay] = useState<ErrorDisplay | null>(null);
+  const publicClient = usePublicClient();
+  const [step,              setStep             ] = useState<TransactionStep>('idle');
+  const [errorDisplay,      setErrorDisplay      ] = useState<ErrorDisplay | null>(null);
+  const [allowanceConfirmed, setAllowanceConfirmed] = useState(false);
 
   const successFiredRef = useRef(false);
   const chainId     = chain?.id ?? 421614;
@@ -232,16 +234,58 @@ export function ExecutionStep({
   useEffect(() => {
     if (isApprovalSuccess && approvalHash && step === 'approving') {
       setStep('approved');
+      setAllowanceConfirmed(false);
+
+      // Polling: esperar hasta confirmar allowance on-chain antes de ejecutar
+      if (!publicClient || !account || !usdcAddress) {
+        setAllowanceConfirmed(true); // sin cliente, intentar igual
+        return;
+      }
+
+      let attempts = 0;
+      const MAX_ATTEMPTS = 6;
+      const INTERVAL_MS  = 2_000;
+
+      const poll = async () => {
+        attempts++;
+        try {
+          const allowance = await publicClient.readContract({
+            address:      usdcAddress,
+            abi:          erc20Abi,
+            functionName: 'allowance',
+            args:         [account, factoryAddress],
+          }) as bigint;
+
+          if (import.meta.env.DEV) {
+            console.log(`[ExecutionStep] Allowance poll #${attempts}:`, allowance.toString());
+          }
+
+          // MAX_UINT256 approve — cualquier valor > 0 es suficiente
+          if (allowance > 0n) {
+            setAllowanceConfirmed(true);
+            return;
+          }
+        } catch (e) {
+          console.warn('[ExecutionStep] Allowance poll error:', e);
+        }
+
+        if (attempts < MAX_ATTEMPTS) {
+          setTimeout(poll, INTERVAL_MS);
+        } else {
+          console.warn('[ExecutionStep] Allowance not confirmed after max attempts — proceeding anyway');
+          setAllowanceConfirmed(true);
+        }
+      };
+
+      setTimeout(poll, 1_000); // primer intento después de 1s
     }
-  }, [isApprovalSuccess, approvalHash, step]);
+  }, [isApprovalSuccess, approvalHash, step, publicClient, account, usdcAddress, factoryAddress]);
 
   useEffect(() => {
     if (step !== 'approved') return;
-    const timer = setTimeout(() => {
-      handleCreateFund();
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, [step, handleCreateFund]);
+    if (!allowanceConfirmed) return; // esperar confirmación on-chain
+    handleCreateFund();
+  }, [step, allowanceConfirmed, handleCreateFund]);
 
   useEffect(() => {
     if (!isTxSuccess || !receipt || step !== 'confirming') return;
@@ -350,6 +394,7 @@ export function ExecutionStep({
   const reset = () => {
     setStep('idle');
     setErrorDisplay(null);
+    setAllowanceConfirmed(false);
     successFiredRef.current = false;
   };
 
@@ -368,23 +413,17 @@ export function ExecutionStep({
               <h3 className="text-lg font-bold text-amber-800 mb-2">
                 Aprobación Completada ✅
               </h3>
-              <p className="text-amber-700 mb-4">
-                Ahora procederemos a crear tu contrato de retiro.
-              </p>
-              <button
-                onClick={handleCreateFund}
-                disabled={isCreatePending}
-                className="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-6 rounded-lg transition disabled:opacity-50"
-              >
-                {isCreatePending ? (
-                  <span className="flex items-center gap-2">
-                    <Loader2 className="animate-spin" size={16} />
-                    Procesando...
-                  </span>
-                ) : (
-                  'Crear Contrato Ahora'
-                )}
-              </button>
+              {allowanceConfirmed ? (
+                <p className="text-amber-700 flex items-center gap-2">
+                  <Loader2 className="animate-spin" size={16} />
+                  Creando tu contrato...
+                </p>
+              ) : (
+                <p className="text-amber-700 flex items-center gap-2">
+                  <Loader2 className="animate-spin" size={16} />
+                  Verificando allowance on-chain...
+                </p>
+              )}
             </div>
           </div>
         </div>

@@ -110,7 +110,6 @@ const CalculatorPage: React.FC = () => {
   const chainId = useChainId();
   const { setPlanData } = useRetirementPlan();
   const { isConnected, openModal } = useWallet();
-
   const factoryAddress = CONTRACT_ADDRESSES[chainId]?.personalFundFactory;
 
   const [isConnecting, setIsConnecting] = useState(false);
@@ -164,9 +163,6 @@ const CalculatorPage: React.FC = () => {
         ? (totalNeeded - fvInitial) * (r / (Math.pow(1 + r, n) - 1))
         : (totalNeeded - fvInitial) / n;
 
-    // Calculamos el depósito bruto (lo que sale de la wallet) de forma que
-    // después de descontar el fee del 5%, el fondo reciba exactamente requiredPMT
-    // grossPMT / (1 - 0.05) = neto correcto para alcanzar el objetivo
     const grossPMT         = r > 0 || n > 0 ? requiredPMT / (1 - FEE_PERCENTAGE) : 0;
     const monthlyDeposit   =
       s.contributionFrequency === 'monthly'
@@ -242,7 +238,7 @@ const CalculatorPage: React.FC = () => {
       15,
       Math.floor((inputs.retirementAge - inputs.currentAge) * 0.3)
     );
-    // monthlyDeposit es el monto bruto (incluye fee) — el Factory descuenta el 5% internamente
+
     setPlanData({
       principal:            result.principal,
       monthlyDeposit:       result.monthlyDeposit,
@@ -525,21 +521,21 @@ const CalculatorPage: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                   <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg text-center">
                     <p className="text-gray-600 text-xs sm:text-sm">{t('calculator.totalDeposit')}</p>
-                    <p className="text-2xl sm:text-3xl font-black text-gray-800 break-words">
+                    <p className="text-2xl sm:text-3xl font-black text-gray-800 break-word">
                       {formatCurrency(result.initialDeposit)}
                     </p>
                     <p className="text-xs text-gray-500 mt-1">Sale de tu wallet</p>
                   </div>
                   <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg text-center">
                     <p className="text-gray-600 text-xs sm:text-sm">{t('calculator.daoFee')}</p>
-                    <p className="text-2xl sm:text-3xl font-black text-orange-600 break-words">
-                      -{formatCurrency(result.feeAmount)}
+                    <p className="text-2xl sm:text-3xl font-black text-orange-600 break-word">
+                      {formatCurrency(result.feeAmount)}
                     </p>
                     <p className="text-xs text-gray-500 mt-1">{t('calculator.goesToTreasury')}</p>
                   </div>
                   <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg text-center">
                     <p className="text-gray-600 text-xs sm:text-sm">{t('calculator.netToFund')}</p>
-                    <p className="text-2xl sm:text-3xl font-black text-green-600 break-words">
+                    <p className="text-2xl sm:text-3xl font-black text-green-600 break-word">
                       {formatCurrency(result.netToOwner)}
                     </p>
                     <p className="text-xs text-gray-500 mt-1">{t('calculator.forDefi')}</p>

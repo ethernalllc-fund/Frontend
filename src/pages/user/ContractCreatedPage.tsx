@@ -307,7 +307,7 @@ const ContractCreatedPage = () => {
                       : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                   }`}
                 >
-                  {confirmed ? 'Proceder a Crear Contrato' : 'Confirma para Continuar'}
+                  Proceder a Crear Contrato
                 </button>
 
                 <button

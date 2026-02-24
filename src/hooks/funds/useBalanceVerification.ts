@@ -4,7 +4,7 @@ import { erc20Abi } from 'viem';
 import { useUSDCAddress } from '@/hooks/usdc/usdcUtils';
 import { getContractAddresses } from '@/config/addresses';
 import type { RetirementPlan } from '@/types/retirement_types';
-import { initialDepositAmount, calcFee } from '@/types/retirement_types';
+import { requiredApprovalAmount } from '@/types/retirement_types';
 
 const REQUIRED_GAS = 5_000_000_000_000_000n; // 0.005 ether in wei
 
@@ -26,9 +26,9 @@ export function useBalanceVerification(plan: RetirementPlan): BalanceVerificatio
   const usdcAddress = useUSDCAddress();
   const factoryAddress = getContractAddresses(chainId)?.personalFundFactory;
 
-  const depositWei   = initialDepositAmount(plan);
-  const feeWei       = calcFee(depositWei);
-  const requiredUSDC = depositWei + feeWei;
+  // Total que debe salir de la wallet: depósito + fee — fuente única de verdad
+  const requiredUSDC = requiredApprovalAmount(plan);
+
   const {
     data:      usdcBalanceRaw,
     isLoading: loadingUSDC,
@@ -54,8 +54,8 @@ export function useBalanceVerification(plan: RetirementPlan): BalanceVerificatio
     args:         address && factoryAddress ? [address, factoryAddress] : undefined,
     query: {
       enabled:         Boolean(address && usdcAddress && factoryAddress),
-      refetchInterval: 15_000,
-      staleTime:       10_000,
+      refetchInterval: 5_000,   // refetch más frecuente para el allowance
+      staleTime:       0,       // nunca usar cache — siempre leer on-chain
     },
   });
 
@@ -89,9 +89,9 @@ export function useBalanceVerification(plan: RetirementPlan): BalanceVerificatio
     allowance,
     requiredUSDC,
     requiredGas:        REQUIRED_GAS,
-    hasEnoughUSDC:      usdcBalance  >= requiredUSDC,
-    hasEnoughGas:       gasBalance   >= REQUIRED_GAS,
-    hasEnoughAllowance: allowance    >= requiredUSDC,
+    hasEnoughUSDC:      usdcBalance >= requiredUSDC,
+    hasEnoughGas:       gasBalance  >= REQUIRED_GAS,
+    hasEnoughAllowance: allowance   >= requiredUSDC,
     isLoading,
   };
 }

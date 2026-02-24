@@ -68,7 +68,7 @@ export function FaucetButton({ className = '' }: FaucetButtonProps) {
         <div className="flex items-center gap-3">
           <AlertCircle className="text-amber-500 shrink-0" size={20} />
           <p className="text-amber-800 text-sm font-medium">
-            Conectá tu wallet para recibir MockUSDC de prueba.
+            Conectá tu wallet para recibir USDC de prueba.
           </p>
         </div>
       </div>
@@ -88,7 +88,7 @@ export function FaucetButton({ className = '' }: FaucetButtonProps) {
             <p className="font-bold text-emerald-800 text-base">{result.message}</p>
             {result.amount && (
               <p className="text-emerald-700 text-sm mt-1">
-                MockUSDC recibido: <strong>{result.amount.toLocaleString()} USDC</strong>
+                USDC recibido: <strong>{result.amount.toLocaleString()} USDC</strong>
               </p>
             )}
             {result.balance !== null && result.balance !== undefined && (
@@ -172,7 +172,7 @@ export function FaucetButton({ className = '' }: FaucetButtonProps) {
       <div className="grid grid-cols-2 gap-2">
         <div className="bg-white/70 rounded-xl p-3 border border-blue-100 text-center">
           <p className="text-xs text-gray-500 mb-0.5">MockUSDC</p>
-          <p className="font-black text-emerald-700 text-lg">~5,000</p>
+          <p className="font-black text-emerald-700 text-lg">~10,000</p>
           <p className="text-xs text-gray-400">para tu fondo</p>
         </div>
         <div className="bg-white/70 rounded-xl p-3 border border-blue-100 text-center">
