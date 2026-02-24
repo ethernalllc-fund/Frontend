@@ -164,10 +164,14 @@ const CalculatorPage: React.FC = () => {
         ? (totalNeeded - fvInitial) * (r / (Math.pow(1 + r, n) - 1))
         : (totalNeeded - fvInitial) / n;
 
-    const monthlyDeposit =
+    // Calculamos el depósito bruto (lo que sale de la wallet) de forma que
+    // después de descontar el fee del 5%, el fondo reciba exactamente requiredPMT
+    // grossPMT / (1 - 0.05) = neto correcto para alcanzar el objetivo
+    const grossPMT         = r > 0 || n > 0 ? requiredPMT / (1 - FEE_PERCENTAGE) : 0;
+    const monthlyDeposit   =
       s.contributionFrequency === 'monthly'
-        ? requiredPMT
-        : requiredPMT / (periodsPerYear / 12);
+        ? grossPMT
+        : grossPMT / (periodsPerYear / 12);
 
     let balance = s.initialCapital;
     const data: ChartPoint[] = [];
@@ -183,21 +187,22 @@ const CalculatorPage: React.FC = () => {
 
     const totalContributed  = s.initialCapital + contributions.reduce((a, b) => a + b, 0);
     const totalInterest     = balance - totalContributed;
-    const firstMonthly      = Math.max(0, monthlyDeposit);
-    const initialDeposit    = s.initialCapital + firstMonthly;
-    const feeAmount         = initialDeposit * FEE_PERCENTAGE;
+    const firstMonthly    = Math.max(0, monthlyDeposit);           // bruto: sale de la wallet
+    const initialDeposit  = s.initialCapital + firstMonthly;       // total bruto del primer depósito
+    const feeAmount       = initialDeposit * FEE_PERCENTAGE;       // 5% que va al Treasury
+    const netToFund       = initialDeposit - feeAmount;            // neto que entra al fondo DeFi
 
     setResult({
-      monthlyDeposit:     firstMonthly,
+      monthlyDeposit:      firstMonthly,   // bruto — lo que el usuario siempre ve
       totalContributed,
       totalInterest,
-      futureValue:        balance,
+      futureValue:         balance,
       yearsToRetirement,
-      principal:          s.initialCapital,
+      principal:           s.initialCapital,
       firstMonthlyDeposit: firstMonthly,
-      initialDeposit,
+      initialDeposit,                      // bruto del primer depósito (para el approve)
       feeAmount,
-      netToOwner:         initialDeposit - feeAmount,
+      netToOwner:          netToFund,      // neto al fondo
     });
     setChartData(data);
   };
@@ -237,6 +242,7 @@ const CalculatorPage: React.FC = () => {
       15,
       Math.floor((inputs.retirementAge - inputs.currentAge) * 0.3)
     );
+    // monthlyDeposit es el monto bruto (incluye fee) — el Factory descuenta el 5% internamente
     setPlanData({
       principal:            result.principal,
       monthlyDeposit:       result.monthlyDeposit,
@@ -516,17 +522,18 @@ const CalculatorPage: React.FC = () => {
                   <Info className="w-6 h-6 sm:w-8 sm:h-8" />
                   {t('calculator.depositSummary')}
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                   <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg text-center">
                     <p className="text-gray-600 text-xs sm:text-sm">{t('calculator.totalDeposit')}</p>
                     <p className="text-2xl sm:text-3xl font-black text-gray-800 break-words">
                       {formatCurrency(result.initialDeposit)}
                     </p>
+                    <p className="text-xs text-gray-500 mt-1">Sale de tu wallet</p>
                   </div>
                   <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg text-center">
                     <p className="text-gray-600 text-xs sm:text-sm">{t('calculator.daoFee')}</p>
                     <p className="text-2xl sm:text-3xl font-black text-orange-600 break-words">
-                      {formatCurrency(result.feeAmount)}
+                      -{formatCurrency(result.feeAmount)}
                     </p>
                     <p className="text-xs text-gray-500 mt-1">{t('calculator.goesToTreasury')}</p>
                   </div>

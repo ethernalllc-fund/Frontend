@@ -4,7 +4,7 @@ import { Loader2, CheckCircle, AlertCircle, ExternalLink } from 'lucide-react';
 import { parseUnits } from 'viem';
 import type { Abi } from 'viem';
 import type { RetirementPlan } from '@/types/retirement_types';
-import { initialDepositAmount } from '@/types/retirement_types';
+import { initialDepositAmount, calcFee, buildCreateFundArgs } from '@/types/retirement_types';
 import { getContractAddresses } from '@/config';
 import { PERSONAL_FUND_FACTORY_ABI } from '@/contracts/abis';
 
@@ -51,8 +51,20 @@ const parseUSDC = (value: string | number): bigint =>
     6,
   );
 
+function extractRevertReason(error: unknown): string | null {
+  const msg = String(error);
+  const match = msg.match(/reverted with reason:\s*(.+?)(?:\.|Raw Call|$)/i);
+  if (match?.[1]) return match[1].trim();
+  const match2 = msg.match(/execution reverted:\s*(.+?)(?:\.|$)/i);
+  if (match2?.[1]) return match2[1].trim();
+  return null;
+}
+
 function enrichGasError(display: ErrorDisplay, rawError: unknown): ErrorDisplay {
   const msg = String(rawError);
+  const revertReason = extractRevertReason(rawError);
+  if (revertReason) return display;
+
   if (
     msg.includes('max fee per gas less than block base fee') ||
     msg.includes('maxFeePerGas') ||
@@ -74,6 +86,41 @@ function enrichGasError(display: ErrorDisplay, rawError: unknown): ErrorDisplay 
 
 function formatErrorForUI(error: unknown): ErrorDisplay {
   const msg = String(error);
+  const revertReason = extractRevertReason(error);
+  if (revertReason) {
+    if (revertReason.toLowerCase().includes('allowance')) {
+      return {
+        title:   'USDC no Aprobado',
+        message: `El contrato no tiene suficiente allowance de USDC.`,
+        details: revertReason,
+        suggestions: [
+          'Volvé al paso anterior y aprobá el USDC primero',
+          'Asegurate de que el approve se confirmó on-chain antes de crear el contrato',
+          'Si ya aprobaste, esperá 15-30 segundos y reintentá',
+        ],
+      };
+    }
+    if (revertReason.toLowerCase().includes('insufficient usdc')) {
+      return {
+        title:   'USDC Insuficiente',
+        message: revertReason,
+        suggestions: ['Verificá tu balance de USDC en el paso de verificación'],
+      };
+    }
+    if (revertReason.toLowerCase().includes('mismatch') || revertReason.toLowerCase().includes('address')) {
+      return {
+        title:   'Error de Dirección',
+        message: revertReason,
+        suggestions: ['Recargá la página e intentá nuevamente'],
+      };
+    }
+    // Revert reason genérico
+    return {
+      title:   'Transacción Rechazada por el Contrato',
+      message: revertReason,
+      suggestions: ['Revisá los parámetros e intentá nuevamente'],
+    };
+  }
 
   if (msg.includes('User rejected') || msg.includes('user rejected'))
     return { title: 'Transacción Rechazada', message: 'Rechazaste la transacción en tu wallet.' };
@@ -114,7 +161,8 @@ export function ExecutionStep({
 
   const principalWei      = parseUSDC(plan.principal);
   const monthlyDepositWei = parseUSDC(plan.monthlyDeposit);
-  const approvalAmountWei = initialDepositAmount(plan);
+  const depositAmountWei  = initialDepositAmount(plan);
+  const approvalAmountWei = depositAmountWei + calcFee(depositAmountWei);
 
   const {
     writeContract: writeApproval,
@@ -162,21 +210,16 @@ export function ExecutionStep({
       });
     }
 
+    const createArgs = buildCreateFundArgs({
+      ...plan,
+      selectedProtocol: selectedProtocol,
+    });
+
     writeCreateFund({
       address:      factoryAddress,
       abi:          PERSONAL_FUND_FACTORY_ABI as Abi,
       functionName: 'createPersonalFund',
-      args: [
-        principalWei,
-        monthlyDepositWei,
-        BigInt(plan.currentAge),
-        BigInt(plan.retirementAge),
-        BigInt(Math.round(plan.desiredMonthlyIncome)),
-        BigInt(plan.yearsPayments),
-        BigInt(Math.round(plan.interestRate * 100)),
-        BigInt(plan.timelockYears === 0 ? 15 : plan.timelockYears),
-        selectedProtocol,
-      ],
+      args:         createArgs,
       account,
       chain,
       gas: 500_000n,
@@ -191,6 +234,14 @@ export function ExecutionStep({
       setStep('approved');
     }
   }, [isApprovalSuccess, approvalHash, step]);
+
+  useEffect(() => {
+    if (step !== 'approved') return;
+    const timer = setTimeout(() => {
+      handleCreateFund();
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [step, handleCreateFund]);
 
   useEffect(() => {
     if (!isTxSuccess || !receipt || step !== 'confirming') return;
@@ -280,14 +331,16 @@ export function ExecutionStep({
 
     if (needsApproval) {
       setStep('approving');
+
+      const MAX_UINT256 = BigInt("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
       writeApproval({
         address:      usdcAddress,
         abi:          ERC20_APPROVE_ABI,
         functionName: 'approve',
-        args:         [factoryAddress, approvalAmountWei],
+        args:         [factoryAddress, MAX_UINT256],
         account,
         chain,
-        gas:          300_000n,
+        gas:          500_000n,
       });
     } else {
       handleCreateFund();
