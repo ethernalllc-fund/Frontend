@@ -85,9 +85,9 @@ export function useUSDCApproval({
   onSuccess,
   onError,
 }: UseUSDCApprovalProps): UseUSDCApprovalReturn {
-  const { address }    = useAccount();
-  const usdcAddress    = useUSDCAddress();
-  const publicClient   = usePublicClient();
+  const { address }  = useAccount();
+  const usdcAddress  = useUSDCAddress();
+  const publicClient = usePublicClient();
   const [localError, setLocalError] = useState<Error | null>(null);
 
   const {
@@ -104,13 +104,15 @@ export function useUSDCApproval({
     error:     txError,
   } = useWaitForTransactionReceipt({ hash });
 
-  function validateCommon(): Error | null {
+  // ─── FIX: validateCommon memoizado para que _doApprove capture siempre
+  // los valores actuales de address/usdcAddress/spender desde su closure ───────
+  const validateCommon = useCallback((): Error | null => {
     if (!address)     return new Error('Wallet not connected.');
     if (!usdcAddress) return new Error('USDC contract not found for this network.');
     if (!spender || spender === ZERO_ADDRESS)
                       return new Error('Invalid spender address.');
     return null;
-  }
+  }, [address, usdcAddress, spender]);
 
   const _doApprove = useCallback(
     async (amountWei: bigint): Promise<void> => {
@@ -152,7 +154,7 @@ export function useUSDCApproval({
         args:         [spender, amountWei],
       });
     },
-    [address, usdcAddress, spender, publicClient, writeContract, onError],
+    [validateCommon, address, usdcAddress, spender, publicClient, writeContract, onError],
   );
 
   const approve = useCallback(async (): Promise<void> => {

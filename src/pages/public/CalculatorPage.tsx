@@ -155,19 +155,28 @@ const CalculatorPage: React.FC = () => {
 
     const periodsPerYear = getPeriodsPerYear(s.contributionFrequency);
     const r = s.annualRate / 100 / periodsPerYear;
+    const rMonthly = s.annualRate / 100 / 12;
     const n = yearsToRetirement * periodsPerYear;
     const totalNeeded = s.desiredMonthlyIncome * 12 * s.yearsInRetirement;
     const fvInitial   = s.initialCapital * Math.pow(1 + r, n);
+
+    // requiredPMT: depósito neto por periodo que el usuario envía al fondo
+    // El contrato requiere allowance = principal + monthlyDeposit (el neto)
+    // El fee (5%) lo descuenta el fondo internamente de ese neto
     const requiredPMT =
       r > 0
         ? (totalNeeded - fvInitial) * (r / (Math.pow(1 + r, n) - 1))
         : (totalNeeded - fvInitial) / n;
 
-    const grossPMT         = r > 0 || n > 0 ? requiredPMT / (1 - FEE_PERCENTAGE) : 0;
-    const monthlyDeposit   =
+    // Equivalente mensual usando equivalencia de anualidades (no división simple)
+    // periodic → monthly: PMT_monthly = PMT_period × r_m / [(1 + r_m)^k - 1]
+    const monthsPerPeriod = 12 / periodsPerYear;
+    const monthlyDeposit =
       s.contributionFrequency === 'monthly'
-        ? grossPMT
-        : grossPMT / (periodsPerYear / 12);
+        ? requiredPMT
+        : rMonthly > 0
+          ? requiredPMT * rMonthly / (Math.pow(1 + rMonthly, monthsPerPeriod) - 1)
+          : requiredPMT / monthsPerPeriod;
 
     let balance = s.initialCapital;
     const data: ChartPoint[] = [];
@@ -183,22 +192,27 @@ const CalculatorPage: React.FC = () => {
 
     const totalContributed  = s.initialCapital + contributions.reduce((a, b) => a + b, 0);
     const totalInterest     = balance - totalContributed;
-    const firstMonthly    = Math.max(0, monthlyDeposit);           // bruto: sale de la wallet
-    const initialDeposit  = s.initialCapital + firstMonthly;       // total bruto del primer depósito
-    const feeAmount       = initialDeposit * FEE_PERCENTAGE;       // 5% que va al Treasury
-    const netToFund       = initialDeposit - feeAmount;            // neto que entra al fondo DeFi
+    const firstMonthly   = Math.max(0, monthlyDeposit);
+    const initialDeposit = s.initialCapital + firstMonthly;  // lo que sale de la wallet = lo que aprueba
+
+    // El fee lo descuenta el fondo internamente del depósito recibido
+    // Usuario envía: initialDeposit (el neto)
+    // Fondo recibe:  initialDeposit, descuenta fee = initialDeposit * 5%
+    // Queda en fondo: initialDeposit * 95%
+    const feeAmount = initialDeposit * FEE_PERCENTAGE;
+    const netToFund = initialDeposit - feeAmount;
 
     setResult({
-      monthlyDeposit:      firstMonthly,   // bruto — lo que el usuario siempre ve
+      monthlyDeposit:      firstMonthly,   // neto mensual equivalente — lo que el usuario ve y el contrato recibe
       totalContributed,
       totalInterest,
       futureValue:         balance,
       yearsToRetirement,
       principal:           s.initialCapital,
       firstMonthlyDeposit: firstMonthly,
-      initialDeposit,                      // bruto del primer depósito (para el approve)
-      feeAmount,
-      netToOwner:          netToFund,      // neto al fondo
+      initialDeposit,      // neto del primer depósito = lo que aprueba (allowance = initialDeposit)
+      feeAmount,           // fee interno que descuenta el fondo (informativo para UI)
+      netToOwner:          netToFund,  // lo que efectivamente queda en el fondo tras el fee
     });
     setChartData(data);
   };

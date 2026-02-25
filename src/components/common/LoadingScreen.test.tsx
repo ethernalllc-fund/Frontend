@@ -3,37 +3,32 @@ import { render, screen } from '@testing-library/react';
 import LoadingScreen from './LoadingScreen';
 
 describe('LoadingScreen', () => {
-  it('should render loading spinner', () => {
-    render(<LoadingScreen />);
-    const spinner = screen.getByRole('status');
-    expect(spinner).toBeDefined();
-  });
-
-  it('should display loading text', () => {
-    render(<LoadingScreen />);
-    const loadingText = screen.getByText(/cargando/i);
-    expect(loadingText).toBeDefined();
-    expect(loadingText.textContent).toMatch(/cargando/i);
-  });
-
-  it('should have correct aria-label', () => {
-    render(<LoadingScreen />);
-    const spinner = screen.getByRole('status');
-    expect(spinner.getAttribute('aria-label')).toBe('Cargando');
-  });
-
-  it('should render with animated spinner icon', () => {
+  it('debería renderizar el spinner animado', () => {
     const { container } = render(<LoadingScreen />);
-    expect(container.firstChild).toBeDefined();
     const animatedElement = container.querySelector('.animate-spin');
-    expect(animatedElement).toBeDefined();
+    expect(animatedElement).not.toBeNull();
   });
 
-  it('should have proper CSS classes for centering', () => {
+  it('debería mostrar el título "Loading Ethernal"', () => {
+    render(<LoadingScreen />);
+    expect(screen.getByText('Loading Ethernal')).toBeDefined();
+  });
+
+  it('debería mostrar el subtítulo de conexión', () => {
+    render(<LoadingScreen />);
+    expect(screen.getByText('Connecting to blockchain...')).toBeDefined();
+  });
+
+  it('debería tener las clases CSS de centrado', () => {
     const { container } = render(<LoadingScreen />);
     const mainContainer = container.firstChild as HTMLElement;
     expect(mainContainer.className).toContain('flex');
     expect(mainContainer.className).toContain('justify-center');
     expect(mainContainer.className).toContain('items-center');
+  });
+
+  it('debería renderizar el contenedor raíz', () => {
+    const { container } = render(<LoadingScreen />);
+    expect(container.firstChild).not.toBeNull();
   });
 });
