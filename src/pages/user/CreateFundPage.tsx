@@ -21,7 +21,7 @@
 
 import { useEffect, useMemo, useRef, useState, startTransition } from 'react';
 import { useNavigate }              from 'react-router-dom';
-import { useChainId, useAccount, useWriteContract, useWaitForTransactionReceipt, usePublicClient } from 'wagmi';
+import { useChainId, useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { formatUnits }              from 'viem';
 
 import { useRetirementPlan }        from '@/components/context/RetirementContext';
@@ -30,7 +30,7 @@ import { useHasFund }               from '@/hooks/funds/useHasFund';
 import { useUSDCApproval }          from '@/hooks/usdc/useUSDCApproval';
 import { useUSDCBalance, useUSDCAllowance } from '@/hooks/usdc/useUSDC';
 import { getContractAddress }       from '@/config';
-import { derivePlanValues, requiredApprovalAmount, buildCreateFundArgs } from '@/types/retirement_types';
+import { derivePlanValues, initialDepositAmount, buildCreateFundArgs } from '@/types/retirement_types';
 import type { RetirementPlan }      from '@/types/retirement_types';
 import { InvestmentSelector }       from '@/components/retirement/InvestmentSelector';
 import type { InvestmentSelection } from '@/components/retirement/InvestmentSelector';
@@ -207,7 +207,6 @@ const TxStage: React.FC<TxStageProps> = ({
 const CreateFundPage: React.FC = () => {
   const navigate                      = useNavigate();
   const { address }                   = useAccount();
-  const publicClient                  = usePublicClient();
   const chainId                       = useChainId();
   const { planData }                  = useRetirementPlan();
   const { isConnected }               = useWallet();
@@ -226,6 +225,7 @@ const CreateFundPage: React.FC = () => {
 
   // Step: approve
   const [approveDone,        setApproveDone]        = useState(false);
+  const [approvalConfirmed,  setApprovalConfirmed]  = useState(false); // approve confirmado on-chain
   const [approveHash,        setApproveHash]        = useState<`0x${string}` | undefined>();
   const [approveError,       setApproveError]       = useState<Error | null>(null);
   const [approveWallet,      setApproveWallet]      = useState(false);
@@ -253,10 +253,10 @@ const CreateFundPage: React.FC = () => {
   const derived = useMemo(() => plan ? derivePlanValues(plan) : null, [plan]);
 
   /** Amount en micro-USDC que el usuario necesita aprobar.
-   *  requiredApprovalAmount() = principal + monthlyDeposit + fee 5%, todo en wei (6 decimales).
-   *  plan.principal/monthlyDeposit están en dólares → toUSDCWei los convierte internamente. */
+   *  El contrato verifica allowance >= principal + monthlyDeposit (sin fee).
+   *  El fee lo calcula el contrato internamente después del transferFrom. */
   const requiredUsdc: bigint = useMemo(
-    () => plan ? requiredApprovalAmount(plan) : 0n,
+    () => plan ? initialDepositAmount(plan) : 0n,
     [plan],
   );
 
@@ -296,6 +296,7 @@ const CreateFundPage: React.FC = () => {
       setApproveHash(hash);
       setApproveDone(true);
       setApproveConfirming(false);
+      setApprovalConfirmed(true); // marcar que el allowance ya está on-chain
     },
     onError: (e) => {
       setApproveError(e);
@@ -393,39 +394,29 @@ const CreateFundPage: React.FC = () => {
   };
 
   const handleApproveNext = () => {
-    void refetchAllowance();
+    void refetchAllowance(); // actualizar UI, pero no bloqueamos en ello
     setStep('create');
   };
 
-  const handleCreate = async () => {
+  const handleCreate = () => {
     if (!plan || !investmentSel || !factoryAddress) return;
+
+    // Si el allowance leído es insuficiente pero el approve acababa de confirmar
+    // on-chain, procedemos igual — el contrato lo verifica en cadena, no nosotros.
+    if (needsApproval && !approvalConfirmed) {
+      setCreateError(new Error('Aprobación pendiente. Esperá a que el approve confirme antes de continuar.'));
+      return;
+    }
+
     setCreateError(null);
     setCreateWallet(true);
     try {
-      const createArgs = buildCreateFundArgs({ ...plan, selectedProtocol: investmentSel.protocolAddress });
-
-      // Gas: precio real clampeado al máximo por chain
-      let gasOverrides: { gasPrice: bigint } | undefined;
-      if (publicClient) {
-        try {
-          const chainId = publicClient.chain?.id ?? 421614;
-          const caps: Record<number, bigint> = {
-            421614: 2_000_000_000n, 42161: 10_000_000_000n,
-            137: 500_000_000_000n,  1: 300_000_000_000n,
-          };
-          const cap = caps[chainId] ?? 10_000_000_000n;
-          const gp  = await publicClient.getGasPrice();
-          gasOverrides = { gasPrice: gp > cap ? cap : gp };
-          if (import.meta.env.DEV) console.log('[handleCreate] gasPrice:', gasOverrides.gasPrice.toString());
-        } catch { /* usar defaults de wagmi */ }
-      }
-
       writeCreate({
         address:      factoryAddress,
         abi:          PERSONAL_FUND_FACTORY_ABI,
         functionName: 'createPersonalFund',
-        args:         createArgs,
-        ...gasOverrides,
+        args:         buildCreateFundArgs({ ...plan, selectedProtocol: investmentSel.protocolAddress }),
+        gas:          3_000_000n,
       });
       setCreateConfirming(true);
     } catch (e) {

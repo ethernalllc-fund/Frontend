@@ -1,37 +1,11 @@
-/// <reference types="vite/client" />
 import { useState, useEffect, useCallback, startTransition } from 'react';
 import {
   useWriteContract,
   useWaitForTransactionReceipt,
   useAccount,
-  usePublicClient,
 } from 'wagmi';
-import { erc20Abi, type Address, type PublicClient } from 'viem';
+import { erc20Abi } from 'viem';
 import { parseUSDC, useUSDCAddress } from './usdcUtils';
-
-// ─── Gas ──────────────────────────────────────────────────────────────────────
-// Lee getGasPrice() real de la red y lo clampea a un máximo por chain.
-// Evita los valores absurdos que devuelven algunas RPCs de testnet.
-const GAS_CAP_BY_CHAIN: Record<number, bigint> = {
-  421614: 2_000_000_000n,   // Arbitrum Sepolia: máx 2 gwei
-  42161:  10_000_000_000n,  // Arbitrum One:     máx 10 gwei
-  137:    500_000_000_000n, // Polygon:          máx 500 gwei
-  80002:  500_000_000_000n, // Polygon Amoy:     máx 500 gwei
-  1:      300_000_000_000n, // Ethereum:         máx 300 gwei
-  11155111: 50_000_000_000n,// Sepolia:          máx 50 gwei
-};
-const DEFAULT_GAS_CAP = 10_000_000_000n; // 10 gwei fallback
-
-async function safeGasPrice(publicClient: PublicClient): Promise<bigint> {
-  const chainId = publicClient.chain?.id ?? 421614;
-  const cap = GAS_CAP_BY_CHAIN[chainId] ?? DEFAULT_GAS_CAP;
-  try {
-    const price = await publicClient.getGasPrice();
-    return price > cap ? cap : price;
-  } catch {
-    return cap;
-  }
-}
 
 export interface UseUSDCApprovalProps {
   amount: string;
@@ -84,26 +58,6 @@ function classifyError(raw: unknown): Error {
   return new Error(shortMsg ?? msg);
 }
 
-async function simulateApprove(
-  publicClient: PublicClient,
-  usdcAddress: Address,
-  spender: Address,
-  amount: bigint,
-  account: Address,
-): Promise<void> {
-  try {
-    await publicClient.simulateContract({
-      address:      usdcAddress,
-      abi:          erc20Abi,
-      functionName: 'approve',
-      args:         [spender, amount],
-      account,
-    });
-  } catch (err) {
-    throw classifyError(err);
-  }
-}
-
 export function useUSDCApproval({
   amount,
   spender,
@@ -112,7 +66,6 @@ export function useUSDCApproval({
 }: UseUSDCApprovalProps): UseUSDCApprovalReturn {
   const { address }  = useAccount();
   const usdcAddress  = useUSDCAddress();
-  const publicClient = usePublicClient();
   const [localError, setLocalError] = useState<Error | null>(null);
 
   const {
@@ -153,20 +106,8 @@ export function useUSDCApproval({
 
       startTransition(() => { setLocalError(null); });
 
-      // ── Gas: precio real de la red clampeado al máximo por chain ─────
-      let gasOverrides: { gasPrice: bigint } | undefined;
-      if (publicClient) {
-        try {
-          const gp = await safeGasPrice(publicClient);
-          gasOverrides = { gasPrice: gp };
-          if (import.meta.env.DEV) {
-            console.log('[useUSDCApproval] gasPrice:', gp.toString(), 'wei');
-          }
-        } catch { /* usar defaults de wagmi */ }
-      }
-
       if (import.meta.env.DEV) {
-        console.log('[useUSDCApproval] Simulating approve...', {
+        console.log('[useUSDCApproval] Sending approve to wallet...', {
           spender:     spender.slice(0, 10) + '...',
           from:        from.slice(0, 10) + '...',
           usdcAddress: usdcAddr.slice(0, 10) + '...',
@@ -174,23 +115,15 @@ export function useUSDCApproval({
         });
       }
 
-      if (publicClient) {
-        await simulateApprove(publicClient, usdcAddr, spender, amountWei, from);
-      }
-
-      if (import.meta.env.DEV) {
-        console.log('[useUSDCApproval] Simulation OK, sending to wallet...');
-      }
-
       writeContract({
         address:      usdcAddr,
         abi:          erc20Abi,
         functionName: 'approve',
         args:         [spender, amountWei],
-        ...gasOverrides,
+        gas:          100_000n, // gasLimit fijo — approve ERC-20 nunca supera ~60k
       });
     },
-    [validateCommon, address, usdcAddress, spender, publicClient, writeContract, onError],
+    [validateCommon, address, usdcAddress, spender, writeContract, onError],
   );
 
   const approve = useCallback(async (): Promise<void> => {

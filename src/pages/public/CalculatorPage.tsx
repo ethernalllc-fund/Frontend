@@ -116,7 +116,6 @@ const CalculatorPage: React.FC = () => {
   const [error, setError]             = useState('');
   const [result, setResult]           = useState<Result | null>(null);
   const [chartData, setChartData]     = useState<ChartPoint[]>([]);
-
   const [inputs, setInputs] = useState<Inputs>({
     initialCapital:       0,
     currentAge:           30,
@@ -178,7 +177,8 @@ const CalculatorPage: React.FC = () => {
           ? requiredPMT * rMonthly / (Math.pow(1 + rMonthly, monthsPerPeriod) - 1)
           : requiredPMT / monthsPerPeriod;
 
-    let balance = s.initialCapital;
+    const FEE_ON_INITIAL = s.initialCapital * FEE_PERCENTAGE;
+    let balance = s.initialCapital - FEE_ON_INITIAL; // el fee también se aplica al depósito inicial, así que lo descontamos desde el inicio para reflejar el crecimiento real en el fondo
     const data: ChartPoint[] = [];
     const contributions: number[] = [];
 
