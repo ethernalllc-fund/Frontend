@@ -263,7 +263,7 @@ const CalculatorPage: React.FC = () => {
       interestRate:         inputs.annualRate,
       timelockYears,
     });
-    navigate('/create-contract');
+    navigate('/create-fund');
   };
 
   const victoryData = chartData.map((d) => ({ x: d.year, y: d.balance }));

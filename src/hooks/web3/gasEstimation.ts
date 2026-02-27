@@ -39,31 +39,37 @@ const CHAIN_CONFIGS = {
     isArbitrum: true,
     defaultGasLimit: 50_000_000n,
     minMaxFee: parseGwei('0.1'),
+    maxMaxFee: parseGwei('2'),      // cap: 2 gwei máximo en testnet
   },
   42161: { // Arbitrum One
     isArbitrum: true,
     defaultGasLimit: 50_000_000n,
     minMaxFee: parseGwei('0.3'),
+    maxMaxFee: parseGwei('10'),
   },
   80002: { // Polygon Amoy
     isArbitrum: false,
     defaultGasLimit: 900_000n,
     minMaxFee: parseGwei('50'),
+    maxMaxFee: parseGwei('500'),
   },
   137: { // Polygon
     isArbitrum: false,
     defaultGasLimit: 900_000n,
     minMaxFee: parseGwei('50'),
+    maxMaxFee: parseGwei('500'),
   },
   1: { // Ethereum
     isArbitrum: false,
     defaultGasLimit: 500_000n,
     minMaxFee: parseGwei('35'),
+    maxMaxFee: parseGwei('300'),
   },
   11155111: { // Sepolia
     isArbitrum: false,
     defaultGasLimit: 30_000_000n,
     minMaxFee: parseGwei('7'),
+    maxMaxFee: parseGwei('50'),
   },
 } as const
 
@@ -145,6 +151,10 @@ export function useGasEstimation() {
       if (maxFeePerGas < config.minMaxFee) {
         maxFeePerGas = config.minMaxFee
       }
+      if (maxFeePerGas > config.maxMaxFee) {
+        maxFeePerGas = config.maxMaxFee
+        maxPriorityFeePerGas = maxPriorityFeePerGas > maxFeePerGas ? maxFeePerGas / 10n : maxPriorityFeePerGas
+      }
 
       const estimatedCost = gasLimit * maxFeePerGas
       const formatted = {
@@ -214,6 +224,10 @@ export async function estimateGasForTransaction(
 
   if (maxFeePerGas < config.minMaxFee) {
     maxFeePerGas = config.minMaxFee
+  }
+  if (maxFeePerGas > config.maxMaxFee) {
+    maxFeePerGas = config.maxMaxFee
+    maxPriorityFeePerGas = maxPriorityFeePerGas > maxFeePerGas ? maxFeePerGas / 10n : maxPriorityFeePerGas
   }
 
   const estimatedCost = gasLimit * maxFeePerGas

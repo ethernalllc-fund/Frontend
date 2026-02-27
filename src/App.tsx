@@ -10,8 +10,10 @@ const CalculatorPage      = lazy(() => import('./pages/public/CalculatorPage'));
 const ContactPage         = lazy(() => import('./pages/public/ContactPage'));
 const SurveyPage          = lazy(() => import('./pages/public/SurveyPage'));
 const DashboardPage       = lazy(() => import('./pages/user/DashboardPage'));
-const CreateContractPage  = lazy(() => import('./pages/user/CreateContractPage'));
-const ContractCreatedPage = lazy(() => import('./pages/user/ContractCreatedPage'));
+const CreateFundPage      = lazy(() => import('./pages/user/CreateFundPage'));
+// 🔒 Desconectadas temporalmente — archivos intactos, sin eliminar
+// const CreateContractPage  = lazy(() => import('./pages/user/CreateContractPage'));
+// const ContractCreatedPage = lazy(() => import('./pages/user/ContractCreatedPage'));
 const AdminDashboard      = lazy(() => import('./pages/admin/AdminDashboard'));
 const ContactMessages     = lazy(() => import('./pages/admin/ContactMessages'));
 const AdminTreasury       = lazy(() => import('./pages/admin/AdminTreasury'));
@@ -50,6 +52,15 @@ function AppContent() {
               }
             />
             <Route
+              path="/create-fund"
+              element={
+                <ProtectedRoute requireAuth>
+                  <CreateFundPage />
+                </ProtectedRoute>
+              }
+            />
+            {/* 🔒 Rutas anteriores — desconectadas temporalmente
+            <Route
               path="/create-contract"
               element={
                 <ProtectedRoute requireAuth>
@@ -65,6 +76,7 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
+            */}
 
             {/* Admin */}
             <Route
@@ -101,9 +113,12 @@ function AppContent() {
             />
 
             {/* Redirects & 404 */}
-            <Route path="/governance" element={<Navigate to="/dashboard"       replace />} />
-            <Route path="/fund"       element={<Navigate to="/create-contract" replace />} />
-            <Route path="*"           element={<Navigate to="/"                replace />} />
+            <Route path="/governance"       element={<Navigate to="/dashboard"  replace />} />
+            <Route path="/fund"             element={<Navigate to="/create-fund" replace />} />
+            {/* 🔒 Redirect anterior apuntaba a /create-contract, ahora va a /create-fund
+            <Route path="/fund" element={<Navigate to="/create-contract" replace />} />
+            */}
+            <Route path="*"                 element={<Navigate to="/"           replace />} />
           </Routes>
         </Suspense>
       </main>

@@ -33,24 +33,24 @@ export {
   requiresCorrectNetwork,
   getNavigationGuards,
   validateNavigation,
-  useNavigationGuard,
+  useNavigationGuards,
   getNavigationErrorMessage,
   getGuard,
   getAllGuards,
   hasGuard,
   getActiveChains,
   getActiveChainIds,
-} from './navigationGuards';
+} from './NavigationGuards';
 
 export type { 
-  NavigationGuard, 
+  NavigationGuards, 
   ValidationResult, 
   RouteType,
   AppPath,
   AllPaths,
   PathKey,
-} from './navigationGuards';
+} from './NavigationGuards';
 
-import type { AllPaths } from './navigationGuards';
+import type { AllPaths } from './NavigationGuards';
 
 export type AppRoutePath = AllPaths[keyof AllPaths];

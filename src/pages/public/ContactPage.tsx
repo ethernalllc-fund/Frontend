@@ -303,8 +303,8 @@ const ContactPage: React.FC = () => {
             <div className="space-y-3 text-center text-sm text-gray-600">
               <p>
                 <strong>{t('contact.emailLabel')}:</strong>{' '}
-                <a href="mailto:contact@ethernity.io" className="text-purple-600 hover:underline">
-                  contact@ethernity.io
+                <a href="mailto:contact@ethernal.fund" className="text-purple-600 hover:underline">
+                  contact@ethernal.fund
                 </a>
               </p>
               <p>

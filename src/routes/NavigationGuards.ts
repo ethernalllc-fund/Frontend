@@ -6,7 +6,7 @@ import { ACTIVE_CHAIN_IDS, getChainName, ACTIVE_CHAINS } from '@/config/chains';
 
 export type RouteType = 'public' | 'user' | 'admin';
 export type AppPath = string;
-export interface NavigationGuard {
+export interface NavigationGuards {
   requiresWallet: boolean;
   requiresCorrectNetwork: boolean;
   requiresAdmin?: boolean;
@@ -29,7 +29,7 @@ export const ALL_PATHS = {
 export type AllPaths = typeof ALL_PATHS;
 export type PathKey = keyof AllPaths;
 
-const guardsMap: Record<string, NavigationGuard> = {
+const guardsMap: Record<string, NavigationGuards> = {
   [PUBLIC_PATHS.HOME]: {
     requiresWallet: false,
     requiresCorrectNetwork: false,
@@ -52,20 +52,18 @@ const guardsMap: Record<string, NavigationGuard> = {
   },
 
   [USER_PATHS.DASHBOARD]: {
-    requiresWallet: true,
+    requiresWallet:         true,
     requiresCorrectNetwork: true,
-    redirectTo: PUBLIC_PATHS.HOME,
+    redirectTo:             PUBLIC_PATHS.HOME,
   },
-  [USER_PATHS.CREATE_CONTRACT]: {
-    requiresWallet: true,
+  [USER_PATHS.CREATE_FUND]: {
+    requiresWallet:         true,
     requiresCorrectNetwork: true,
-    redirectTo: PUBLIC_PATHS.CALCULATOR,
+    redirectTo:             PUBLIC_PATHS.CALCULATOR,
   },
-  [USER_PATHS.CONTRACT_CREATED]: {
-    requiresWallet: true,
-    requiresCorrectNetwork: true,
-    redirectTo: USER_PATHS.CREATE_CONTRACT,
-  },
+  // 🔒 Guards de rutas desconectadas temporalmente
+  // [USER_PATHS.CREATE_CONTRACT]:  { requiresWallet: true, requiresCorrectNetwork: true, redirectTo: PUBLIC_PATHS.CALCULATOR },
+  // [USER_PATHS.CONTRACT_CREATED]: { requiresWallet: true, requiresCorrectNetwork: true, redirectTo: USER_PATHS.CREATE_CONTRACT },
 
   [ADMIN_PATHS.ADMIN_DASHBOARD]: {
     requiresWallet: true,
@@ -111,7 +109,7 @@ export const getRouteType = (path: string): RouteType => {
   return 'public';
 };
 
-export const getGuard = (path: string): NavigationGuard => {
+export const getGuard = (path: string): NavigationGuards => {
   return guardsMap[path] ?? guardsMap[PUBLIC_PATHS.HOME]!;
 };
 
@@ -134,7 +132,7 @@ export const getNavigationGuards = (path: string) => {
   };
 };
 
-export const useNavigationGuard = () => {
+export const useNavigationGuards = () => {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
   const isCorrectNetwork = ACTIVE_CHAIN_IDS.includes(chainId as any);
@@ -222,7 +220,7 @@ export const getNavigationErrorMessage = (validation: ValidationResult): string 
   return messages[validation.reason || ''] || validation.reason || 'Access denied';
 };
 
-export const getAllGuards = (): Record<string, NavigationGuard> => ({ ...guardsMap });
+export const getAllGuards = (): Record<string, NavigationGuards> => ({ ...guardsMap });
 export const hasGuard     = (path: string): boolean => path in guardsMap;
 export const getActiveChains    = () => ACTIVE_CHAINS;
 export const getActiveChainIds  = () => ACTIVE_CHAIN_IDS;

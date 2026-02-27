@@ -26,7 +26,7 @@ ENABLE_DEBUG=false
 PROJECT_NAME=USDC Faucet
 VERSION=1.0.0
 API_URL=https://mock-usdc-1.onrender.com/api
-FAUCET_API_URL=https://mock-usdc-1.onrender.com
+FAUCET_API_URL=https://mock-usdc-c8wy.onrender.com
 
 FRONTEND_URL=https://tu-app.vercel.app
 BACKEN_CORS_ORIGINS=https://tu-app.vercel.app,http://localhost:5173

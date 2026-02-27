@@ -3,14 +3,18 @@ import { Navigate } from "react-router-dom";
 import { useRetirementPlan } from "../components/context/RetirementContext";
 
 const DashboardPage = lazy(() => import("../pages/user/DashboardPage"));
-const CreateContractPage = lazy(() => import("../pages/user/CreateContractPage"));
-const ContractCreatedPage = lazy(() => import("../pages/user/ContractCreatedPage"));
+const CreateFundPage = lazy(() => import("../pages/user/CreateFundPage"));
+// 🔒 Desconectadas temporalmente — archivos intactos
+// const CreateContractPage  = lazy(() => import("../pages/user/CreateContractPage"));
+// const ContractCreatedPage = lazy(() => import("../pages/user/ContractCreatedPage"));
 
 export const USER_PATHS = {
-  DASHBOARD: "/dashboard",
-  CREATE_CONTRACT: "/create-contract",
-  CONTRACT_CREATED: "/contract-created",
-  GOVERNANCE: "/governance",
+  DASHBOARD:        "/dashboard",
+  CREATE_FUND:      "/create-fund",       // ✅ nueva ruta activa
+  // 🔒 Desconectadas temporalmente
+  // CREATE_CONTRACT:  "/create-contract",
+  // CONTRACT_CREATED: "/contract-created",
+  GOVERNANCE:       "/governance",
 } as const;
 
 interface UserRoute {
@@ -36,26 +40,22 @@ interface WalletProps {
 
 export const userRoutes: UserRoute[] = [
   {
-    path: USER_PATHS.DASHBOARD,
-    component: DashboardPage,
-    title: "Dashboard",
-    description: "Manage your retirement fund",
+    path:         USER_PATHS.DASHBOARD,
+    component:    DashboardPage,
+    title:        "Dashboard",
+    description:  "Manage your retirement fund",
     requiresAuth: true,
   },
   {
-    path: USER_PATHS.CREATE_CONTRACT,
-    component: CreateContractPage,
-    title: "Create Contract",
-    description: "Create your retirement savings contract",
+    path:         USER_PATHS.CREATE_FUND,
+    component:    CreateFundPage,
+    title:        "Create Fund",
+    description:  "Create your retirement savings contract",
     requiresAuth: true,
   },
-  {
-    path: USER_PATHS.CONTRACT_CREATED,
-    component: ContractCreatedPage,
-    title: "Contract Created",
-    description: "Smart Contract created successfully",
-    requiresAuth: true,
-  },
+  // 🔒 Desconectadas temporalmente
+  // { path: USER_PATHS.CREATE_CONTRACT,  component: CreateContractPage,  ... },
+  // { path: USER_PATHS.CONTRACT_CREATED, component: ContractCreatedPage, ... },
 ];
 
 export const getUserRoute = (path: string): UserRoute | undefined => {
@@ -81,37 +81,16 @@ export const UserRouter: React.FC<UserRouterProps> = ({
   const { planData } = useRetirementPlan();
   const pageProps = useMemo(() => {
     switch (currentPage) {
-      case USER_PATHS.CREATE_CONTRACT:
+      case USER_PATHS.CREATE_FUND:
         return {
           wallet: {
-            address: wallet.address as `0x${string}` | undefined,
+            address:     wallet.address as `0x${string}` | undefined,
             isConnected: wallet.isConnected,
-            chainId: wallet.chainId,
+            chainId:     wallet.chainId,
           },
           contracts: {
-            factory: contracts.factory ?? null,
+            factory:        contracts.factory ?? null,
             daoFundAddress: contracts.treasury ?? contracts.factory ?? null,
-          },
-          calculatedPlan: planData ?? null,
-          onSuccess: () => {
-            window.location.href = USER_PATHS.CONTRACT_CREATED;
-          },
-        };
-
-      case USER_PATHS.CONTRACT_CREATED:
-        return {
-          wallet: {
-            address: wallet.address as `0x${string}` | undefined,
-            isConnected: wallet.isConnected,
-            chainId: wallet.chainId,
-          },
-          contracts: {
-            factory: contracts.factory ?? null,
-            daoFundAddress: contracts.treasury ?? contracts.factory ?? null,
-          },
-          calculatedPlan: planData ?? null,
-          onSuccess: () => {
-            window.location.href = USER_PATHS.DASHBOARD;
           },
         };
 
