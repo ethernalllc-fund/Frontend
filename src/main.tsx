@@ -1,7 +1,6 @@
 import ReactDOM from 'react-dom/client';
 import { WagmiProvider } from 'wagmi';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { HelmetProvider } from 'react-helmet-async';
 import App from './App';
 import './index.css';
 import './i18n/config';
@@ -22,13 +21,11 @@ if (import.meta.env['DEV']) {
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <HelmetProvider>
-    <WagmiProvider config={wagmiConfig}>
-      <QueryClientProvider client={queryClient}>
-        <RetirementProvider>
-          <App />
-        </RetirementProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
-  </HelmetProvider>
+  <WagmiProvider config={wagmiConfig}>
+    <QueryClientProvider client={queryClient}>
+      <RetirementProvider>
+        <App />
+      </RetirementProvider>
+    </QueryClientProvider>
+  </WagmiProvider>
 );

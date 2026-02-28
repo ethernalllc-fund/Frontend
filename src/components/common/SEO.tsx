@@ -1,5 +1,3 @@
-import { Helmet } from 'react-helmet-async';
-
 interface SEOProps {
   title: string;
   description: string;
@@ -21,7 +19,7 @@ export const SEO = ({
   const currentUrl = url || (typeof window !== 'undefined' ? window.location.href : '');
 
   return (
-    <Helmet>
+    <>
       {/* Primary Meta Tags */}
       <title>{fullTitle}</title>
       <meta name="title" content={fullTitle} />
@@ -53,7 +51,7 @@ export const SEO = ({
 
       {/* Canonical URL */}
       {currentUrl && <link rel="canonical" href={currentUrl} />}
-    </Helmet>
+    </>
   );
 };
 
