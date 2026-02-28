@@ -417,6 +417,8 @@ const CreateFundPage: React.FC = () => {
         functionName: 'createPersonalFund',
         args:         buildCreateFundArgs({ ...plan, selectedProtocol: investmentSel.protocolAddress }),
         gas:          3_000_000n,
+        maxFeePerGas:         100_000_000n, // 0.1 gwei — siempre > baseFee de Arbitrum Sepolia (~0.02 gwei)
+        maxPriorityFeePerGas:   1_000_000n, // 0.001 gwei
       });
       setCreateConfirming(true);
     } catch (e) {

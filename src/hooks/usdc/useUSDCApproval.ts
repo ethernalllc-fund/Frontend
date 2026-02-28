@@ -120,7 +120,9 @@ export function useUSDCApproval({
         abi:          erc20Abi,
         functionName: 'approve',
         args:         [spender, amountWei],
-        gas:          100_000n, // gasLimit fijo — approve ERC-20 nunca supera ~60k
+        gas:                    100_000n,
+        maxFeePerGas:         100_000_000n, // 0.1 gwei
+        maxPriorityFeePerGas:   1_000_000n, // 0.001 gwei
       });
     },
     [validateCommon, address, usdcAddress, spender, writeContract, onError],
