@@ -3,8 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 import { Mail, User, MessageSquare, Send, CheckCircle, AlertCircle } from 'lucide-react';
 import SEO from '@/components/common/SEO';
-
-const API_URL = import.meta.env['VITE_API_URL'] ?? 'http://localhost:3001';
+import { contactService } from '@/services/api';
 
 interface FormData {
   name: string;
@@ -22,21 +21,19 @@ interface FormErrors {
 const ContactPage: React.FC = () => {
   const { t } = useTranslation();
   const { address } = useAccount();
-
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
     subject: '',
     message: '',
   });
-  const [loading, setLoading]           = useState(false);
-  const [success, setSuccess]           = useState(false);
-  const [error, setError]               = useState('');
-  const [fieldErrors, setFieldErrors]   = useState<FormErrors>({});
+  const [loading, setLoading]         = useState(false);
+  const [success, setSuccess]         = useState(false);
+  const [error, setError]             = useState('');
+  const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
 
   const validateEmail = (email: string): boolean =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
   const validateForm = (): boolean => {
     const errors: FormErrors = {};
 
@@ -74,17 +71,10 @@ const ContactPage: React.FC = () => {
     setError('');
 
     try {
-      const response = await fetch(`${API_URL}/api/v1/contact`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, walletAddress: address ?? null }),
+      await contactService.submitContact({
+        ...formData,
+        walletAddress: address ?? undefined,
       });
-
-      const data = await response.json() as { error?: string };
-
-      if (!response.ok) {
-        throw new Error(data.error ?? t('errors.somethingWrong'));
-      }
 
       setSuccess(true);
       setFormData({ name: '', email: '', subject: '', message: '' });
@@ -217,7 +207,7 @@ const ContactPage: React.FC = () => {
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
                 <MessageSquare className="w-5 h-5" />
-                {t('contact.subject')} *
+                {t('contact.subject')}
               </label>
               <input
                 type="text"
