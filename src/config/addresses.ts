@@ -48,6 +48,7 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     personalFundFactory: '0x817E46C53D1F185B9A8b38614527D398e043baf1',
     usdc:                getUSDCAddress(421614),
     treasury:            '0xAFEFd36D0911c503f44768aef721162444ADeA1b',
+    token:               ZERO_ADDRESS, 
     protocolRegistry:    '0x9c65A8baE28B663fc4613137C6c27F4300860f72',
     userPreferences:     '0x8BEc849AB22bf570b5E7C92abC666c385635C4e9',
     dateTime:            '0xE02b954494Ea690B54Ba63ED7E722C89C8926de5',
