@@ -13,20 +13,20 @@ export const DEFAULT_HEADERS = {
 export const API_ENDPOINTS = {
 
   AUTH: {
-    NONCE: '/users/nonce',   
-    LOGIN: '/users/auth',    
+    NONCE: '/users/nonce',
+    LOGIN: '/users/auth',
   },
 
   USERS: {
-    ME:     '/users/me',     
-    SURVEY: '/users/survey', 
+    ME:     '/users/me',
+    SURVEY: '/users/survey',
   },
 
   FUNDS: {
-    ME:           '/funds/me',                             
-    TRANSACTIONS: '/funds/me/transactions',                
-    SYNC:         '/funds/sync',                           
-    BY_ADDRESS:   (address: string) => `/funds/${address}`, 
+    ME:           '/funds/me',
+    TRANSACTIONS: '/funds/me/transactions',
+    SYNC:         '/funds/sync',
+    BY_ADDRESS:   (address: string) => `/funds/${address}`,
   },
 
   TREASURY: {
@@ -39,19 +39,19 @@ export const API_ENDPOINTS = {
   },
 
   PROTOCOLS: {
-    LIST:         '/protocols/',
-    STATS:        '/protocols/stats',
-    BY_ADDRESS:   (address: string) => `/protocols/${address}`,
-    SYNC:         '/protocols/sync',
+    LIST:       '/protocols/',
+    STATS:      '/protocols/stats',
+    BY_ADDRESS: (address: string) => `/protocols/${address}`,
+    SYNC:       '/protocols/sync',
   },
 
   CONTACT: {
-    BASE: '/contact',     
+    BASE: '/contact',           // ✅ was '/contacts'
   },
 
   SURVEY: {
-    BASE:     '/survey',           
-    FOLLOWUP: '/survey/followup',  
+    BASE:     '/surveys',
+    FOLLOWUP: '/surveys/follow-up',  // ✅ was '/surveys/followup'
   },
 
   ADMIN: {
@@ -68,9 +68,9 @@ export const API_ENDPOINTS = {
 } as const;
 
 export const buildApiUrl = (endpoint: string): string => {
-  const base     = API_CONFIG.BASE_URL.replace(/\/$/, '');
-  const path     = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-  return `${base}/v1${path}`;
+  const base = API_CONFIG.BASE_URL.replace(/\/$/, '');
+  const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  return `${base}/api/v1${path}`;  // ✅ was '/v1', missing '/api'
 };
 
 export const getHealthUrl = (): string =>
@@ -79,10 +79,10 @@ export const getHealthUrl = (): string =>
 export type BackendStatus = 'unknown' | 'healthy' | 'warming_up' | 'unavailable';
 
 const WARMUP = {
-  PING_INTERVAL:    600_000, 
-  TIMEOUT:           15_000, 
-  INITIAL_PINGS:          3,
-  INITIAL_DELAY:      5_000,
+  PING_INTERVAL:  600_000,
+  TIMEOUT:         15_000,
+  INITIAL_PINGS:        3,
+  INITIAL_DELAY:    5_000,
 } as const;
 
 class WarmupManager {
