@@ -7,6 +7,7 @@ import esTranslations from './locales/es.json';
 import deTranslations from './locales/de.json';
 import itTranslations from './locales/it.json';
 import ptTranslations from './locales/pt.json';
+import zhTranslations from './locales/zh.json';
 
 i18n
   .use(LanguageDetector)
@@ -17,7 +18,8 @@ i18n
       es: { translation: esTranslations },
       de: { translation: deTranslations },
       it: { translation: itTranslations },
-      pt: { translation: ptTranslations }
+      pt: { translation: ptTranslations },
+      zh: { translation: zhTranslations }
     },
     fallbackLng: 'en',
     returnNull: false,

@@ -6,7 +6,8 @@ const languages = [
   { code: 'es', name: 'Español', flag: '🇦🇷' },     
   { code: 'de', name: 'Deutsch', flag: '🇩🇪' },    
   { code: 'it', name: 'Italiano', flag: '🇮🇹' },    
-  { code: 'pt', name: 'Português', flag: '🇧🇷' }, 
+  { code: 'pt', name: 'Português', flag: '🇧🇷' },
+  { code: 'zh', name: '中文', flag: '🇨🇳' }, 
 ];
 
 export const LanguageSwitcher: React.FC = () => {

@@ -1,5 +1,6 @@
 @import "tailwindcss/theme";
 @import "tailwindcss/utilities";
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
 
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -85,7 +86,57 @@ html {
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 
+               'PingFang SC', 'Microsoft YaHei', '微软雅黑', 'WenQuanYi Micro Hei',
+               'Noto Sans SC', 'Source Han Sans CN',
+               'Helvetica Neue', Arial, sans-serif;
+}
+
+[lang="zh"] {
+  line-height: 1.7; 
+  letter-spacing: 0.01em; 
+  word-break: break-word;
+}
+
+[lang="zh"] h1, 
+[lang="zh"] h2, 
+[lang="zh"] h3, 
+[lang="zh"] h4, 
+[lang="zh"] h5, 
+[lang="zh"] h6 {
+  letter-spacing: 0.005em;
+  font-weight: 600; 
+  line-height: 1.4;
+}
+
+[lang="zh"] p {
+  line-height: 1.8;
+  margin-bottom: 1.2rem;
+}
+
+@media (max-width: 640px) {
+  [lang="zh"] {
+    font-size: 16px; 
+  }
+  
+  [lang="zh"] p {
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  
+  [lang="zh"] button,
+  [lang="zh"] .btn,
+  [lang="zh"] input,
+  [lang="zh"] textarea {
+    font-size: 15px;
+  }
+}
+
+[lang="zh"] .number,
+[lang="zh"] .amount,
+[lang="zh"] .stat-value {
+  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', monospace;
+  letter-spacing: 0.02em;
 }
 
 body {
@@ -149,7 +200,7 @@ p, h1, h2, h3, h4, h5, h6 {
   h3 { @apply text-lg  sm:text-xl  md:text-2xl lg:text-3xl; }
   h4 { @apply text-base sm:text-lg  md:text-xl  lg:text-2xl; }
   h5 { @apply text-sm  sm:text-base md:text-lg  lg:text-xl;  }
-  h6 { @apply text-sm  sm:text-sm   md:text-base lg:text-lg; }
+  h6 { @apply text-sm  sm:text-sm   md:text-base lg:text-lg;  }
 
   p {
     @apply text-gray-600 mb-4 text-sm sm:text-base leading-relaxed;
@@ -369,7 +420,6 @@ p, h1, h2, h3, h4, h5, h6 {
   .touch-pan-y { touch-action: pan-y; }
   .touch-pan-x { touch-action: pan-x; }
 
-  /* Truncado multilínea */
   .truncate-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -390,5 +440,21 @@ p, h1, h2, h3, h4, h5, h6 {
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  .chinese-text {
+    line-height: 1.7;
+    letter-spacing: 0.01em;
+  }
+  
+  .chinese-title {
+    font-weight: 600;
+    letter-spacing: 0.005em;
+    line-height: 1.4;
+  }
+
+  .mixed-lang {
+    word-break: break-word;
+    hyphens: auto;
   }
 }

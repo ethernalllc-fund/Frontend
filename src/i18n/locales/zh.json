@@ -1,0 +1,153 @@
+{
+  "common": {
+    "error": "错误",
+    "loading": "加载中...",
+    "save": "保存",
+    "cancel": "取消",
+    "close": "关闭",
+    "back": "返回",
+    "next": "继续",
+    "finish": "完成",
+    "confirm": "确认",
+    "yes": "是",
+    "no": "否",
+    "wallet": "钱包"
+  },
+
+  "hero": {
+    "title": "区块链上的财务未来",
+    "subtitle": "使用Ethernal规划您的退休：在Arbitrum上安全、透明、去中心化",
+    "ctaDisconnected": "立即开始",
+    "ctaConnected": "前往计算器"
+  },
+
+  "features": {
+    "title": "为什么选择Ethernal？",
+    "security": {
+      "title": "安全与控制",
+      "description": "您的资金存放在经过审计的智能合约中。只有您拥有控制权。"
+    },
+    "education": {
+      "title": "金融教育",
+      "description": "在储蓄的同时学习DeFi和退休策略。"
+    },
+    "fees": {
+      "title": "低手续费",
+      "description": "无中介。费用比传统基金低10倍。"
+    }
+  },
+
+  "about": {
+    "title": "关于Ethernal",
+    "description": "Ethernal将区块链安全性与传统财务规划相结合，为您提供去中心化、透明且人人可及的退休体验。"
+  },
+
+  "survey": {
+    "title": "退休与区块链调查",
+    "subtitle": "帮助我们了解您如何看待退休和区块链技术",
+    "bannerText": "帮助我们改进！参与我们关于退休和区块链的简短调查。",
+    "bannerCta": "参与调查",
+    "question1": "您的年龄？",
+    "question2": "您信任传统的退休系统（养老金基金、401k）吗？",
+    "question3": "您对区块链/DeFi熟悉程度如何？",
+    "question4": "您对退休后的财务未来有多担心？",
+    "question5": "您目前有退休计划吗？",
+    "question6": "退休价值观：安全还是增长？",
+    "question7": "您对基于区块链的退休计划感兴趣吗？",
+    "ageOptions": {
+      "18-24": "18-24岁",
+      "25-34": "25-34岁",
+      "35-44": "35-44岁",
+      "45-54": "45-54岁",
+      "55-64": "55-64岁",
+      "65+": "65岁以上"
+    },
+    "rating": {
+      "stronglyDisagree": "非常不同意",
+      "disagree": "不同意",
+      "neutral": "中立",
+      "agree": "同意",
+      "stronglyAgree": "非常同意"
+    },
+    "selectAge": "请选择您的年龄",
+    "answerAll": "请回答所有问题",
+    "submitting": "提交中...",
+    "submit": "提交答案",
+    "errorTitle": "提交错误",
+    "required": "必填字段"
+  },
+
+  "followUp": {
+    "successTitle": "调查完成！",
+    "successMessage": "感谢您的参与。您的回答帮助我们改进。",
+    "question1": "您想接收Ethernal的相关信息吗？",
+    "yesInterested": "是，我想接收更新",
+    "notNow": "不，谢谢",
+    "question2": "您的电子邮件地址",
+    "emailPlaceholder": "您的邮箱@example.com",
+    "finish": "完成",
+    "thankYou": "谢谢！",
+    "willContact": "我们将尽快与您联系，告知最新消息。",
+    "helpImprove": "您的反馈帮助我们改进。",
+    "pleaseIndicate": "请表明您的偏好",
+    "enterEmail": "请输入您的电子邮件"
+  },
+
+  "contact": {
+    "title": "联系我们",
+    "subtitle": "有问题？我们的团队随时提供帮助",
+    "name": "全名",
+    "namePlaceholder": "张三",
+    "email": "电子邮件地址",
+    "subject": "主题",
+    "subjectPlaceholder": "例如：关于我的基金的问题",
+    "message": "留言",
+    "messagePlaceholder": "告诉我们如何帮助您...",
+    "messageHint": "至少10个字符",
+    "send": "发送消息",
+    "sending": "发送中...",
+    "success": "消息已发送！",
+    "successDetail": "感谢您联系我们。我们将在24-48小时内回复。",
+    "error": "发送错误。请重试。",
+    "walletConnected": "钱包已连接",
+    "walletIncluded": "我们将在消息中包含您的钱包：",
+    "otherWays": "其他联系方式",
+    "emailLabel": "电子邮件",
+    "responseTime": "回复时间",
+    "responseTimeValue": "24-48个工作小时",
+    "requiredFields": "* 必填字段",
+    "validation": {
+      "nameRequired": "姓名是必填项",
+      "nameTooShort": "姓名至少需要2个字符",
+      "emailRequired": "电子邮件是必填项",
+      "emailInvalid": "请输入有效的电子邮件",
+      "messageRequired": "留言是必填项",
+      "messageTooShort": "留言至少需要10个字符",
+      "formErrors": "请更正表单错误"
+    }
+  },
+
+  "calculator": {
+    "title": "退休计算器",
+    "subtitle": "模拟您的个性化退休计划",
+    "currentAge": "当前年龄",
+    "retirementAge": "期望退休年龄",
+    "monthlyDeposit": "每月储蓄 (USDC)",
+    "currentSavings": "当前储蓄 (USDC)",
+    "interestRate": "预期年利率 (%)",
+    "calculate": "计算",
+    "results": {
+      "projected": "退休预测",
+      "monthlyIncome": "预估月收入",
+      "totalSaved": "总储蓄",
+      "yearsCovered": "覆盖年数"
+    }
+  },
+
+  "errors": {
+    "somethingWrong": "出错了。请重试。",
+    "networkError": "网络错误。检查您的连接。",
+    "walletRequired": "连接您的钱包以继续",
+    "wrongNetwork": "网络错误。切换到Arbitrum Sepolia"
+  }
+}
