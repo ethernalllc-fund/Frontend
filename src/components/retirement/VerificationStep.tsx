@@ -113,7 +113,10 @@ export function VerificationStep({ plan, onVerificationComplete }: VerificationS
                     Te faltan {formatUnits(requiredUSDC - usdcBalance, 6)} USDC
                   </p>
                   <a
-                    href="https://faucet.quicknode.com/arbitrum/sepolia"
+                    href={chainId === 421614
+                      ? 'https://faucet.quicknode.com/arbitrum/sepolia'
+                      : 'https://faucet.polygon.technology/'
+                    }
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 text-xs bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition"

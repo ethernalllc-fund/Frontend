@@ -59,7 +59,7 @@ const Footer: React.FC = () => {
             <h3 className="font-semibold mb-4">{t('footer.followUs')}</h3>
             <div className="flex gap-4 mb-4">
               <a
-                href="https://github.com/ethernity-dao"
+                href="https://github.com/ethernal.fund"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center hover:bg-green-600 transition"
@@ -68,7 +68,7 @@ const Footer: React.FC = () => {
                 <Github size={20} />
               </a>
               <a
-                href="https://twitter.com/ethernity_dao"
+                href="https://twitter.com/ethernialfund"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center hover:bg-green-600 transition"
@@ -86,14 +86,14 @@ const Footer: React.FC = () => {
                 <Linkedin size={20} />
               </a>
               <a
-                href="mailto:contact@ethernity.io"
+                href="mailto:contact@ethernal.fund"
                 className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center hover:bg-green-600 transition"
                 aria-label="Email"
               >
                 <Mail size={20} />
               </a>
             </div>
-            <p className="text-gray-400 text-sm">contact@ethernity.io</p>
+            <p className="text-gray-400 text-sm">contact@ethernal.fund</p>
           </div>
         </div>
 

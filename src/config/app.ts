@@ -17,10 +17,10 @@ export const appConfig = {
   },
 
   urls: {
-    website: 'https://ethernity-dao.com',
-    docs: 'https://docs.ethernity-dao.com',
-    twitter: 'https://twitter.com/ethernity_dao',
-    discord: 'https://discord.gg/ethernity',
+    website: 'https://ethernal.fund',
+    docs: 'https://docs.ethernal.fund',
+    twitter: 'https://twitter.com/ethernialfund',
+    discord: 'https://discord.gg/ethernal-fund',
   },
 } as const
 

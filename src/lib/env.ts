@@ -25,8 +25,6 @@ export interface AppConfig {
     personalFundFactory: string;
     personalFund:        string;
     treasury:            string;
-    token:               string;
-    governance:          string;
     protocolRegistry:    string;
     userPreferences:     string;
     dateTime:            string;
@@ -122,8 +120,6 @@ export const env: Readonly<AppConfig> = Object.freeze({
     personalFundFactory: read('VITE_PERSONALFUNDFACTORY_ADDRESS', ''),
     personalFund:        read('VITE_PERSONALFUND_ADDRESS',        ''),
     treasury:            read('VITE_TREASURY_ADDRESS',            ''),
-    token:               read('VITE_TOKEN_ADDRESS',               ''),
-    governance:          read('VITE_GOVERNANCE_ADDRESS',          ''),
     protocolRegistry:    read('VITE_PROTOCOLREGISTRY_ADDRESS',    ''),
     userPreferences:     read('VITE_USERPREFERENCES_ADDRESS',     ''),
     dateTime:            read('VITE_DATETIME_ADDRESS',            ''),

@@ -1,6 +1,6 @@
 // ============================================================
 // Ethernal Faucet API Client
-// Compatible con: https://mock-usdc-c8wy.onrender.com
+// Compatible con: https://mock-usdc-i67q.onrender.com
 // ============================================================
 
 export interface FaucetRequest {
