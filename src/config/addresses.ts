@@ -45,14 +45,14 @@ const getUSDCAddress = (chainId: number): `0x${string}` => {
 export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
   // ✅ ARBITRUM SEPOLIA — DEPLOYED 2026-02-23
   421614: {
-    personalFundFactory: '0x817E46C53D1F185B9A8b38614527D398e043baf1',
+    personalFundFactory: '0x63DAf4fCFe18B9cd17E25c87127b4620d0A84f35',
     usdc:                getUSDCAddress(421614),
-    treasury:            '0xAFEFd36D0911c503f44768aef721162444ADeA1b',
+    treasury:            '0x1213e740F60b0113313d46daD5f58d88931747ad',
     token:               ZERO_ADDRESS, 
-    protocolRegistry:    '0x9c65A8baE28B663fc4613137C6c27F4300860f72',
-    userPreferences:     '0x8BEc849AB22bf570b5E7C92abC666c385635C4e9',
-    dateTime:            '0xE02b954494Ea690B54Ba63ED7E722C89C8926de5',
-    personalFund:        '0x8988d2f73d172Bd8Be60A2e3E658d24561ad31cC',
+    protocolRegistry:    '0x175920eacec162B842bdFea101EAd9B808566F3B',
+    userPreferences:     '0xE75C45262B21670c6A0Cd5D8eCF61d06D17a2fBd',
+    dateTime:            '0x3CAA7fdc538cC5DEA5a886687B6483FcaD703688',
+    personalFund:        '0xbc0302Ab7dF07D0a3E7Bd93A81092D94285a668b',
   },
 
   // 🟡 POLYGON AMOY — READY TO DEPLOY
