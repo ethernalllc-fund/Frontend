@@ -114,7 +114,6 @@ function formatErrorForUI(error: unknown): ErrorDisplay {
         suggestions: ['Recargá la página e intentá nuevamente'],
       };
     }
-    // Revert reason genérico
     return {
       title:   'Transacción Rechazada por el Contrato',
       message: revertReason,
@@ -236,9 +235,8 @@ export function ExecutionStep({
       setStep('approved');
       setAllowanceConfirmed(false);
 
-      // Polling: esperar hasta confirmar allowance on-chain antes de ejecutar
       if (!publicClient || !account || !usdcAddress) {
-        setAllowanceConfirmed(true); // sin cliente, intentar igual
+        setAllowanceConfirmed(true); 
         return;
       }
 
@@ -260,7 +258,6 @@ export function ExecutionStep({
             console.log(`[ExecutionStep] Allowance poll #${attempts}:`, allowance.toString());
           }
 
-          // MAX_UINT256 approve — cualquier valor > 0 es suficiente
           if (allowance > 0n) {
             setAllowanceConfirmed(true);
             return;
@@ -369,6 +366,7 @@ export function ExecutionStep({
         principal:      principalWei.toString(),
         monthlyDeposit: monthlyDepositWei.toString(),
         approvalAmount: approvalAmountWei.toString(),
+        expectedTransfer: (principalWei + monthlyDepositWei + calcFee(principalWei + monthlyDepositWei)).toString(),
         chainId,
       });
     }
