@@ -2,7 +2,6 @@ import { parseUnits, type Address } from 'viem';
 
 export const FEE_BASIS_POINTS = 500n;
 export const BASIS_POINTS     = 10_000n;
-
 export const PLAN_CONSTRAINTS = {
   minPrincipal:         0n,
   maxPrincipal:         parseUnits('100000', 6),
@@ -33,10 +32,10 @@ export interface RetirementPlan {
 
 export type RetirementPlanData = RetirementPlan;
 export interface RetirementPlanDerived {
-  initialDepositUsdc:  number; 
-  feeUsdc:             number; 
-  netToFundUsdc:       number; 
-  monthlyDepositUsdc:  number; 
+  initialDepositUsdc:  number;
+  feeUsdc:             number;
+  netToFundUsdc:       number;
+  monthlyDepositUsdc:  number;
   interestRateBps:     number;
   yearsToRetirement:   number;
 }
@@ -73,8 +72,7 @@ export function monthlyDepositAmount(plan: RetirementPlan): bigint {
 }
 
 export function requiredApprovalAmount(plan: RetirementPlan): bigint {
-  const deposit = initialDepositAmount(plan);
-  return deposit + calcFee(deposit);
+  return initialDepositAmount(plan); // solo principal + monthly, sin fee
 }
 
 export function buildCreateFundArgs(plan: RetirementPlan): readonly [
@@ -98,16 +96,16 @@ export function buildCreateFundArgs(plan: RetirementPlan): readonly [
 }
 
 export function derivePlanValues(plan: RetirementPlan): RetirementPlanDerived {
-  const depositWei = initialDepositAmount(plan); // bruto: principal + monthlyDeposit
-  const feeWei     = calcFee(depositWei);        // 5% del bruto → va al Treasury
-  const netWei     = depositWei - feeWei;        // neto → entra al fondo DeFi
+  const depositWei = initialDepositAmount(plan); // principal + monthlyDeposit
+  const feeWei     = calcFee(depositWei);        // 5% → va al Treasury (se cobra dentro del fondo)
+  const netWei     = depositWei - feeWei;        // neto → entra al fondo 
   const toUsdc     = (wei: bigint) => Number(wei) / 1_000_000;
 
   return {
-    initialDepositUsdc: toUsdc(depositWei),  // lo que sale de la wallet
-    feeUsdc:            toUsdc(feeWei),      // fee al Treasury
-    netToFundUsdc:      toUsdc(netWei),      // lo que entra al fondo
-    monthlyDepositUsdc: plan.monthlyDeposit, // bruto mensual (mes 2+)
+    initialDepositUsdc: toUsdc(depositWei),
+    feeUsdc:            toUsdc(feeWei),
+    netToFundUsdc:      toUsdc(netWei),
+    monthlyDepositUsdc: plan.monthlyDeposit,
     interestRateBps:    Math.round(plan.interestRate * 100),
     yearsToRetirement:  plan.retirementAge - plan.currentAge,
   };

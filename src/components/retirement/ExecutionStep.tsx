@@ -4,7 +4,7 @@ import { Loader2, CheckCircle, AlertCircle, ExternalLink } from 'lucide-react';
 import { parseUnits, erc20Abi } from 'viem';
 import type { Abi } from 'viem';
 import type { RetirementPlan } from '@/types/retirement_types';
-import { initialDepositAmount, calcFee, buildCreateFundArgs } from '@/types/retirement_types';
+import { initialDepositAmount, buildCreateFundArgs } from '@/types/retirement_types';
 import { getContractAddresses } from '@/config';
 import { PERSONAL_FUND_FACTORY_ABI } from '@/contracts/abis';
 
@@ -148,9 +148,9 @@ export function ExecutionStep({
 }: ExecutionStepProps) {
   const { address: account, chain } = useAccount();
   const publicClient = usePublicClient();
-  const [step,              setStep             ] = useState<TransactionStep>('idle');
-  const [errorDisplay,      setErrorDisplay      ] = useState<ErrorDisplay | null>(null);
-  const [allowanceConfirmed, setAllowanceConfirmed] = useState(false);
+  const [step,               setStep              ] = useState<TransactionStep>('idle');
+  const [errorDisplay,       setErrorDisplay       ] = useState<ErrorDisplay | null>(null);
+  const [allowanceConfirmed, setAllowanceConfirmed ] = useState(false);
 
   const successFiredRef = useRef(false);
   const chainId     = chain?.id ?? 421614;
@@ -162,8 +162,7 @@ export function ExecutionStep({
 
   const principalWei      = parseUSDC(plan.principal);
   const monthlyDepositWei = parseUSDC(plan.monthlyDeposit);
-  const depositAmountWei  = initialDepositAmount(plan);
-  const approvalAmountWei = depositAmountWei + calcFee(depositAmountWei);
+  const approvalAmountWei = initialDepositAmount(plan);
 
   const {
     writeContract: writeApproval,
@@ -173,6 +172,7 @@ export function ExecutionStep({
   } = useWriteContract();
 
   const { isSuccess: isApprovalSuccess } = useWaitForTransactionReceipt({ hash: approvalHash });
+
   const {
     writeContract: writeCreateFund,
     data:          txHash,
@@ -202,6 +202,7 @@ export function ExecutionStep({
       console.log('[ExecutionStep] createPersonalFund params:', {
         principal:            `${plan.principal} USDC → ${principalWei} wei`,
         monthlyDeposit:       `${plan.monthlyDeposit} USDC → ${monthlyDepositWei} wei`,
+        approvalAmount:       `${approvalAmountWei} wei (principal + monthly, sin fee)`,
         currentAge:           plan.currentAge,
         retirementAge:        plan.retirementAge,
         desiredMonthlyIncome: plan.desiredMonthlyIncome,
@@ -227,7 +228,7 @@ export function ExecutionStep({
     });
   }, [
     account, chain, factoryAddress, selectedProtocol,
-    plan, principalWei, monthlyDepositWei, writeCreateFund,
+    plan, principalWei, monthlyDepositWei, approvalAmountWei, writeCreateFund,
   ]);
 
   useEffect(() => {
@@ -236,7 +237,7 @@ export function ExecutionStep({
       setAllowanceConfirmed(false);
 
       if (!publicClient || !account || !usdcAddress) {
-        setAllowanceConfirmed(true); 
+        setAllowanceConfirmed(true);
         return;
       }
 
@@ -256,9 +257,10 @@ export function ExecutionStep({
 
           if (import.meta.env.DEV) {
             console.log(`[ExecutionStep] Allowance poll #${attempts}:`, allowance.toString());
+            console.log(`[ExecutionStep] Required:`, approvalAmountWei.toString());
           }
 
-          if (allowance > 0n) {
+          if (allowance >= approvalAmountWei) {
             setAllowanceConfirmed(true);
             return;
           }
@@ -274,13 +276,13 @@ export function ExecutionStep({
         }
       };
 
-      setTimeout(poll, 1_000); // primer intento después de 1s
+      setTimeout(poll, 1_000);
     }
-  }, [isApprovalSuccess, approvalHash, step, publicClient, account, usdcAddress, factoryAddress]);
+  }, [isApprovalSuccess, approvalHash, step, publicClient, account, usdcAddress, factoryAddress, approvalAmountWei]);
 
   useEffect(() => {
     if (step !== 'approved') return;
-    if (!allowanceConfirmed) return; // esperar confirmación on-chain
+    if (!allowanceConfirmed) return;
     handleCreateFund();
   }, [step, allowanceConfirmed, handleCreateFund]);
 
@@ -366,7 +368,6 @@ export function ExecutionStep({
         principal:      principalWei.toString(),
         monthlyDeposit: monthlyDepositWei.toString(),
         approvalAmount: approvalAmountWei.toString(),
-        expectedTransfer: (principalWei + monthlyDepositWei + calcFee(principalWei + monthlyDepositWei)).toString(),
         chainId,
       });
     }
@@ -374,7 +375,7 @@ export function ExecutionStep({
     if (needsApproval) {
       setStep('approving');
 
-      const MAX_UINT256 = BigInt("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+      const MAX_UINT256 = BigInt('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff');
       writeApproval({
         address:      usdcAddress,
         abi:          ERC20_APPROVE_ABI,
