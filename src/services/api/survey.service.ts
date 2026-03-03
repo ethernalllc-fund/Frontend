@@ -1,6 +1,6 @@
 import { z }           from 'zod';
 import { ApiError }    from '@/lib/api';
-import { API_URL }     from '@/lib/env';
+import { buildApiUrl } from '@/config/api.config';
 import { API_ENDPOINTS, API_CONFIG } from '@/config/api.config';
 
 export const SurveyCreateSchema = z.object({
@@ -80,7 +80,7 @@ const pendingStore = {
 };
 
 async function post<T>(endpoint: string, body: unknown): Promise<T> {
-  const url  = `${API_URL}${endpoint}`;
+  const url  = buildApiUrl(endpoint);
   const ctrl = new AbortController();
   const tid  = setTimeout(() => ctrl.abort(), API_CONFIG.TIMEOUT);
 

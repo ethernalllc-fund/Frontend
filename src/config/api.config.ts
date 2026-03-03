@@ -46,12 +46,12 @@ export const API_ENDPOINTS = {
   },
 
   CONTACT: {
-    BASE: '/contact',           // ✅ was '/contacts'
+    BASE: '/contact',        
   },
 
   SURVEY: {
     BASE:     '/surveys',
-    FOLLOWUP: '/surveys/follow-up',  // ✅ was '/surveys/followup'
+    FOLLOWUP: '/surveys/follow-up',  
   },
 
   ADMIN: {
@@ -70,7 +70,7 @@ export const API_ENDPOINTS = {
 export const buildApiUrl = (endpoint: string): string => {
   const base = API_CONFIG.BASE_URL.replace(/\/$/, '');
   const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-  return `${base}/api/v1${path}`;  // ✅ was '/v1', missing '/api'
+  return `${base}/api/v1${path}`; 
 };
 
 export const getHealthUrl = (): string =>
