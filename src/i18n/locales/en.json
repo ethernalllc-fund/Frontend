@@ -11,13 +11,55 @@
     "confirm": "Confirm",
     "yes": "Yes",
     "no": "No",
-    "wallet": "Wallet"
+    "wallet": "Wallet",
+    "copy": "Copy",
+    "copied": "Copied!"
+  },
+
+  "nav": {
+    "home": "Home",
+    "calculator": "Calculator",
+    "dashboard": "Dashboard",
+    "contact": "Contact",
+    "connectWallet": "Connect Wallet",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+
+  "wallet": {
+    "connectedWallet": "Connected Wallet",
+    "balance": "Balance",
+    "network": "Network",
+    "unknownNetwork": "Unknown network",
+    "switchTo": "Switch to",
+    "correctNetwork": "Correct network ✓",
+    "connectedTo": "Connected to",
+    "wrongNetwork": "Wrong network",
+    "viewFullAccount": "View full account",
+    "disconnect": "Disconnect",
+    "needTestEth": "Need test ETH?",
+    "yourWallet": "Your Wallet",
+    "language": "Language",
+    "copyAddress": "Copy address",
+    "viewOnExplorer": "View on explorer",
+    "account": "Account"
+  },
+
+  "footer": {
+    "tagline": "Plan your retirement on blockchain – securely and transparently",
+    "quickLinks": "Quick Links",
+    "followUs": "Follow Us",
+    "copyright": "Ethernal. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use",
+    "disclaimer": "Legal Disclaimer",
+    "builtOn": "Built on Arbitrum · Secure · Transparent · Decentralized"
   },
 
   "hero": {
     "title": "Your Financial Future on Blockchain",
-    "subtitle": "Plan your retirement with Ethernal: Secure, Transparent, and Decentralized on Arbitrum",
-    "ctaDisconnected": "Get Started",
+    "subtitle": "Plan your retirement with Ethernal: Secure, Transparent and Decentralized on Arbitrum",
+    "ctaDisconnected": "Get Started Now",
     "ctaConnected": "Go to Calculator"
   },
 
@@ -25,7 +67,7 @@
     "title": "Why Ethernal?",
     "security": {
       "title": "Security & Control",
-      "description": "Your funds are in audited smart contracts. Only you have control."
+      "description": "Your funds are held in audited smart contracts. You have full control."
     },
     "education": {
       "title": "Financial Education",
@@ -33,41 +75,41 @@
     },
     "fees": {
       "title": "Low Fees",
-      "description": "No intermediaries. Fees up to 10x lower than traditional funds."
+      "description": "No intermediaries. Fees up to 10× lower than traditional funds."
     }
   },
 
   "about": {
     "title": "About Ethernal",
-    "description": "Ethernal combines blockchain security with traditional financial planning to offer you a decentralized, transparent, and accessible retirement experience for everyone."
+    "description": "Ethernal combines blockchain security with traditional financial planning to deliver a decentralized, transparent, and accessible retirement experience for everyone."
   },
 
   "survey": {
     "title": "Retirement & Blockchain Survey",
-    "subtitle": "Help us understand how you perceive retirement and blockchain technology",
+    "subtitle": "Help us understand your views on retirement and blockchain technology",
     "bannerText": "Help us improve! Take our short survey on retirement and blockchain.",
     "bannerCta": "Take the Survey",
     "question1": "What is your age?",
-    "question2": "Do you trust traditional retirement systems (pension funds, 401k)?",
+    "question2": "Do you trust traditional retirement systems (pension funds, social security)?",
     "question3": "How familiar are you with blockchain/DeFi?",
     "question4": "How concerned are you about your financial future in retirement?",
     "question5": "Do you currently have a retirement plan?",
-    "question6": "Retirement values: security or growth?",
+    "question6": "Retirement priority: security or growth?",
     "question7": "Would you be interested in a blockchain-based retirement plan?",
     "ageOptions": {
-      "18-24": "18-24 years",
-      "25-34": "25-34 years",
-      "35-44": "35-44 years",
-      "45-54": "45-54 years",
-      "55-64": "55-64 years",
+      "18-24": "18–24 years",
+      "25-34": "25–34 years",
+      "35-44": "35–44 years",
+      "45-54": "45–54 years",
+      "55-64": "55–64 years",
       "65+": "65+ years"
     },
     "rating": {
-      "stronglyDisagree": "Strongly Disagree",
+      "stronglyDisagree": "Strongly disagree",
       "disagree": "Disagree",
       "neutral": "Neutral",
       "agree": "Agree",
-      "stronglyAgree": "Strongly Agree"
+      "stronglyAgree": "Strongly agree"
     },
     "selectAge": "Please select your age",
     "answerAll": "Please answer all questions",
@@ -79,48 +121,48 @@
 
   "followUp": {
     "successTitle": "Survey Completed!",
-    "successMessage": "Thank you for your participation. Your answers help us improve.",
-    "question1": "Would you like to receive information about Ethernal?",
-    "yesInterested": "Yes, I want updates",
-    "notNow": "No, thanks",
+    "successMessage": "Thank you for participating. Your answers help us improve.",
+    "question1": "Would you like to receive updates about Ethernal?",
+    "yesInterested": "Yes, send me updates",
+    "notNow": "No thanks",
     "question2": "Your email address",
-    "emailPlaceholder": "youremail@example.com",
+    "emailPlaceholder": "you@example.com",
     "finish": "Finish",
     "thankYou": "Thank you!",
     "willContact": "We'll contact you soon with updates.",
-    "helpImprove": "Your feedback helps us improve.",
-    "pleaseIndicate": "Please indicate your preference",
-    "enterEmail": "Please enter your email"
+    "helpImprove": "Your feedback helps us get better.",
+    "pleaseIndicate": "Please select an option",
+    "enterEmail": "Please enter your email address"
   },
 
   "contact": {
     "title": "Contact Us",
     "subtitle": "Questions? Our team is here to help",
-    "name": "Full name",
+    "name": "Full Name",
     "namePlaceholder": "John Doe",
-    "email": "Email address",
+    "email": "Email Address",
     "subject": "Subject",
-    "subjectPlaceholder": "e.g., Question about my fund",
+    "subjectPlaceholder": "E.g., Question about my fund",
     "message": "Message",
-    "messagePlaceholder": "Tell us how we can help...",
+    "messagePlaceholder": "Tell us how we can help you...",
     "messageHint": "Minimum 10 characters",
     "send": "Send Message",
     "sending": "Sending...",
-    "success": "Message sent!",
-    "successDetail": "Thank you for contacting us. We'll respond within 24-48 hours.",
-    "error": "Error sending. Please try again.",
+    "success": "Message Sent!",
+    "successDetail": "Thank you for reaching out. We'll reply within 24–48 hours.",
+    "error": "Error sending message. Please try again.",
     "walletConnected": "Wallet connected",
     "walletIncluded": "We'll include your wallet in the message:",
-    "otherWays": "Other contact methods",
+    "otherWays": "Other ways to reach us",
     "emailLabel": "Email",
     "responseTime": "Response time",
-    "responseTimeValue": "24-48 business hours",
+    "responseTimeValue": "24–48 business hours",
     "requiredFields": "* Required fields",
     "validation": {
       "nameRequired": "Name is required",
       "nameTooShort": "Name must be at least 2 characters",
       "emailRequired": "Email is required",
-      "emailInvalid": "Enter a valid email",
+      "emailInvalid": "Please enter a valid email",
       "messageRequired": "Message is required",
       "messageTooShort": "Message must be at least 10 characters",
       "formErrors": "Please correct the form errors"
@@ -130,17 +172,249 @@
   "calculator": {
     "title": "Retirement Calculator",
     "subtitle": "Simulate your personalized retirement plan",
-    "currentAge": "Current age",
-    "retirementAge": "Desired retirement age",
-    "monthlyDeposit": "Monthly savings (USDC)",
-    "currentSavings": "Current savings (USDC)",
-    "interestRate": "Expected annual interest rate (%)",
+    "currentAge": "Current Age",
+    "retirementAge": "Desired Retirement Age",
+    "monthlyDeposit": "Monthly Savings (USDC)",
+    "currentSavings": "Current Savings (USDC)",
+    "interestRate": "Expected Annual Interest Rate (%)",
     "calculate": "Calculate",
     "results": {
-      "projected": "Retirement projection",
-      "monthlyIncome": "Estimated monthly income",
-      "totalSaved": "Total saved",
-      "yearsCovered": "Years covered"
+      "projected": "Projected at Retirement",
+      "monthlyIncome": "Estimated Monthly Income",
+      "totalSaved": "Total Saved",
+      "yearsCovered": "Years Covered"
+    }
+  },
+
+  "createFund": {
+    "title": "Create My Fund",
+    "subtitle": "Plan calculated · Arbitrum Sepolia",
+    "steps": {
+      "review": "Review",
+      "balance": "Balance",
+      "approve": "Approve",
+      "create": "Create",
+      "success": "Done!"
+    },
+    "review": {
+      "title": "Plan Parameters",
+      "initialDeposit": "Initial Deposit",
+      "monthlyDeposit": "Monthly Savings",
+      "currentAge": "Current / Retirement Age",
+      "desiredIncome": "Desired Monthly Income",
+      "yearsPayments": "Years Receiving Payments",
+      "interestRate": "Expected Annual Rate",
+      "timelock": "Security Timelock",
+      "breakdown": {
+        "title": "Initial Deposit Breakdown",
+        "fromWallet": "From your wallet",
+        "fee": "Ethernal Fee (5%)",
+        "netToFund": "Net to your DeFi fund"
+      },
+      "investment": {
+        "title": "Investment Method",
+        "subtitle": "Choose how you want your retirement savings to grow",
+        "selectError": "Please select an investment method to continue."
+      },
+      "immutability": "Once created, these parameters cannot be changed. The {years}-year timelock is permanent.",
+      "continue": "Check Balance"
+    },
+    "balance": {
+      "title": "Balance Verification",
+      "subtitle": "We check your wallet on-chain. No gas, no transaction.",
+      "yourBalance": "Your USDC Balance",
+      "required": "Required",
+      "insufficient": "Insufficient",
+      "sufficient": "Sufficient",
+      "missing": "You need {amount} more",
+      "allowance": {
+        "title": "Current Allowance",
+        "alreadyApproved": "Already approved",
+        "requiresApproval": "Requires approval",
+        "needApproval": "You'll need to sign an approval tx (one-time)."
+      },
+      "nextSteps": {
+        "title": "Next steps required",
+        "approve": "Approve — ERC-20 approve for Factory",
+        "create": "Create fund — factory.createFund + initial deposit"
+      },
+      "insufficientBalance": "Insufficient balance. Get more test USDC from the faucet before continuing.",
+      "refresh": "Refresh",
+      "continueApprove": "Continue to Approval",
+      "continueCreate": "Continue to Create Fund"
+    },
+    "approve": {
+      "title": "Authorize USDC",
+      "subtitle": "Allow the Factory to move your tokens (one-time)",
+      "whatIs": {
+        "title": "What is Approve?",
+        "description": "On Ethereum, ERC-20 tokens (like USDC) require you to explicitly authorize a contract before it can move them. It's a security standard: the contract can only spend up to the approved amount.",
+        "note": "This approval does **not** move any funds. The transfer happens in the next step."
+      },
+      "details": {
+        "contract": "Recipient Contract",
+        "token": "Token",
+        "amount": "Amount to Authorize"
+      },
+      "button": "Approve USDC",
+      "waiting": "Waiting…",
+      "next": "Continue to Create Fund"
+    },
+    "create": {
+      "title": "Create the Fund",
+      "subtitle": "The factory will deploy your personal contract and make the initial deposit",
+      "summary": {
+        "title": "Transaction Summary",
+        "initialDeposit": "Initial Deposit",
+        "fee": "Ethernal Fee (5%)",
+        "netToFund": "Net to Fund",
+        "protocol": "DeFi Protocol",
+        "timelock": "Timelock"
+      },
+      "button": "Create My Fund",
+      "processing": "Processing…"
+    },
+    "success": {
+      "title": "Fund Created!",
+      "subtitle": "Your personal contract now lives on the blockchain.",
+      "txHash": "Transaction Hash",
+      "fundAddress": "Fund Address",
+      "nextSteps": {
+        "title": "Next Steps",
+        "step1": "Make monthly deposits of {amount} to reach your goal.",
+        "step2": "Track your progress and DeFi performance from the Dashboard.",
+        "step3": "Once the timelock ends, you can start scheduled withdrawals."
+      },
+      "goToDashboard": "Go to Dashboard",
+      "redirecting": "Redirecting automatically in {seconds}s…"
+    },
+    "back": {
+      "toCalculator": "Back to Calculator",
+      "previous": "Previous Step"
+    }
+  },
+
+  "dashboard": {
+    "title": "Your Ethernal Dashboard",
+    "welcome": "Welcome, {address}",
+    "subtitle": "Manage your financial future on blockchain",
+    "refresh": "Refresh Data",
+    "personalFund": {
+      "title": "My Personal Fund",
+      "active": "Active",
+      "noFund": "No Fund",
+      "currentBalance": "Current Balance",
+      "fundStatus": "Fund Status",
+      "retired": "Retired",
+      "saving": "Saving",
+      "progress": {
+        "title": "Progress Toward Goal",
+        "current": "Current",
+        "projected": "Projected",
+        "target": "Target",
+        "monthsRemaining": "{months} months remaining until timelock"
+      },
+      "stats": {
+        "principal": "Principal",
+        "monthlyDeposit": "Monthly Deposit",
+        "totalDeposits": "Total Deposits",
+        "retirementAge": "Retirement Age",
+        "years": "years"
+      },
+      "contractAddress": "Contract Address",
+      "viewOnArbiscan": "View on Arbiscan",
+      "timelock": {
+        "ends": "Timelock ends:",
+        "never": "Never",
+        "daysRemaining": "{days} days remaining"
+      },
+      "actions": {
+        "deposit": "Make Deposit",
+        "startRetirement": "Start Retirement",
+        "createFund": "Create My Fund"
+      },
+      "noFundMessage": "You don't have a retirement fund yet"
+    },
+    "defiInvestments": {
+      "title": "DeFi Investments",
+      "description": "Your funds can be invested in approved DeFi protocols to generate yield",
+      "viewOpportunities": "View Opportunities"
+    },
+    "preferences": {
+      "title": "My Preferences",
+      "subtitle": "Configure your on-chain investment profile. These settings determine how your deposits are routed.",
+      "currentConfig": "Current config: ",
+      "risk": {
+        "title": "Risk Level",
+        "conservador": "Conservative",
+        "moderado": "Moderate",
+        "agresivo": "Aggressive",
+        "conservador_desc": "Low risk, stable returns, capital protection",
+        "moderado_desc": "Balance between growth and stability – ideal for long term",
+        "agresivo_desc": "Maximum yield potential with higher risk exposure"
+      },
+      "protocol": {
+        "title": "Preferred Protocol",
+        "noProtocols": "No active protocols registered",
+        "verified": "Verified",
+        "apy": "APY"
+      },
+      "saveSuccess": "Preferences saved on-chain",
+      "saveError": "Error saving preferences",
+      "saveButton": "Save Settings",
+      "saving": "Saving..."
+    },
+    "strategy": {
+      "title": "Protocol Registry",
+      "subtitle": "Deposit routing strategy and metrics of verified protocols.",
+      "types": {
+        "concentrado": "Concentrated",
+        "diversificado": "Diversified",
+        "hibrido": "Hybrid",
+        "concentrado_desc": "Everything in the best available protocol according to your profile",
+        "diversificado_desc": "Spread across multiple protocols to reduce risk",
+        "hibrido_desc": "Dynamic allocation adjusted to market performance"
+      },
+      "saveSuccess": "Strategy saved on-chain",
+      "saveButton": "Save Strategy",
+      "saving": "Saving...",
+      "activeProtocols": "Active Protocols",
+      "verified": "verified",
+      "viewMore": "View {count} more",
+      "noProtocols": "No protocols registered yet"
+    },
+    "teamContent": {
+      "title": "From the Ethernal Team",
+      "subtitle": "Financial recommendations and educational content published by the Admin."
+    },
+    "support": {
+      "title": "Need Help?",
+      "description": "Contact the Ethernal team for questions about your retirement plan or investment strategies",
+      "contact": "Contact Ethernal",
+      "documentation": "View Documentation"
+    },
+    "depositModal": {
+      "title": "Make a Deposit",
+      "monthly": "Monthly",
+      "custom": "Custom",
+      "monthlyAmount": "Configured monthly amount",
+      "amountLabel": "Amount in USDC",
+      "amountPlaceholder": "E.g. 500.00",
+      "amountError": "Enter a valid amount (max 6 decimals)",
+      "insufficientBalance": "Insufficient USDC balance. You need {amount} more.",
+      "twoTransactions": "Two transactions will be required: USDC approval + deposit.",
+      "status": {
+        "approving": "Waiting for approval in wallet...",
+        "approvingConfirming": "Confirming approval on-chain...",
+        "executing": "Waiting for deposit in wallet...",
+        "confirming": "Confirming deposit on-chain..."
+      },
+      "buttons": {
+        "approveAndDeposit": "Approve & Deposit",
+        "confirmDeposit": "Confirm Deposit",
+        "processing": "Processing...",
+        "cancel": "Cancel"
+      }
     }
   },
 
@@ -148,6 +422,46 @@
     "somethingWrong": "Something went wrong. Please try again.",
     "networkError": "Network error. Check your connection.",
     "walletRequired": "Connect your wallet to continue",
-    "wrongNetwork": "Wrong network. Switch to Arbitrum Sepolia"
+    "wrongNetwork": "Wrong network. Switch to Arbitrum Sepolia",
+    "wrongNetworkTitle": "Wrong Network",
+    "wrongNetworkMessage": "Switch to {network} (Chain ID {chainId}) to continue.",
+    "alreadyHaveFund": "You Already Have a Fund",
+    "alreadyHaveFundMessage": "You can only have one fund per wallet. Your fund: {address}",
+    "approvalPending": "Approval pending. Wait for the approve to confirm before continuing."
+  },
+
+  "faucet": {
+    "connectWallet": "Connect your wallet to receive test USDC.",
+    "success": {
+      "title": "Tokens Received!",
+      "amount": "USDC received: {amount} USDC",
+      "balance": "Current balance: {balance} USDC"
+    },
+    "error": {
+      "title": "Error Requesting Tokens",
+      "rateLimit": "Request limit reached",
+      "rateLimitMessage": "The faucet allows one request every 24 hours per wallet."
+    },
+    "info": {
+      "mockUSDC": "MockUSDC",
+      "forFund": "for your fund",
+      "ethGas": "ETH for gas",
+      "forTransactions": "for transactions"
+    },
+    "button": "Get Test USDC",
+    "minting": "Minting USDC…",
+    "disclaimer": "USDC on Arbitrum Sepolia · Limit: 1 request / 24h per wallet"
+  },
+
+  "network": {
+    "wrongDetected": "Wrong Network Detected",
+    "youAreOn": "You are on {network}. Please switch to {expected}.",
+    "switchButton": "Switch to {network}"
+  },
+
+  "loading": {
+    "ethernal": "Loading Ethernal",
+    "connecting": "Connecting to blockchain...",
+    "dashboard": "Loading your Dashboard..."
   }
 }
