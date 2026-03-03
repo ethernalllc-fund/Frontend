@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, startTransition } from 'react';
+import { useState, useEffect, useCallback, useRef, startTransition } from 'react';
 import {
   useWriteContract,
   useWaitForTransactionReceipt,
@@ -19,9 +19,9 @@ export interface UseUSDCApprovalReturn {
   approveMax: () => Promise<void>;
   reset:      () => void;
 
-  isApproving:  boolean;   // wallet abierta / esperando firma
-  isConfirming: boolean;   // tx enviada, esperando confirmación on-chain
-  isSuccess:    boolean;   // tx confirmada con éxito
+  isApproving:  boolean;  
+  isConfirming: boolean;   
+  isSuccess:    boolean;  
   isError:      boolean;
   hash?:        `0x${string}`;
   error:        Error | null;
@@ -67,7 +67,11 @@ export function useUSDCApproval({
   const { address }  = useAccount();
   const usdcAddress  = useUSDCAddress();
   const [localError, setLocalError] = useState<Error | null>(null);
-
+  const onSuccessRef = useRef(onSuccess);
+  const onErrorRef   = useRef(onError);
+  useEffect(() => { onSuccessRef.current = onSuccess; }, [onSuccess]);
+  useEffect(() => { onErrorRef.current   = onError;   }, [onError]);
+  const confirmedHashRef = useRef<`0x${string}` | null>(null);
   const {
     writeContract,
     data:       hash,
@@ -82,8 +86,6 @@ export function useUSDCApproval({
     error:     txError,
   } = useWaitForTransactionReceipt({ hash });
 
-  // ─── FIX: validateCommon memoizado para que _doApprove capture siempre
-  // los valores actuales de address/usdcAddress/spender desde su closure ───────
   const validateCommon = useCallback((): Error | null => {
     if (!address)     return new Error('Wallet not connected.');
     if (!usdcAddress) return new Error('USDC contract not found for this network.');
@@ -97,7 +99,7 @@ export function useUSDCApproval({
       const validationError = validateCommon();
       if (validationError) {
         setLocalError(validationError);
-        onError?.(validationError);
+        onErrorRef.current?.(validationError);
         throw validationError;
       }
 
@@ -125,32 +127,33 @@ export function useUSDCApproval({
         maxPriorityFeePerGas:   1_000_000n, // 0.001 gwei
       });
     },
-    [validateCommon, address, usdcAddress, spender, writeContract, onError],
+    [validateCommon, address, usdcAddress, spender, writeContract],
   );
 
   const approve = useCallback(async (): Promise<void> => {
     if (!amount || parseFloat(amount) <= 0) {
       const err = new Error('Amount must be greater than 0.');
       setLocalError(err);
-      onError?.(err);
+      onErrorRef.current?.(err);
       throw err;
     }
     await _doApprove(parseUSDC(amount));
-  }, [amount, _doApprove, onError]);
+  }, [amount, _doApprove]);
 
   const approveMax = useCallback(async (): Promise<void> => {
     await _doApprove(MAX_UINT256);
   }, [_doApprove]);
 
   const reset = useCallback(() => {
-    startTransition(() => {
-      setLocalError(null);
-    });
+    startTransition(() => { setLocalError(null); });
+    confirmedHashRef.current = null; // permite una nueva aprobación futura
     resetWrite();
   }, [resetWrite]);
 
   useEffect(() => {
     if (!isSuccess || !hash) return;
+    if (confirmedHashRef.current === hash) return; // ya procesado
+    confirmedHashRef.current = hash;
 
     if (import.meta.env.DEV) {
       console.log('[useUSDCApproval] Approval confirmed on-chain', {
@@ -159,29 +162,23 @@ export function useUSDCApproval({
       });
     }
 
-    startTransition(() => {
-      setLocalError(null);
-    });
-    onSuccess?.(hash);
-  }, [isSuccess, hash, onSuccess, spender]);
+    startTransition(() => { setLocalError(null); });
+    onSuccessRef.current?.(hash);
+  }, [isSuccess, hash, spender]);
 
   useEffect(() => {
     if (!writeError) return;
     const classified = classifyError(writeError);
-    startTransition(() => {
-      setLocalError(classified);
-    });
-    onError?.(classified);
-  }, [writeError, onError]);
+    startTransition(() => { setLocalError(classified); });
+    onErrorRef.current?.(classified);
+  }, [writeError]);
 
   useEffect(() => {
     if (!txError) return;
     const classified = classifyError(txError);
-    startTransition(() => {
-      setLocalError(classified);
-    });
-    onError?.(classified);
-  }, [txError, onError]);
+    startTransition(() => { setLocalError(classified); });
+    onErrorRef.current?.(classified);
+  }, [txError]);
 
   const finalError: Error | null =
     (txError ? classifyError(txError) : null) ??
