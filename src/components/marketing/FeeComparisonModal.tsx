@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const ETHERNAL_FEE = 0.03;
 const CORPORATE_FEES = {
@@ -29,7 +30,7 @@ function simulate(monthly: number, years: number, isEthernal: boolean): SimResul
     : (CORP_APY - CORPORATE_FEES.management - CORPORATE_FEES.admin) / 12;
 
   for (let m = 1; m <= months; m++) {
-    const entryFee  = monthly * (isEthernal ? ETHERNAL_FEE : CORPORATE_FEES.entry);
+    const entryFee   = monthly * (isEthernal ? ETHERNAL_FEE : CORPORATE_FEES.entry);
     const netDeposit = monthly - entryFee;
     totalDeposited  += monthly;
     totalFeesPaid   += entryFee;
@@ -73,7 +74,7 @@ function AnimatedNumber({ value }: { value: number }) {
     };
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [value]); 
+  }, [value]);
 
   return <span>{display.toLocaleString('es-AR')}</span>;
 }
@@ -112,6 +113,7 @@ function CompRow({ label, ethVal, corpVal, better }: { label: string; ethVal: st
 }
 
 function FeeComparisonContent() {
+  const { t } = useTranslation();
   const [monthly, setMonthly] = useState(500);
   const [years,   setYears]   = useState(30);
   const [tab,     setTab]     = useState<'result' | 'breakdown' | 'fees'>('result');
@@ -127,11 +129,16 @@ function FeeComparisonContent() {
   const yPct       = ((years - 5) / (40 - 5)) * 100;
 
   const s = {
-    card: { background: 'rgba(255,255,255,.03)', border: '1px solid rgba(255,255,255,.08)', borderRadius: '18px', padding: '22px', marginBottom: '16px' } as React.CSSProperties,
-    slider: { width: '100%', appearance: 'none' as const, height: '4px', borderRadius: '2px', outline: 'none', cursor: 'pointer' },
-    tab: (a: boolean) => ({ flex: 1, padding: '9px 0', border: a ? '1px solid rgba(0,200,150,.25)' : '1px solid transparent', background: a ? 'rgba(0,200,150,.15)' : 'transparent', color: a ? '#00e5b0' : '#8899aa', borderRadius: '9px', cursor: 'pointer', fontFamily: 'Outfit,sans-serif', fontSize: '13px', fontWeight: a ? 600 : 400, transition: 'all .2s' } as React.CSSProperties),
+    card:    { background: 'rgba(255,255,255,.03)', border: '1px solid rgba(255,255,255,.08)', borderRadius: '18px', padding: '22px', marginBottom: '16px' } as React.CSSProperties,
+    slider:  { width: '100%', appearance: 'none' as const, height: '4px', borderRadius: '2px', outline: 'none', cursor: 'pointer' },
+    tab:     (a: boolean) => ({ flex: 1, padding: '9px 0', border: a ? '1px solid rgba(0,200,150,.25)' : '1px solid transparent', background: a ? 'rgba(0,200,150,.15)' : 'transparent', color: a ? '#00e5b0' : '#8899aa', borderRadius: '9px', cursor: 'pointer', fontFamily: 'Outfit,sans-serif', fontSize: '13px', fontWeight: a ? 600 : 400, transition: 'all .2s' } as React.CSSProperties),
     insight: { display: 'flex', gap: '12px', alignItems: 'flex-start', background: 'rgba(0,200,150,.07)', border: '1px solid rgba(0,200,150,.2)', borderRadius: '13px', padding: '16px', marginBottom: '10px' } as React.CSSProperties,
   };
+
+  const sliders = [
+    { label: t('feeModal.monthlyDeposit'), val: fmt(monthly), min: 100, max: 5000, step: 50,  pct: mPct, onChange: (v: number) => setMonthly(v), lo: '$100',    hi: '$5.000'  },
+    { label: t('feeModal.horizon'),        val: t('feeModal.years', { count: years }), min: 5, max: 40, step: 1, pct: yPct, onChange: (v: number) => setYears(v), lo: t('feeModal.yearsMin'), hi: t('feeModal.yearsMax') },
+  ];
 
   return (
     <div style={{ fontFamily: 'Outfit,sans-serif', color: '#e8f0ff' }}>
@@ -139,23 +146,20 @@ function FeeComparisonContent() {
       {/* Header */}
       <div style={{ marginBottom: '24px' }}>
         <span style={{ fontFamily: 'DM Mono,monospace', fontSize: '10px', letterSpacing: '3px', color: '#00c896', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
-          Análisis comparativo
+          {t('feeModal.headerLabel')}
         </span>
         <h2 style={{ fontFamily: 'DM Serif Display,serif', fontSize: 'clamp(26px,4vw,42px)', lineHeight: 1.05, fontWeight: 400, margin: '0 0 6px', background: 'linear-gradient(135deg,#e8f0ff,#a0b4cc)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-          Tu jubilación,{' '}<em>sin intermediarios.</em>
+          {t('feeModal.title')}
         </h2>
         <p style={{ color: '#8899aa', fontSize: '14px', margin: 0 }}>
-          Calculá cuánto más acumulás cuando las comisiones trabajan para vos, no contra vos.
+          {t('feeModal.subtitle')}
         </p>
       </div>
 
       {/* Sliders */}
       <div style={s.card}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '28px' }}>
-          {[
-            { label: 'Depósito mensual', val: fmt(monthly), min: 100, max: 5000, step: 50, pct: mPct, onChange: (v: number) => setMonthly(v), lo: '$100', hi: '$5.000' },
-            { label: 'Horizonte',        val: `${years} años`,   min: 5,   max: 40,   step: 1,  pct: yPct, onChange: (v: number) => setYears(v),   lo: '5 años', hi: '40 años' },
-          ].map(({ label, val, min, max, step, pct, onChange, lo, hi }) => (
+          {sliders.map(({ label, val, min, max, step, pct, onChange, lo, hi }) => (
             <div key={label}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                 <span style={{ fontSize: '12px', color: '#8899aa' }}>{label}</span>
@@ -163,7 +167,7 @@ function FeeComparisonContent() {
               </div>
               <input
                 type="range" min={min} max={max} step={step}
-                value={label === 'Horizonte' ? years : monthly}
+                value={label === t('feeModal.horizon') ? years : monthly}
                 onChange={e => onChange(+e.target.value)}
                 style={{ ...s.slider, background: `linear-gradient(to right,#00c896 0%,#00c896 ${pct}%,rgba(255,255,255,.1) ${pct}%,rgba(255,255,255,.1) 100%)` }}
               />
@@ -183,26 +187,26 @@ function FeeComparisonContent() {
           <p style={{ fontFamily: 'DM Serif Display,serif', fontSize: 'clamp(22px,3vw,34px)', color: '#00e5b0', margin: '0 0 6px', lineHeight: 1.1 }}>
             $<AnimatedNumber value={Math.round(eth.balance)} />
           </p>
-          <p style={{ fontFamily: 'DM Mono,monospace', fontSize: '11px', color: '#8899aa' }}>Fee único: 3% por depósito</p>
-          <p style={{ fontFamily: 'DM Mono,monospace', fontSize: '11px', color: '#8899aa' }}>DeFi: ~{fmtPct(AAVE_APY)} APY (Aave)</p>
+          <p style={{ fontFamily: 'DM Mono,monospace', fontSize: '11px', color: '#8899aa' }}>{t('feeModal.ethFeeLabel')}</p>
+          <p style={{ fontFamily: 'DM Mono,monospace', fontSize: '11px', color: '#8899aa' }}>{t('feeModal.ethApy', { apy: fmtPct(AAVE_APY) })}</p>
           <span style={{ display: 'inline-block', marginTop: '10px', background: 'linear-gradient(135deg,#00c896,#00a67e)', color: '#001a14', fontFamily: 'DM Mono,monospace', fontSize: '10px', fontWeight: 500, padding: '3px 9px', borderRadius: '20px', letterSpacing: '1px' }}>
-            +{fmt(advantage)} EXTRA
+            +{fmt(advantage)} {t('feeModal.extra')}
           </span>
         </div>
         <div style={{ borderRadius: '18px', padding: '22px 18px', border: '1px solid rgba(255,77,109,.2)', background: 'radial-gradient(ellipse at top left,rgba(255,77,109,.07) 0%,transparent 60%)' }}>
-          <p style={{ fontFamily: 'DM Mono,monospace', fontSize: '10px', letterSpacing: '2px', color: '#8899aa', textTransform: 'uppercase', marginBottom: '8px' }}>🏦 Fondo Corporativo</p>
+          <p style={{ fontFamily: 'DM Mono,monospace', fontSize: '10px', letterSpacing: '2px', color: '#8899aa', textTransform: 'uppercase', marginBottom: '8px' }}>🏦 {t('feeModal.corpName')}</p>
           <p style={{ fontFamily: 'DM Serif Display,serif', fontSize: 'clamp(22px,3vw,34px)', color: '#ff8099', margin: '0 0 6px', lineHeight: 1.1 }}>
             $<AnimatedNumber value={Math.round(corp.balance)} />
           </p>
-          <p style={{ fontFamily: 'DM Mono,monospace', fontSize: '11px', color: '#8899aa' }}>Gestión 1.5% + Admin 0.5% + Entrada 3%</p>
-          <p style={{ fontFamily: 'DM Mono,monospace', fontSize: '11px', color: '#8899aa' }}>Bruto: ~{fmtPct(CORP_APY)} (neto mucho menos)</p>
+          <p style={{ fontFamily: 'DM Mono,monospace', fontSize: '11px', color: '#8899aa' }}>{t('feeModal.corpFeeLabel')}</p>
+          <p style={{ fontFamily: 'DM Mono,monospace', fontSize: '11px', color: '#8899aa' }}>{t('feeModal.corpApy', { apy: fmtPct(CORP_APY) })}</p>
         </div>
       </div>
 
       {/* Chart */}
       <div style={{ ...s.card, paddingBottom: '14px' }}>
         <div style={{ display: 'flex', gap: '14px', marginBottom: '12px' }}>
-          {[['#00c896', 'Ethernal Fund'], ['#ff4d6d', 'Fondo Corporativo']].map(([c, l]) => (
+          {[['#00c896', 'Ethernal Fund'], ['#ff4d6d', t('feeModal.corpName')]].map(([c, l]) => (
             <div key={l} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <div style={{ width: 10, height: 10, borderRadius: 2, background: c }} />
               <span style={{ fontSize: '11px', color: '#8899aa' }}>{l}</span>
@@ -211,7 +215,7 @@ function FeeComparisonContent() {
         </div>
         <MiniChart ethH={eth.history} corpH={corp.history} />
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px' }}>
-          {['Año 1', `Año ${Math.floor(years / 2)}`, `Año ${years}`].map(l => (
+          {[t('feeModal.year1'), t('feeModal.yearMid', { year: Math.floor(years / 2) }), t('feeModal.yearEnd', { year: years })].map(l => (
             <span key={l} style={{ fontFamily: 'DM Mono,monospace', fontSize: '10px', color: '#445566' }}>{l}</span>
           ))}
         </div>
@@ -221,7 +225,7 @@ function FeeComparisonContent() {
       <div style={{ display: 'flex', gap: '4px', background: 'rgba(255,255,255,.04)', borderRadius: '12px', padding: '4px', marginBottom: '16px' }}>
         {(['result', 'breakdown', 'fees'] as const).map((id, i) => (
           <button key={id} onClick={() => setTab(id)} style={s.tab(tab === id)}>
-            {['Resultados', 'Comparativa', 'Fees'][i]}
+            {[t('feeModal.tabResults'), t('feeModal.tabBreakdown'), t('feeModal.tabFees')][i]}
           </button>
         ))}
       </div>
@@ -246,48 +250,38 @@ function FeeComparisonContent() {
       {tab === 'breakdown' && (
         <div style={s.card}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', paddingBottom: '10px', borderBottom: '1px solid rgba(255,255,255,.1)', marginBottom: '4px' }}>
-            <span style={{ fontFamily: 'DM Mono,monospace', fontSize: '10px', color: '#8899aa', letterSpacing: '2px', textTransform: 'uppercase' }}>Métrica</span>
+            <span style={{ fontFamily: 'DM Mono,monospace', fontSize: '10px', color: '#8899aa', letterSpacing: '2px', textTransform: 'uppercase' }}>{t('feeModal.colMetric')}</span>
             <span style={{ fontFamily: 'DM Mono,monospace', fontSize: '10px', color: '#00e5b0', letterSpacing: '2px', textTransform: 'uppercase', textAlign: 'center' }}>🌿 Ethernal</span>
-            <span style={{ fontFamily: 'DM Mono,monospace', fontSize: '10px', color: '#ff8099', letterSpacing: '2px', textTransform: 'uppercase', textAlign: 'center' }}>🏦 Corp.</span>
+            <span style={{ fontFamily: 'DM Mono,monospace', fontSize: '10px', color: '#ff8099', letterSpacing: '2px', textTransform: 'uppercase', textAlign: 'center' }}>🏦 {t('feeModal.colCorp')}</span>
           </div>
-          <CompRow label="Capital final"         ethVal={fmt(eth.balance)}           corpVal={fmt(corp.balance)}           better="eth" />
-          <CompRow label="Comisiones pagadas"     ethVal={fmt(eth.totalFeesPaid)}     corpVal={fmt(corp.totalFeesPaid)}     better="eth" />
-          <CompRow label="Retorno sobre capital"  ethVal={`${ethEff.toFixed(1)}%`}    corpVal={`${corpEff.toFixed(1)}%`}   better="eth" />
-          <CompRow label="Fee de entrada"         ethVal="3% único"                   corpVal="3% cada aporte"             better="eth" />
-          <CompRow label="Fee anual gestión"       ethVal="0%"                         corpVal="1.5% + 0.5% admin"          better="eth" />
-          <CompRow label="Fee de salida"           ethVal="0% (normal)"                corpVal="1% + penalidad"             better="eth" />
-          <CompRow label="Transparencia"           ethVal="100% on-chain"              corpVal="Prospecto + auditoría"      better="eth" />
-          <CompRow label="Custodia"                ethVal="Smart contract"             corpVal="Entidad financiera"         better="eth" />
+          <CompRow label={t('feeModal.row.finalCapital')}     ethVal={fmt(eth.balance)}           corpVal={fmt(corp.balance)}           better="eth" />
+          <CompRow label={t('feeModal.row.feesPaid')}         ethVal={fmt(eth.totalFeesPaid)}     corpVal={fmt(corp.totalFeesPaid)}     better="eth" />
+          <CompRow label={t('feeModal.row.returnOnCapital')}  ethVal={`${ethEff.toFixed(1)}%`}    corpVal={`${corpEff.toFixed(1)}%`}   better="eth" />
+          <CompRow label={t('feeModal.row.entryFee')}         ethVal={t('feeModal.row.ethEntry')} corpVal={t('feeModal.row.corpEntry')} better="eth" />
+          <CompRow label={t('feeModal.row.annualFee')}        ethVal="0%"                         corpVal="1.5% + 0.5% admin"          better="eth" />
+          <CompRow label={t('feeModal.row.exitFee')}          ethVal={t('feeModal.row.ethExit')}  corpVal={t('feeModal.row.corpExit')} better="eth" />
+          <CompRow label={t('feeModal.row.transparency')}     ethVal={t('feeModal.row.ethTransparency')} corpVal={t('feeModal.row.corpTransparency')} better="eth" />
+          <CompRow label={t('feeModal.row.custody')}          ethVal={t('feeModal.row.ethCustody')}     corpVal={t('feeModal.row.corpCustody')}     better="eth" />
         </div>
       )}
 
       {/* Tab: Fees */}
       {tab === 'fees' && (
         <div>
-          <h3 style={{ fontFamily: 'DM Serif Display,serif', fontSize: '20px', color: '#00e5b0', margin: '0 0 12px' }}>🌿 Ethernal — Estructura simple</h3>
-          {[
-            ['Fee por depósito', '3% · Va al Treasury on-chain', 'Sin fees ocultos, sin gestión anual, sin penalidades de salida estándar.', true],
-            ['Retiro anticipado', '7% · Solo antes del timelock', 'Desincentiva el cortoplacismo. Si esperás al vencimiento, es 0%.', true],
-            ['Gas (Arbitrum L2)', '~$0.01-$0.10 por tx', 'Prácticamente despreciable vs cualquier alternativa tradicional.', true],
-          ].map(([l, v, d]) => (
-            <div key={l as string} style={{ background: 'rgba(0,200,150,.06)', border: '1px solid rgba(0,200,150,.2)', borderRadius: '13px', padding: '14px 18px', marginBottom: '10px' }}>
-              <div style={{ fontSize: '12px', color: '#8899aa', marginBottom: '3px' }}>{l as string}</div>
-              <div style={{ fontFamily: 'DM Mono,monospace', color: '#00e5b0', fontWeight: 500, fontSize: '13px' }}>{v as string}</div>
-              <div style={{ fontSize: '11px', color: '#8899aa', marginTop: '4px' }}>{d as string}</div>
+          <h3 style={{ fontFamily: 'DM Serif Display,serif', fontSize: '20px', color: '#00e5b0', margin: '0 0 12px' }}>🌿 {t('feeModal.ethStructureTitle')}</h3>
+          {(t('feeModal.ethFees', { returnObjects: true }) as { label: string; value: string; desc: string }[]).map(({ label, value, desc }) => (
+            <div key={label} style={{ background: 'rgba(0,200,150,.06)', border: '1px solid rgba(0,200,150,.2)', borderRadius: '13px', padding: '14px 18px', marginBottom: '10px' }}>
+              <div style={{ fontSize: '12px', color: '#8899aa', marginBottom: '3px' }}>{label}</div>
+              <div style={{ fontFamily: 'DM Mono,monospace', color: '#00e5b0', fontWeight: 500, fontSize: '13px' }}>{value}</div>
+              <div style={{ fontSize: '11px', color: '#8899aa', marginTop: '4px' }}>{desc}</div>
             </div>
           ))}
-          <h3 style={{ fontFamily: 'DM Serif Display,serif', fontSize: '20px', color: '#ff8099', margin: '16px 0 12px' }}>🏦 Corporativo — Estructura típica</h3>
-          {[
-            ['Entry load', '3% sobre cada aporte', 'Cobra desde el primer peso, antes de invertir.'],
-            ['Fee de gestión anual (TER)', '1.5% sobre el saldo', 'Se cobra aunque el fondo rinda negativo.'],
-            ['Fee de administración', '0.5% anual', 'Costos operativos trasladados al inversor.'],
-            ['Fee de performance', '20% sobre ganancias', 'Solo visible en el prospecto, raramente en los estados.'],
-            ['Fee de salida / rescate', '1% al retirar', 'Penalidad por liquidar tu posición.'],
-          ].map(([l, v, d]) => (
-            <div key={l} style={{ background: 'rgba(255,100,120,.06)', border: '1px solid rgba(255,100,120,.15)', borderRadius: '13px', padding: '14px 18px', marginBottom: '10px' }}>
-              <div style={{ fontSize: '12px', color: '#8899aa', marginBottom: '3px' }}>{l}</div>
-              <div style={{ fontFamily: 'DM Mono,monospace', color: '#ff8099', fontWeight: 500, fontSize: '13px' }}>{v}</div>
-              <div style={{ fontSize: '11px', color: '#8899aa', marginTop: '4px' }}>{d}</div>
+          <h3 style={{ fontFamily: 'DM Serif Display,serif', fontSize: '20px', color: '#ff8099', margin: '16px 0 12px' }}>🏦 {t('feeModal.corpStructureTitle')}</h3>
+          {(t('feeModal.corpFees', { returnObjects: true }) as { label: string; value: string; desc: string }[]).map(({ label, value, desc }) => (
+            <div key={label} style={{ background: 'rgba(255,100,120,.06)', border: '1px solid rgba(255,100,120,.15)', borderRadius: '13px', padding: '14px 18px', marginBottom: '10px' }}>
+              <div style={{ fontSize: '12px', color: '#8899aa', marginBottom: '3px' }}>{label}</div>
+              <div style={{ fontFamily: 'DM Mono,monospace', color: '#ff8099', fontWeight: 500, fontSize: '13px' }}>{value}</div>
+              <div style={{ fontSize: '11px', color: '#8899aa', marginTop: '4px' }}>{desc}</div>
             </div>
           ))}
         </div>
@@ -295,24 +289,20 @@ function FeeComparisonContent() {
 
       {/* Disclaimer */}
       <p style={{ fontFamily: 'DM Mono,monospace', fontSize: '10px', color: '#334455', letterSpacing: '1px', textAlign: 'center', marginTop: '24px' }}>
-        Simulación orientativa · Rendimiento DeFi real puede variar · No es asesoría financiera
+        {t('feeModal.disclaimer')}
       </p>
     </div>
   );
 }
 
 interface FeeComparisonModalProps {
-  isOpen:   boolean;
-  onClose:  () => void;
+  isOpen:  boolean;
+  onClose: () => void;
 }
 
 export function FeeComparisonModal({ isOpen, onClose }: FeeComparisonModalProps) {
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    document.body.style.overflow = isOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
@@ -330,48 +320,23 @@ export function FeeComparisonModal({ isOpen, onClose }: FeeComparisonModalProps)
   return (
     <div
       onClick={onClose}
-      style={{
-        position: 'fixed', inset: 0, zIndex: 9999,
-        background: 'rgba(5,8,18,0.85)',
-        backdropFilter: 'blur(12px)',
-        display: 'flex', alignItems: 'flex-end',
-        justifyContent: 'center',
-      }}
+      style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(5,8,18,0.85)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
     >
-      {/* Drawer panel */}
       <div
         onClick={e => e.stopPropagation()}
-        style={{
-          width: '100%', maxWidth: '820px',
-          maxHeight: '92vh',
-          background: '#0d1221',
-          borderRadius: '24px 24px 0 0',
-          border: '1px solid rgba(255,255,255,0.08)',
-          borderBottom: 'none',
-          boxShadow: '0 -20px 80px rgba(0,0,0,0.6)',
-          display: 'flex', flexDirection: 'column',
-          animation: 'slideUp .35s cubic-bezier(.32,1.2,.64,1) both',
-        }}
+        style={{ width: '100%', maxWidth: '820px', maxHeight: '92vh', background: '#0d1221', borderRadius: '24px 24px 0 0', border: '1px solid rgba(255,255,255,0.08)', borderBottom: 'none', boxShadow: '0 -20px 80px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column', animation: 'slideUp .35s cubic-bezier(.32,1.2,.64,1) both' }}
       >
-        {/* Drag handle + close */}
         <div style={{ padding: '16px 24px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
           <div style={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(255,255,255,.15)', margin: '0 auto' }} />
           <button
             onClick={onClose}
-            style={{
-              background: 'rgba(255,255,255,.08)', border: '1px solid rgba(255,255,255,.1)',
-              borderRadius: '50%', width: 36, height: 36,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', color: '#8899aa', transition: 'all .2s',
-            }}
+            style={{ background: 'rgba(255,255,255,.08)', border: '1px solid rgba(255,255,255,.1)', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#8899aa', transition: 'all .2s' }}
             onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,.15)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,.08)')}
           >
             <X size={16} />
           </button>
         </div>
-
-        {/* Scrollable content */}
         <div style={{ overflowY: 'auto', padding: '20px 28px 40px', flex: 1 }}>
           <FeeComparisonContent />
         </div>

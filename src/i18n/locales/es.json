@@ -15,7 +15,6 @@
     "copy": "Copiar",
     "copied": "¡Copiado!"
   },
-
   "nav": {
     "home": "Inicio",
     "calculator": "Calculadora",
@@ -25,7 +24,6 @@
     "openMenu": "Abrir menú",
     "closeMenu": "Cerrar menú"
   },
-
   "wallet": {
     "connectedWallet": "Wallet Conectada",
     "balance": "Balance",
@@ -44,7 +42,6 @@
     "viewOnExplorer": "Ver en explorador",
     "account": "Cuenta"
   },
-
   "footer": {
     "tagline": "Planifica tu retiro en blockchain de forma segura y transparente",
     "quickLinks": "Enlaces rápidos",
@@ -55,14 +52,12 @@
     "disclaimer": "Aviso Legal",
     "builtOn": "Construido en Arbitrum · Seguro · Transparente · Descentralizado"
   },
-
   "hero": {
     "title": "Tu Futuro Financiero en Blockchain",
     "subtitle": "Planifica tu retiro con Ethernal: Seguro, Transparente y Descentralizado en Arbitrum",
     "ctaDisconnected": "Comenzar ahora",
     "ctaConnected": "Ir a Calculadora"
   },
-
   "features": {
     "title": "¿Por qué Ethernal?",
     "security": {
@@ -78,12 +73,10 @@
       "description": "Sin intermediarios. Comisiones hasta 10x menores que fondos tradicionales."
     }
   },
-
   "about": {
     "title": "Sobre Ethernal",
     "description": "Ethernal combina la seguridad de blockchain con la planificación financiera tradicional para ofrecerte una experiencia de retiro descentralizada, transparente y accesible para todos."
   },
-
   "survey": {
     "title": "Encuesta sobre Jubilación y Blockchain",
     "subtitle": "Ayúdanos a entender cómo percibes el retiro y la tecnología blockchain",
@@ -118,7 +111,6 @@
     "errorTitle": "Error al enviar",
     "required": "Campo requerido"
   },
-
   "followUp": {
     "successTitle": "¡Encuesta completada!",
     "successMessage": "Gracias por tu participación. Tus respuestas nos ayudan a mejorar.",
@@ -134,7 +126,6 @@
     "pleaseIndicate": "Por favor indica tu preferencia",
     "enterEmail": "Por favor ingresa tu correo electrónico"
   },
-
   "contact": {
     "title": "Contáctanos",
     "subtitle": "¿Preguntas? Nuestro equipo está aquí para ayudarte",
@@ -168,16 +159,63 @@
       "formErrors": "Por favor corrige los errores del formulario"
     }
   },
-
   "calculator": {
     "title": "Calculadora de Retiro",
+    "titleFull": "Calculadora de Retiro",
+    "titleShort": "Calculadora",
     "subtitle": "Simula tu plan de jubilación personalizado",
+    "configurePlan": "Configurá tu plan",
     "currentAge": "Edad actual",
     "retirementAge": "Edad de retiro deseada",
+    "initialCapital": "Capital inicial (USDC)",
+    "monthlyContribution": "Aporte mensual (USDC)",
+    "expectedReturn": "Retorno anual esperado (%)",
+    "frequency": "Frecuencia de aportes",
+    "frequencyMonthly": "Mensual",
+    "frequencyQuarterly": "Trimestral",
+    "frequencyAnnual": "Anual",
+    "yearsReceivingIncome": "Años recibiendo ingresos",
+    "ageLabel": "años",
     "monthlyDeposit": "Ahorro mensual (USDC)",
     "currentSavings": "Ahorros actuales (USDC)",
     "interestRate": "Tasa de interés anual esperada (%)",
     "calculate": "Calcular",
+    "dataError": "Error al cargar los datos. Intentá de nuevo.",
+    "growthProjection": "Proyección de crecimiento",
+    "fillFormToSeeChart": "Completá el formulario para ver tu proyección",
+    "depositSummary": "Resumen del primer depósito",
+    "totalDeposit": "Total a depositar",
+    "daoFee": "Fee Ethernal (5%)",
+    "goesToTreasury": "Va al treasury del protocolo",
+    "forDefi": "Para tu fondo DeFi",
+    "netToFund": "Neto en tu fondo",
+    "fundReady": "Tu fondo estará listo en",
+    "lastStep": "Último paso",
+    "monthlySavingsRequired": "Ahorro mensual requerido",
+    "createContract": "Crear contrato",
+    "createOnArbitrum": "Crear en Arbitrum",
+    "walletWillOpen": "Se abrirá tu wallet para firmar",
+    "getTestTokens": "Obtener tokens de prueba",
+    "getTestTokensDesc": "Necesitás USDC de testnet para crear tu fondo",
+    "howToStart": "¿Cómo empezar?",
+    "testnetOnly": "Solo testnet por ahora",
+    "testnetOnlyDesc": "Estamos en Arbitrum Sepolia. Los fondos no tienen valor real.",
+    "step1Title": "Conectá tu wallet",
+    "step1Desc": "MetaMask, WalletConnect o cualquier wallet compatible",
+    "step2Title": "Obtené USDC de testnet",
+    "step2Desc": "Usá el faucet para recibir tokens de prueba",
+    "step3Title": "Configurá tu plan",
+    "step3Desc": "Definí tu edad, ahorros y objetivos de retiro",
+    "step4Title": "Creá tu fondo",
+    "step4Desc": "Desplegá tu contrato personal en la blockchain",
+    "validation": {
+      "ageRequired": "La edad actual es requerida",
+      "ageTooHigh": "La edad actual debe ser menor a 80 años",
+      "retirementAgeTooLow": "La edad de retiro debe ser al menos 5 años mayor que la actual",
+      "minYears": "Debés recibir ingresos por al menos 5 años",
+      "contributionRequired": "El aporte mensual debe ser mayor a 0",
+      "rateRange": "La tasa anual debe estar entre 0% y 50%"
+    },
     "results": {
       "projected": "Proyección al retiro",
       "monthlyIncome": "Ingreso mensual estimado",
@@ -185,7 +223,6 @@
       "yearsCovered": "Años cubiertos"
     }
   },
-
   "createFund": {
     "title": "Crear mi Fondo",
     "subtitle": "Plan calculado · Arbitrum Sepolia",
@@ -293,7 +330,6 @@
       "previous": "Paso anterior"
     }
   },
-
   "dashboard": {
     "title": "Tu Dashboard Ethernal",
     "welcome": "Bienvenido, {address}",
@@ -417,7 +453,6 @@
       }
     }
   },
-
   "errors": {
     "somethingWrong": "Algo salió mal. Intenta nuevamente.",
     "networkError": "Error de red. Verifica tu conexión.",
@@ -429,7 +464,6 @@
     "alreadyHaveFundMessage": "Solo puedes tener un fondo por wallet. Tu fondo: {address}",
     "approvalPending": "Aprobación pendiente. Esperá a que el approve confirme antes de continuar."
   },
-
   "faucet": {
     "connectWallet": "Conectá tu wallet para recibir USDC de prueba.",
     "success": {
@@ -452,16 +486,106 @@
     "minting": "Minteando USDC…",
     "disclaimer": "USDC en Arbitrum Sepolia · Límite: 1 solicitud / 24 hs por wallet"
   },
-
   "network": {
     "wrongDetected": "Red Incorrecta Detectada",
     "youAreOn": "Estás en {network}. Cambia a {expected}.",
     "switchButton": "Cambiar a {network}"
   },
-
   "loading": {
     "ethernal": "Cargando Ethernal",
     "connecting": "Conectando a blockchain...",
     "dashboard": "Cargando tu Dashboard..."
+  },
+  "createContract": {
+    "factoryAddressNotConfigured": "Dirección del factory no configurada para esta red"
+  },
+  "feeModal": {
+    "headerLabel": "Análisis comparativo",
+    "title": "Tu jubilación, sin intermediarios.",
+    "subtitle": "Calculá cuánto más acumulás cuando las comisiones trabajan para vos, no contra vos.",
+    "monthlyDeposit": "Depósito mensual",
+    "horizon": "Horizonte",
+    "years": "{{count}} años",
+    "yearsMin": "5 años",
+    "yearsMax": "40 años",
+    "ethFeeLabel": "Fee único: 3% por depósito",
+    "ethApy": "DeFi: ~{{apy}} APY (Aave)",
+    "extra": "EXTRA",
+    "corpName": "Fondo Corporativo",
+    "corpFeeLabel": "Gestión 1.5% + Admin 0.5% + Entrada 3%",
+    "corpApy": "Bruto: ~{{apy}} (neto mucho menos)",
+    "year1": "Año 1",
+    "yearMid": "Año {{year}}",
+    "yearEnd": "Año {{year}}",
+    "tabResults": "Resultados",
+    "tabBreakdown": "Comparativa",
+    "tabFees": "Fees",
+    "colMetric": "Métrica",
+    "colCorp": "Corp.",
+    "row": {
+      "finalCapital": "Capital final",
+      "feesPaid": "Comisiones pagadas",
+      "returnOnCapital": "Retorno sobre capital",
+      "entryFee": "Fee de entrada",
+      "ethEntry": "3% único",
+      "corpEntry": "3% cada aporte",
+      "annualFee": "Fee anual gestión",
+      "exitFee": "Fee de salida",
+      "ethExit": "0% (normal)",
+      "corpExit": "1% + penalidad",
+      "transparency": "Transparencia",
+      "ethTransparency": "100% on-chain",
+      "corpTransparency": "Prospecto + auditoría",
+      "custody": "Custodia",
+      "ethCustody": "Smart contract",
+      "corpCustody": "Entidad financiera"
+    },
+    "ethStructureTitle": "Ethernal — Estructura simple",
+    "corpStructureTitle": "Corporativo — Estructura típica",
+    "ethFees": [
+      {
+        "label": "Fee por depósito",
+        "value": "3% · Va al Treasury on-chain",
+        "desc": "Sin fees ocultos, sin gestión anual, sin penalidades de salida estándar."
+      },
+      {
+        "label": "Retiro anticipado",
+        "value": "7% · Solo antes del timelock",
+        "desc": "Desincentiva el cortoplacismo. Si esperás al vencimiento, es 0%."
+      },
+      {
+        "label": "Gas (Arbitrum L2)",
+        "value": "~$0.01-$0.10 por tx",
+        "desc": "Prácticamente despreciable vs cualquier alternativa tradicional."
+      }
+    ],
+    "corpFees": [
+      {
+        "label": "Entry load",
+        "value": "3% sobre cada aporte",
+        "desc": "Cobra desde el primer peso, antes de invertir."
+      },
+      {
+        "label": "Fee de gestión anual (TER)",
+        "value": "1.5% sobre el saldo",
+        "desc": "Se cobra aunque el fondo rinda negativo."
+      },
+      {
+        "label": "Fee de administración",
+        "value": "0.5% anual",
+        "desc": "Costos operativos trasladados al inversor."
+      },
+      {
+        "label": "Fee de performance",
+        "value": "20% sobre ganancias",
+        "desc": "Solo visible en el prospecto, raramente en los estados."
+      },
+      {
+        "label": "Fee de salida / rescate",
+        "value": "1% al retirar",
+        "desc": "Penalidad por liquidar tu posición."
+      }
+    ],
+    "disclaimer": "Simulación orientativa · Rendimiento DeFi real puede variar · No es asesoría financiera"
   }
 }
