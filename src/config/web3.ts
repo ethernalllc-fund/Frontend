@@ -51,7 +51,6 @@ function buildTransport(
   if (ALCHEMY_KEY) providers.push(http(alchemyUrl));
   if (INFURA_KEY)  providers.push(http(infuraUrl));
   publicUrls.forEach(url => providers.push(http(url)));
-  // Siempre hay al menos un provider público, nunca lista vacía
   return fallback(providers);
 }
 

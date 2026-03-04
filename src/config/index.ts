@@ -1,3 +1,28 @@
+/**
+ * config/index.ts — Public API of the config layer.
+ *
+ * Import from here in the rest of the app:
+ *   import { wagmiConfig, Web3Provider, FACTORY_ADDRESS } from '@/config'
+ *
+ * Naming convention for collisions:
+ *   - web3.tsx  → ACTIVE_CHAINS / DEFAULT_CHAIN are the wagmi-ready chain tuples
+ *   - chains.ts → DEFAULT_CHAIN / ACTIVE_CHAINS are the full metadata-rich arrays
+ *   Since both are useful, web3 versions are aliased with WEB3_ prefix.
+ */
+
+export {
+  wagmiAdapter,
+  wagmiConfig,
+  modal,
+  queryClient,
+  Web3Provider,
+  IS_TESTNET,
+  isActiveChain,
+  getActiveChain,
+  ACTIVE_CHAINS as WEB3_ACTIVE_CHAINS,
+  DEFAULT_CHAIN as WEB3_DEFAULT_CHAIN,
+} from './web3';
+
 export {
   SUPPORTED_CHAINS,
   TESTNET_CHAINS,
@@ -11,6 +36,11 @@ export {
   CHAIN_METADATA,
   getChainById,
   getChainMetadata,
+  getChainName,
+  getChainShortName,
+  getChainInfo,
+  getChainStatus,
+  getChainErrorMessage,
   isChainSupported,
   isChainActive,
   isTestnet,
@@ -20,20 +50,15 @@ export {
   getExplorerUrl,
   getExplorerAddressUrl,
   getExplorerTokenUrl,
-  getChainName,
-  getChainShortName,
-  getChainsByPriority,
   getActiveChains,
   getTestnetChains,
   getMainnetChains,
   getDeployedChains,
   getPendingChains,
-  getChainErrorMessage,
-  getChainStatus,
-  getChainInfo,
+  getChainsByPriority,
   getDeploymentSummary as getChainDeploymentSummary,
   validateChainConfig,
-} from './chains'
+} from './chains';
 
 export type {
   ChainMetadata,
@@ -41,17 +66,51 @@ export type {
   ActiveChainId,
   TestnetChainId,
   MainnetChainId,
-} from './chains'
+} from './chains';
 
 export {
-  wagmiConfig,
-  wagmiAdapter,
-  modal,
-  queryClient,
-  chains,
-  isActiveChain,
-  getActiveChain,
-} from './web3'
+  CONTRACT_ADDRESSES,
+  DEPLOYMENT_STATUS,
+  CONTRACT_CATEGORIES,
+  ZERO_ADDRESS,
+  TREASURY_ADDRESS,
+  FACTORY_ADDRESS,
+  USDC_ADDRESS,
+  TOKEN_ADDRESS,
+  PROTOCOL_REGISTRY_ADDRESS,
+  USER_PREFERENCES_ADDRESS,
+  DATETIME_ADDRESS,
+  PERSONAL_FUND_ADDRESS,
+  MOCK_USDC_ADDRESS,
+  OFFICIAL_USDC_ADDRESS,
+  getCurrentUSDCType,
+  getOfficialUSDC,
+  getMockUSDC,
+  getUSDCForChain,
+  hasUSDC,
+  hasMockUSDC,
+  getContractAddresses,
+  getContractAddress,
+  getContractsByCategory,
+  getCategoryContracts,
+  hasChainConfig,
+  isValidAddress,
+  isContractDeployed,
+  isTestnetChain,
+  areMainContractsDeployed,
+  getDeployedContracts,
+  getPendingContracts,
+  getDeploymentProgress,
+  getDeploymentStatus,
+  getDeploymentSummary as getAddressDeploymentSummary,
+  updateChainAddresses,
+} from './addresses';
+
+export type {
+  ContractAddresses,
+  ContractName,
+  ChainId,
+} from './addresses';
 
 export {
   MOCK_USDC_ABI,
@@ -63,70 +122,16 @@ export {
   fromUSDCUnits,
   formatUSDC,
   isValidMintAmount,
-} from './contracts.config'
+} from './contracts.config';
 
-export type { MintPreset } from './contracts.config'
-
-export {
-
-  CONTRACT_ADDRESSES,
-
-  TREASURY_ADDRESS,
-  FACTORY_ADDRESS,
-  USDC_ADDRESS,
-  TOKEN_ADDRESS,
-  PROTOCOL_REGISTRY_ADDRESS,
-  USER_PREFERENCES_ADDRESS,
-  DATETIME_ADDRESS,
-  PERSONAL_FUND_ADDRESS,
-
-  // USDC helpers
-  ZERO_ADDRESS,
-  MOCK_USDC_ADDRESS,
-  OFFICIAL_USDC_ADDRESS,
-  getCurrentUSDCType,
-  getOfficialUSDC,
-  getMockUSDC,
-  hasUSDC,
-  hasMockUSDC,
-  getUSDCForChain,
-
-  // Helpers de contratos
-  getContractAddresses,
-  getContractAddress,
-  hasChainConfig,
-  isValidAddress,
-  isContractDeployed,
-  areMainContractsDeployed,
-  isTestnetChain,
-  getDeployedContracts,
-  getPendingContracts,
-  getDeploymentProgress,
-  getDeploymentSummary as getAddressDeploymentSummary,
-  getDeploymentStatus,
-  updateChainAddresses,
-
-  // Categorías
-  CONTRACT_CATEGORIES,
-  getCategoryContracts,
-  getContractsByCategory,
-
-  // Estado de deploy
-  DEPLOYMENT_STATUS,
-} from './addresses'
-
-export type {
-  ContractAddresses,
-  ContractName,
-  ChainId,
-} from './addresses'
+export type { MintPreset } from './contracts.config';
 
 export {
   appConfig,
   isValidChain,
   getFaucetUrl,
   isTestnet as isTestnetEnv,
-} from './app'
+} from './app';
 
 export {
   default as env,
@@ -141,6 +146,6 @@ export {
   ENABLE_FAUCET,
   ENABLE_EXPERIMENTAL,
   ENABLE_MOCKS,
-} from '@/lib/env'
+} from '@/lib/env';
 
-export type { AppConfig } from '@/lib/env'
+export type { AppConfig } from '@/lib/env';
