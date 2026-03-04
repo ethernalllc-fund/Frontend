@@ -1,5 +1,6 @@
 import { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import LoadingScreen from './components/common/LoadingScreen';
@@ -99,6 +100,7 @@ function AppContent() {
         </Suspense>
       </main>
       <Footer />
+      <Analytics />
     </div>
   );
 }
