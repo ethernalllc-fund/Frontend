@@ -1,4 +1,3 @@
-
 export {
   SUPPORTED_CHAINS,
   TESTNET_CHAINS,
