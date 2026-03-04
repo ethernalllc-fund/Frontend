@@ -1,121 +1,77 @@
-import { cookieStorage, createStorage, http, fallback } from 'wagmi';
-import { WagmiAdapter }  from '@reown/appkit-adapter-wagmi';
-import { createAppKit } from '@reown/appkit/react';
-import { arbitrumSepolia } from 'wagmi/chains';
-import type { Chain }    from 'wagmi/chains';
+import React from 'react';
+import { WagmiProvider, cookieStorage, createStorage, http, fallback } from 'wagmi';
+import { WagmiAdapter }        from '@reown/appkit-adapter-wagmi';
+import { createAppKit }        from '@reown/appkit/react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import {
+  arbitrumSepolia,
+  polygonAmoy,
+  arbitrum,
+  polygon,
+  mainnet,
+} from 'wagmi/chains';
+import type { Chain } from 'wagmi/chains';
 import { queryClient } from '@/lib/queryClient';
 import env             from '@/lib/env';
 
 const projectId   = env.walletConnectProjectId;
-const ALCHEMY_KEY = env.alchemyApiKey;
-const INFURA_KEY  = env.infuraApiKey;
+const ALCHEMY_KEY = env.alchemyApiKey ?? '';
+const INFURA_KEY  = env.infuraApiKey  ?? '';
 
 if (!projectId) {
-  throw new Error(
-    '[web3] VITE_WALLETCONNECT_PROJECT_ID is required. Get one at https://cloud.reown.com',
-  );
+  throw new Error('[web3] VITE_WALLETCONNECT_PROJECT_ID is required — https://cloud.reown.com');
+}
+if (!ALCHEMY_KEY && import.meta.env.PROD) {
+  throw new Error('[web3] VITE_ALCHEMY_API_KEY is required in production.');
+}
+if (!ALCHEMY_KEY) {
+  console.warn('[web3] VITE_ALCHEMY_API_KEY not set — using public RPCs (rate-limited)');
 }
 
-if (!ALCHEMY_KEY && import.meta.env.DEV) {
-  console.warn(
-    '[web3] VITE_ALCHEMY_API_KEY not set — using public RPCs (may be slow or rate-limited)',
-  );
-}
+export const IS_TESTNET: boolean = import.meta.env.VITE_NETWORK !== 'mainnet';
 
-const activeChains: readonly Chain[] = [
-  arbitrumSepolia,
-  // polygonAmoy,
-  // baseSepolia,
-  // optimismSepolia,
-] as const;
+const TESTNET_CHAINS = [arbitrumSepolia, polygonAmoy] as const satisfies Chain[];
+const MAINNET_CHAINS = [arbitrum, polygon, mainnet]   as const satisfies Chain[];
 
-export const chains = activeChains as unknown as [Chain, ...Chain[]];
+export const ACTIVE_CHAINS: readonly Chain[] = IS_TESTNET ? TESTNET_CHAINS : MAINNET_CHAINS;
+export const DEFAULT_CHAIN: Chain            = IS_TESTNET ? arbitrumSepolia : arbitrum;
 
-const origin = typeof window !== 'undefined'
-  ? window.location.origin
-  : 'https://ethernity-dao.com';
+const wagmiChains = ACTIVE_CHAINS as unknown as [Chain, ...Chain[]];
 
-const metadata = {
-  name:        'Ethernal',
-  description: 'Decentralized retirement fund platform on blockchain',
-  url:         origin,
-  icons:       [`${origin}/ethernity.ico`],
-};
+type Transport = ReturnType<typeof fallback>;
 
-function buildTransport(
-  alchemyUrl: string,
-  infuraUrl:  string,
-  publicUrls: string[],
-): ReturnType<typeof fallback> {
+function rpc(alchemyBase: string, infuraBase: string, publicUrl: string): Transport {
   const providers: ReturnType<typeof http>[] = [];
-  if (ALCHEMY_KEY) providers.push(http(alchemyUrl));
-  if (INFURA_KEY)  providers.push(http(infuraUrl));
-  publicUrls.forEach(url => providers.push(http(url)));
+  if (ALCHEMY_KEY) providers.push(http(`${alchemyBase}${ALCHEMY_KEY}`));
+  if (INFURA_KEY)  providers.push(http(`${infuraBase}${INFURA_KEY}`));
+  providers.push(http(publicUrl));
   return fallback(providers);
 }
 
-function buildTransports(): Record<number, ReturnType<typeof fallback>> {
-  return {
-    // ── Testnets ──
-    421614: buildTransport(
-      `https://arb-sepolia.g.alchemy.com/v2/${ALCHEMY_KEY}`,
-      `https://arbitrum-sepolia.infura.io/v3/${INFURA_KEY}`,
-      ['https://sepolia-rollup.arbitrum.io/rpc'],
-    ),
-    80002: buildTransport(
-      `https://polygon-amoy.g.alchemy.com/v2/${ALCHEMY_KEY}`,
-      `https://polygon-amoy.infura.io/v3/${INFURA_KEY}`,
-      ['https://rpc-amoy.polygon.technology'],
-    ),
-    84532: buildTransport(
-      `https://base-sepolia.g.alchemy.com/v2/${ALCHEMY_KEY}`,
-      `https://base-sepolia.infura.io/v3/${INFURA_KEY}`,
-      ['https://sepolia.base.org'],
-    ),
-    11155420: buildTransport(
-      `https://opt-sepolia.g.alchemy.com/v2/${ALCHEMY_KEY}`,
-      `https://optimism-sepolia.infura.io/v3/${INFURA_KEY}`,
-      ['https://sepolia.optimism.io'],
-    ),
-    11155111: buildTransport(
-      `https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_KEY}`,
-      `https://sepolia.infura.io/v3/${INFURA_KEY}`,
-      ['https://rpc.sepolia.org'],
-    ),
+const TRANSPORT_MAP: Record<number, Transport> = {
+  [arbitrumSepolia.id]: rpc('https://arb-sepolia.g.alchemy.com/v2/',     'https://arbitrum-sepolia.infura.io/v3/', 'https://sepolia-rollup.arbitrum.io/rpc'),
+  [polygonAmoy.id]:     rpc('https://polygon-amoy.g.alchemy.com/v2/',    'https://polygon-amoy.infura.io/v3/',    'https://rpc-amoy.polygon.technology'),
+  [arbitrum.id]:        rpc('https://arb-mainnet.g.alchemy.com/v2/',     'https://arbitrum-mainnet.infura.io/v3/', 'https://arb1.arbitrum.io/rpc'),
+  [polygon.id]:         rpc('https://polygon-mainnet.g.alchemy.com/v2/', 'https://polygon-mainnet.infura.io/v3/', 'https://polygon-rpc.com'),
+  [mainnet.id]:         rpc('https://eth-mainnet.g.alchemy.com/v2/',     'https://mainnet.infura.io/v3/',         'https://eth.llamarpc.com'),
+};
 
-    // ── Mainnets ──
-    42161: buildTransport(
-      `https://arb-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`,
-      `https://arbitrum-mainnet.infura.io/v3/${INFURA_KEY}`,
-      ['https://arb1.arbitrum.io/rpc'],
-    ),
-    137: buildTransport(
-      `https://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`,
-      `https://polygon-mainnet.infura.io/v3/${INFURA_KEY}`,
-      ['https://polygon-rpc.com'],
-    ),
-    8453: buildTransport(
-      `https://base-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`,
-      `https://base-mainnet.infura.io/v3/${INFURA_KEY}`,
-      ['https://mainnet.base.org'],
-    ),
-    10: buildTransport(
-      `https://opt-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`,
-      `https://optimism-mainnet.infura.io/v3/${INFURA_KEY}`,
-      ['https://mainnet.optimism.io'],
-    ),
-    1: buildTransport(
-      `https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`,
-      `https://mainnet.infura.io/v3/${INFURA_KEY}`,
-      ['https://eth.llamarpc.com'],
-    ),
-  };
-}
+const activeTransports = Object.fromEntries(
+  ACTIVE_CHAINS.map(c => [c.id, TRANSPORT_MAP[c.id]!]),
+) as Record<number, Transport>;
+
+const APP_URL = import.meta.env.VITE_APP_URL ?? 'https://ethernal.fund';
+const APP_METADATA = {
+  name:        'Ethernal Foundation',
+  description: 'Personal retirement fund management protocol',
+  url:         APP_URL,
+  icons:       [`${APP_URL}/icon-512.png`] as string[],
+};
 
 export const wagmiAdapter = new WagmiAdapter({
   projectId,
-  networks:   chains,
-  transports: buildTransports(),
+  networks:   wagmiChains,
+  transports: activeTransports,
   storage:    createStorage({ storage: cookieStorage }),
   ssr:        false,
 });
@@ -124,9 +80,9 @@ export const wagmiConfig = wagmiAdapter.wagmiConfig;
 export const modal = createAppKit({
   adapters:       [wagmiAdapter],
   projectId,
-  networks:       chains,
-  defaultNetwork: arbitrumSepolia,
-  metadata,
+  networks:       wagmiChains,
+  defaultNetwork: DEFAULT_CHAIN,
+  metadata:       APP_METADATA,
   features: {
     analytics:        env.features.analytics,
     email:            false,
@@ -142,28 +98,27 @@ export const modal = createAppKit({
   },
 });
 
-export const isActiveChain = (chainId: number): boolean =>
-  chains.some(c => c.id === chainId);
+export function Web3Provider({ children }: { children: React.ReactNode }) {
+  return (
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+}
 
-export const getActiveChain = (chainId: number): Chain | undefined =>
-  chains.find(c => c.id === chainId);
+export const isActiveChain  = (chainId: number): boolean       => ACTIVE_CHAINS.some(c => c.id === chainId);
+export const getActiveChain = (chainId: number): Chain | undefined => ACTIVE_CHAINS.find(c => c.id === chainId);
 
 if (import.meta.env.DEV) {
   console.group('[web3] Config');
-  console.log('Alchemy   :', ALCHEMY_KEY ? 'SET' : 'not set (public RPC)');
-  console.log('Infura    :', INFURA_KEY  ? 'SET' : 'not set (public RPC)');
-  console.log('Chains    :', chains.map(c => c.name).join(', '));
+  console.log('Network :', IS_TESTNET ? '🟡 TESTNET' : '🟢 MAINNET');
+  console.log('Alchemy :', ALCHEMY_KEY ? '✅ SET' : '⚠️  not set');
+  console.log('Infura  :', INFURA_KEY  ? '✅ SET' : '⚠️  not set');
+  console.log('Chains  :', ACTIVE_CHAINS.map(c => c.name).join(', '));
+  console.log('Default :', DEFAULT_CHAIN.name);
   console.groupEnd();
 }
 
 export { queryClient };
-export default {
-  wagmiConfig,
-  wagmiAdapter,
-  modal,
-  queryClient,
-  chains,
-  metadata,
-  isActiveChain,
-  getActiveChain,
-};
