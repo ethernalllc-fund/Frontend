@@ -2,11 +2,9 @@ export interface ContractAddresses {
   personalFundFactory: `0x${string}`
   usdc:                `0x${string}`
   treasury:            `0x${string}`
-  token:               `0x${string}`
   protocolRegistry?:   `0x${string}`
   userPreferences?:    `0x${string}`
   dateTime?:           `0x${string}`
-  personalFund?:       `0x${string}`
 }
 
 const OFFICIAL_USDC: Record<number, `0x${string}`> = {
@@ -25,7 +23,8 @@ const OFFICIAL_USDC: Record<number, `0x${string}`> = {
 }
 
 const MOCK_USDC: Record<number, `0x${string}`> = {
-  421614: '0x6e1371974D923397ecE9eE7525ac50ad7087c77f',
+  421614: '0x6e1371974D923397ecE9eE7525ac50ad7087c77f',  // Arbitrum Sepolia
+  80002:  '0xDA7610fD028bA2958d1Bb3dcB43F2d5d2Fb2A29d',  // Polygon Amoy
 }
 
 export const ZERO_ADDRESS: `0x${string}` = '0x0000000000000000000000000000000000000000'
@@ -43,28 +42,24 @@ const getUSDCAddress = (chainId: number): `0x${string}` => {
 }
 
 export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
-  // ✅ ARBITRUM SEPOLIA — DEPLOYED 2026-02-23
+  // ✅ ARBITRUM SEPOLIA — DEPLOYED 2026-03-08
   421614: {
-    personalFundFactory: '0x63DAf4fCFe18B9cd17E25c87127b4620d0A84f35',
+    personalFundFactory: '0xD92Ad92F08C8F9F15800dA1485F58a5bA15F002e',
     usdc:                getUSDCAddress(421614),
-    treasury:            '0x1213e740F60b0113313d46daD5f58d88931747ad',
-    token:               ZERO_ADDRESS, 
-    protocolRegistry:    '0x175920eacec162B842bdFea101EAd9B808566F3B',
-    userPreferences:     '0xE75C45262B21670c6A0Cd5D8eCF61d06D17a2fBd',
-    dateTime:            '0x3CAA7fdc538cC5DEA5a886687B6483FcaD703688',
-    personalFund:        '0xbc0302Ab7dF07D0a3E7Bd93A81092D94285a668b',
+    treasury:            '0xb458135486f914aFbB89caa6b3AAD0dc5AE61D0d',
+    protocolRegistry:    '0x2614aEEcDB2A961edcbB0650BE46528a7F0F0054',
+    userPreferences:     '0xA2568f10f1Bd71301ACbe1250F8C9c2023FD76c2',
+    dateTime:            '0x447A965a6fF502e240EFa99EC72157ec520fD646',
   },
 
-  // 🟡 POLYGON AMOY — READY TO DEPLOY
+  // ✅ POLYGON AMOY — DEPLOYED 2026-03-08
   80002: {
-    personalFundFactory: ZERO_ADDRESS,
+    personalFundFactory: '0xf7b6b09F99d37dC1338c75EcC02aeA8b6E9686E5',
     usdc:                getUSDCAddress(80002),
-    treasury:            ZERO_ADDRESS,
-    token:               ZERO_ADDRESS,
-    protocolRegistry:    ZERO_ADDRESS,
-    userPreferences:     ZERO_ADDRESS,
-    dateTime:            ZERO_ADDRESS,
-    personalFund:        ZERO_ADDRESS,
+    treasury:            '0xFf64f402aaF12f242ebd435656377e5fce30a9E9',
+    protocolRegistry:    '0x52240E0A314f538632b9052fB1f3F21dC15E7911',
+    userPreferences:     '0x9fa77C672781429f88aD4b8795AC6aa022732f20',
+    dateTime:            '0x05c5B4914CF6840f0830feC6D0e1ef828624fB89',
   },
 
   // 🔴 BASE SEPOLIA — PENDING
@@ -72,11 +67,9 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     personalFundFactory: ZERO_ADDRESS,
     usdc:                getUSDCAddress(84532),
     treasury:            ZERO_ADDRESS,
-    token:               ZERO_ADDRESS,
     protocolRegistry:    ZERO_ADDRESS,
     userPreferences:     ZERO_ADDRESS,
     dateTime:            ZERO_ADDRESS,
-    personalFund:        ZERO_ADDRESS,
   },
 
   // 🔴 OPTIMISM SEPOLIA — PENDING
@@ -84,11 +77,9 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     personalFundFactory: ZERO_ADDRESS,
     usdc:                getUSDCAddress(11155420),
     treasury:            ZERO_ADDRESS,
-    token:               ZERO_ADDRESS,
     protocolRegistry:    ZERO_ADDRESS,
     userPreferences:     ZERO_ADDRESS,
     dateTime:            ZERO_ADDRESS,
-    personalFund:        ZERO_ADDRESS,
   },
 
   // 🔴 ETHEREUM SEPOLIA — PENDING
@@ -96,11 +87,9 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     personalFundFactory: ZERO_ADDRESS,
     usdc:                getUSDCAddress(11155111),
     treasury:            ZERO_ADDRESS,
-    token:               ZERO_ADDRESS,
     protocolRegistry:    ZERO_ADDRESS,
     userPreferences:     ZERO_ADDRESS,
     dateTime:            ZERO_ADDRESS,
-    personalFund:        ZERO_ADDRESS,
   },
 
   // 🔴 ARBITRUM ONE (MAINNET) — PENDING
@@ -108,7 +97,6 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     personalFundFactory: ZERO_ADDRESS,
     usdc:                getUSDCAddress(42161),
     treasury:            ZERO_ADDRESS,
-    token:               ZERO_ADDRESS,
   },
 
   // 🔴 POLYGON (MAINNET) — PENDING
@@ -116,7 +104,6 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     personalFundFactory: ZERO_ADDRESS,
     usdc:                getUSDCAddress(137),
     treasury:            ZERO_ADDRESS,
-    token:               ZERO_ADDRESS,
   },
 
   // 🔴 BASE (MAINNET) — PENDING
@@ -124,7 +111,6 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     personalFundFactory: ZERO_ADDRESS,
     usdc:                getUSDCAddress(8453),
     treasury:            ZERO_ADDRESS,
-    token:               ZERO_ADDRESS,
   },
 
   // 🔴 OPTIMISM (MAINNET) — PENDING
@@ -132,7 +118,6 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     personalFundFactory: ZERO_ADDRESS,
     usdc:                getUSDCAddress(10),
     treasury:            ZERO_ADDRESS,
-    token:               ZERO_ADDRESS,
   },
 
   // 🔴 ETHEREUM (MAINNET) — PENDING
@@ -140,7 +125,6 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     personalFundFactory: ZERO_ADDRESS,
     usdc:                getUSDCAddress(1),
     treasury:            ZERO_ADDRESS,
-    token:               ZERO_ADDRESS,
   },
 }
 
@@ -149,11 +133,11 @@ const _arb = CONTRACT_ADDRESSES[421614] as ContractAddresses
 export const TREASURY_ADDRESS          = _arb.treasury
 export const FACTORY_ADDRESS           = _arb.personalFundFactory
 export const USDC_ADDRESS              = _arb.usdc
-export const TOKEN_ADDRESS             = _arb.token
+// TOKEN_ADDRESS removido — no hay token nativo en v1 (IToken.vy es placeholder para v2)
+// PERSONAL_FUND_ADDRESS removido — proxy template, el frontend resuelve clones via Factory
 export const PROTOCOL_REGISTRY_ADDRESS = _arb.protocolRegistry!
 export const USER_PREFERENCES_ADDRESS  = _arb.userPreferences!
 export const DATETIME_ADDRESS          = _arb.dateTime!
-export const PERSONAL_FUND_ADDRESS     = _arb.personalFund!
 
 export const MOCK_USDC_ADDRESS:     `0x${string}` = MOCK_USDC[421614]!
 export const OFFICIAL_USDC_ADDRESS: `0x${string}` = OFFICIAL_USDC[421614]!
@@ -198,7 +182,7 @@ export const areMainContractsDeployed = (chainId: number): boolean => {
   const addresses = CONTRACT_ADDRESSES[chainId]
   if (!addresses) return false
   const main: (keyof ContractAddresses)[] = [
-    'personalFundFactory', 'usdc', 'treasury', 'token',
+    'personalFundFactory', 'usdc', 'treasury',
   ]
   return main.every(c => isContractDeployed(chainId, c))
 }
@@ -260,7 +244,7 @@ export const getDeploymentStatus = (chainId: number) =>
   }
 
 export const CONTRACT_CATEGORIES = {
-  core:     ['personalFundFactory', 'usdc', 'treasury', 'token'] as const,
+  core:     ['personalFundFactory', 'usdc', 'treasury'] as const,
   optional: ['protocolRegistry', 'userPreferences', 'dateTime'] as const,
 } as const
 
@@ -296,8 +280,8 @@ export const updateChainAddresses = (
 }
 
 export const DEPLOYMENT_STATUS = {
-  421614:   { status: 'deployed' as const, date: '2026-02-23', deployer: '0x2c81Af5Ca0663Ef8aa73b498c0E5BeC54EB24C15', verified: true  },
-  80002:    { status: 'pending'  as const, date: null,          deployer: null,                                           verified: false },
+  421614:   { status: 'deployed' as const, date: '2026-03-08', deployer: '0x5C7f635e60b36D415F7214B903b2057ce088ead5', verified: true  },
+  80002:    { status: 'deployed' as const, date: '2026-03-08', deployer: '0x5C7f635e60b36D415F7214B903b2057ce088ead5', verified: true  },
   84532:    { status: 'pending'  as const, date: null,          deployer: null,                                           verified: false },
   11155420: { status: 'pending'  as const, date: null,          deployer: null,                                           verified: false },
   11155111: { status: 'pending'  as const, date: null,          deployer: null,                                           verified: false },
