@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { useChainId } from 'wagmi';
 import { getContractAddresses, isValidAddress } from './../config/addresses';
-import { useToken }               from './core/useToken';
 import { useTreasury }            from './core/useTreasury';
 import { usePersonalFundFactory } from './funds/usePersonalFundFactory';
 import { usePersonalFund }        from './funds/usePersonalFund';
@@ -21,7 +20,6 @@ export function useEthernal() {
     ].every(addr => isValidAddress(addr));
   }, [addresses]);
 
-  const token            = useToken(addresses?.token);
   const treasury         = useTreasury(addresses?.treasury);
   const factory          = usePersonalFundFactory(addresses?.personalFundFactory);
   const personalFund     = usePersonalFund(factory.userFund);
@@ -30,7 +28,6 @@ export function useEthernal() {
   const usdc             = useUSDC();
 
   const isLoading = useMemo(() => (
-    token.isLoading            ||
     treasury.isLoading         ||
     factory.isLoading          ||
     personalFund.isLoading     ||
@@ -38,7 +35,6 @@ export function useEthernal() {
     userPreferences.isLoading  ||
     usdc.isApproving
   ), [
-    token.isLoading,
     treasury.isLoading,
     factory.isLoading,
     personalFund.isLoading,
@@ -49,7 +45,6 @@ export function useEthernal() {
 
   const refetchAll = async () => {
     const results = await Promise.allSettled([
-      token.refetch?.(),
       treasury.refetch?.(),
       factory.refetch?.(),
       personalFund.refetch?.(),
@@ -81,7 +76,6 @@ export function useEthernal() {
   }
 
   return {
-    token,
     treasury,
     factory,
     personalFund,
