@@ -77,7 +77,7 @@ const Navbar: React.FC = () => {
 
         {/* ── Logo ── */}
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-lg overflow-hidden transition-transform group-hover:scale-110">
+          <div className="w-17 h-17 rounded-lg overflow-hidden transition-transform group-hover:scale-110">
             <img
               src={logo}
               alt="Ethernal Logo"
