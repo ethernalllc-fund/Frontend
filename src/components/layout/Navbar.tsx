@@ -20,7 +20,7 @@ import {
   getFaucetUrl,
 } from '@/config';
 import { LanguageSwitcher } from '@/components/common/LanguageSwitcher';
-import logo from '@/assets/logo.ico';
+import logo from '@/assets/ethernal_sombra.jpg';
 
 type BalanceData = { value: bigint; decimals: number; symbol: string } | undefined;
 

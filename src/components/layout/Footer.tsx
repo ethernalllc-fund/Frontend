@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
-import logo from '@/assets/logo.ico';
+import logo from '@/assets/ethernal_sombra.jpg';
 
 const Footer: React.FC = () => {
   const { t } = useTranslation();
