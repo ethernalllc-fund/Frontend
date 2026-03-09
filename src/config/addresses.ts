@@ -5,6 +5,7 @@ export interface ContractAddresses {
   protocolRegistry?:   `0x${string}`
   userPreferences?:    `0x${string}`
   dateTime?:           `0x${string}`
+  mockDeFiProtocol?:   `0x${string}`
 }
 
 const OFFICIAL_USDC: Record<number, `0x${string}`> = {
@@ -50,6 +51,7 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     protocolRegistry:    '0x12D247f33D415D495522f34BdDf931CcDF24cd06',
     userPreferences:     '0x79B2168B1914771B54FdfBD92655b908fFF65579',
     dateTime:            '0x0C97086FaA8A93E98cb77649179D8a2A2A3b1954',
+    mockDeFiProtocol:    '0x6f250593DabDb4Eb44431AF35eBe9eb49cA08577',
   },
 
   // ✅ POLYGON AMOY — DEPLOYED 2026-03-08
@@ -245,7 +247,7 @@ export const getDeploymentStatus = (chainId: number) =>
 
 export const CONTRACT_CATEGORIES = {
   core:     ['personalFundFactory', 'usdc', 'treasury'] as const,
-  optional: ['protocolRegistry', 'userPreferences', 'dateTime'] as const,
+  optional: ['protocolRegistry', 'userPreferences', 'dateTime', 'mockDeFiProtocol'] as const,
 } as const
 
 export const getCategoryContracts = (
@@ -280,7 +282,7 @@ export const updateChainAddresses = (
 }
 
 export const DEPLOYMENT_STATUS = {
-  421614:   { status: 'deployed' as const, date: '2026-03-08', deployer: '0x5C7f635e60b36D415F7214B903b2057ce088ead5', verified: true  },
+  421614:   { status: 'deployed' as const, date: '2026-03-09', deployer: '0x5C7f635e60b36D415F7214B903b2057ce088ead5', verified: true  },
   80002:    { status: 'deployed' as const, date: '2026-03-08', deployer: '0x5C7f635e60b36D415F7214B903b2057ce088ead5', verified: true  },
   84532:    { status: 'pending'  as const, date: null,          deployer: null,                                           verified: false },
   11155420: { status: 'pending'  as const, date: null,          deployer: null,                                           verified: false },
