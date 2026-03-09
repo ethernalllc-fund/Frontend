@@ -44,7 +44,7 @@ const getUSDCAddress = (chainId: number): `0x${string}` => {
 export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
   // ✅ ARBITRUM SEPOLIA — DEPLOYED 2026-03-08
   421614: {
-    personalFundFactory: '0xD92Ad92F08C8F9F15800dA1485F58a5bA15F002e',
+    personalFundFactory: '0xECC3C30154b618D8eE10Fe21Eb7e74EF1903fef1',
     usdc:                getUSDCAddress(421614),
     treasury:            '0xb458135486f914aFbB89caa6b3AAD0dc5AE61D0d',
     protocolRegistry:    '0x2614aEEcDB2A961edcbB0650BE46528a7F0F0054',
