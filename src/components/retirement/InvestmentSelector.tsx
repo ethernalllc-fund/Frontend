@@ -37,14 +37,17 @@ export interface InvestmentSelection {
 
 const ZERO = '0x0000000000000000000000000000000000000000' as `0x${string}`;
 
+// ─── Protocol addresses per chain ────────────────────────────────────────────
+// Testnet (421614 — Arbitrum Sepolia): MockDeFi contract
+// Mainnet (42161  — Arbitrum One):     real protocol addresses
 const PROTOCOL_ADDRESSES: Record<string, Partial<Record<number, `0x${string}`>>> = {
   aave: {
-    421614: '0x6e1371974D923397ecE9eE7525ac50ad7087c77f',                                
-    42161:  '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
+    421614: '0x6f250593DabDb4Eb44431AF35eBe9eb49cA08577', // ✅ MockDeFi — Arbitrum Sepolia
+    42161:  '0x794a61358D6845594F94dc1DB02A252b5b4814aD', // Aave V3 Pool — Arbitrum One
   },
   compound: {
-    421614: '0x6e1371974D923397ecE9eE7525ac50ad7087c77f',                                       
-    42161:  '0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf',
+    421614: '0x6f250593DabDb4Eb44431AF35eBe9eb49cA08577', // ✅ MockDeFi — Arbitrum Sepolia
+    42161:  '0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf', // Compound V3 — Arbitrum One
   },
 };
 
@@ -145,11 +148,12 @@ export const InvestmentSelector: React.FC<InvestmentSelectorProps> = ({
 
   const handleProviderSelect = (provider: Provider) => {
     if (!selectedMethod) return;
+    if (!provider.supported) return; // bloquear proveedores no integrados
     setSelectedProvider(provider.id);
     const method = INVESTMENT_METHODS.find(m => m.id === selectedMethod)!;
     const protocolAddress = (provider.addresses[chainId] ?? ZERO);
 
-    if (provider.supported && protocolAddress === ZERO) {
+    if (protocolAddress === ZERO) {
       console.warn(
         `⚠️ ${provider.name} no tiene address configurada en la red ${chainId}. ` +
         'Actualizá PROTOCOL_ADDRESSES en InvestmentSelector.tsx.'
@@ -240,10 +244,13 @@ export const InvestmentSelector: React.FC<InvestmentSelectorProps> = ({
               <button
                 key={provider.id}
                 onClick={() => handleProviderSelect(provider)}
-                className={`relative bg-white rounded-xl p-4 shadow hover:shadow-lg transition text-left ${
-                  selectedProvider === provider.id
-                    ? 'ring-2 ring-indigo-600'
-                    : 'hover:ring-2 hover:ring-indigo-300'
+                disabled={!provider.supported}
+                className={`relative bg-white rounded-xl p-4 shadow transition text-left ${
+                  !provider.supported
+                    ? 'opacity-50 cursor-not-allowed'
+                    : selectedProvider === provider.id
+                    ? 'ring-2 ring-indigo-600 hover:shadow-lg'
+                    : 'hover:ring-2 hover:ring-indigo-300 hover:shadow-lg'
                 }`}
               >
                 {selectedProvider === provider.id && (
@@ -265,10 +272,14 @@ export const InvestmentSelector: React.FC<InvestmentSelectorProps> = ({
                     </div>
                   </div>
 
-                  {provider.supported && (
+                  {provider.supported ? (
                     <div className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
                       <Zap size={12} />
                       Ready
+                    </div>
+                  ) : (
+                    <div className="bg-gray-100 text-gray-500 px-2 py-1 rounded-full text-xs font-semibold">
+                      Coming Soon
                     </div>
                   )}
                 </div>
@@ -280,16 +291,18 @@ export const InvestmentSelector: React.FC<InvestmentSelectorProps> = ({
                     <span className="text-gray-500">Fees: </span>
                     <span className="font-semibold">{provider.fees}</span>
                   </div>
-                  <div className="flex items-center gap-1 text-green-600">
-                    <Globe size={12} />
-                    <span>API</span>
-                  </div>
+                  {provider.supported && (
+                    <div className="flex items-center gap-1 text-green-600">
+                      <Globe size={12} />
+                      <span>API</span>
+                    </div>
+                  )}
                 </div>
               </button>
             ))}
           </div>
 
-          {/* Warning proveedores no integrados */}
+          {/* Warning proveedores no integrados — solo si el seleccionado no está soportado */}
           {selectedProvider && !availableProviders.find(p => p.id === selectedProvider)?.supported && (
             <div className="mt-3 bg-amber-50 border-2 border-amber-200 rounded-xl p-3">
               <div className="flex items-start gap-2">
