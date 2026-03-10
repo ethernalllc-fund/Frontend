@@ -99,6 +99,8 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     personalFundFactory: ZERO_ADDRESS,
     usdc:                getUSDCAddress(42161),
     treasury:            ZERO_ADDRESS,
+    protocolRegistry:    ZERO_ADDRESS,
+    userPreferences:     ZERO_ADDRESS,
   },
 
   // 🔴 POLYGON (MAINNET) — PENDING
@@ -106,6 +108,8 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     personalFundFactory: ZERO_ADDRESS,
     usdc:                getUSDCAddress(137),
     treasury:            ZERO_ADDRESS,
+    protocolRegistry:    ZERO_ADDRESS,
+    userPreferences:     ZERO_ADDRESS,
   },
 
   // 🔴 BASE (MAINNET) — PENDING
@@ -113,6 +117,8 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     personalFundFactory: ZERO_ADDRESS,
     usdc:                getUSDCAddress(8453),
     treasury:            ZERO_ADDRESS,
+    protocolRegistry:    ZERO_ADDRESS,
+    userPreferences:     ZERO_ADDRESS,
   },
 
   // 🔴 OPTIMISM (MAINNET) — PENDING
@@ -120,6 +126,8 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     personalFundFactory: ZERO_ADDRESS,
     usdc:                getUSDCAddress(10),
     treasury:            ZERO_ADDRESS,
+    protocolRegistry:    ZERO_ADDRESS,
+    userPreferences:     ZERO_ADDRESS,
   },
 
   // 🔴 ETHEREUM (MAINNET) — PENDING
@@ -127,7 +135,15 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     personalFundFactory: ZERO_ADDRESS,
     usdc:                getUSDCAddress(1),
     treasury:            ZERO_ADDRESS,
+    protocolRegistry:    ZERO_ADDRESS,
+    userPreferences:     ZERO_ADDRESS,
   },
+}
+
+export const resolveAddresses = (chainId: number): ContractAddresses => {
+  const addresses = CONTRACT_ADDRESSES[chainId]
+  if (!addresses) throw new Error(`Chain ${chainId} not configured in addresses.ts`)
+  return addresses
 }
 
 const _arb = CONTRACT_ADDRESSES[421614] as ContractAddresses
@@ -135,12 +151,9 @@ const _arb = CONTRACT_ADDRESSES[421614] as ContractAddresses
 export const TREASURY_ADDRESS          = _arb.treasury
 export const FACTORY_ADDRESS           = _arb.personalFundFactory
 export const USDC_ADDRESS              = _arb.usdc
-// TOKEN_ADDRESS removido — no hay token nativo en v1 (IToken.vy es placeholder para v2)
-// PERSONAL_FUND_ADDRESS removido — proxy template, el frontend resuelve clones via Factory
 export const PROTOCOL_REGISTRY_ADDRESS = _arb.protocolRegistry!
 export const USER_PREFERENCES_ADDRESS  = _arb.userPreferences!
-export const DATETIME_ADDRESS          = _arb.dateTime!
-
+export const DATETIME_ADDRESS          = _arb.dateTime ?? ZERO_ADDRESS
 export const MOCK_USDC_ADDRESS:     `0x${string}` = MOCK_USDC[421614]!
 export const OFFICIAL_USDC_ADDRESS: `0x${string}` = OFFICIAL_USDC[421614]!
 
@@ -184,7 +197,7 @@ export const areMainContractsDeployed = (chainId: number): boolean => {
   const addresses = CONTRACT_ADDRESSES[chainId]
   if (!addresses) return false
   const main: (keyof ContractAddresses)[] = [
-    'personalFundFactory', 'usdc', 'treasury',
+    'personalFundFactory', 'usdc', 'treasury', 'protocolRegistry', 'userPreferences',
   ]
   return main.every(c => isContractDeployed(chainId, c))
 }
