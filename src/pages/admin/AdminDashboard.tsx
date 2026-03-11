@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { useReadContracts } from 'wagmi';
 import { formatUnits } from 'viem';
-import { getSupabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { TREASURY_ABI, PERSONAL_FUND_FACTORY_ABI as FACTORY_ABI } from '@/contracts/abis';
 import { TREASURY_ADDRESS, FACTORY_ADDRESS } from '@/config/addresses';
 
