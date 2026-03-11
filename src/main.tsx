@@ -1,11 +1,11 @@
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
-import { WagmiProvider } from 'wagmi';
-import { QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
 import './index.css';
 import './i18n/config';
-import { wagmiConfig, queryClient } from './config/web3';
+// web3.tsx initializes wagmiAdapter + createAppKit as a side-effect on import.
+// It must be imported before any component that calls useAppKit / useAccount.
+import { Web3Provider } from './config/web3';
 import { RetirementProvider } from '@/components/context/RetirementContext';
 
 if (import.meta.env.DEV) {
@@ -23,12 +23,10 @@ if (import.meta.env.DEV) {
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <WagmiProvider config={wagmiConfig}>
-      <QueryClientProvider client={queryClient}>
-        <RetirementProvider>
-          <App />
-        </RetirementProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+    <Web3Provider>
+      <RetirementProvider>
+        <App />
+      </RetirementProvider>
+    </Web3Provider>
   </StrictMode>
 );

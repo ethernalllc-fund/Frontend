@@ -1,27 +1,129 @@
 import { createClient } from '@supabase/supabase-js';
+import env from './env';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+const isConfigured = Boolean(env.supabaseUrl && env.supabaseAnonKey);
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
+if (!isConfigured && env.isProd) {
+  throw new Error('[supabase] VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are required in production.');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+if (!isConfigured && env.isDev) {
+  console.warn('[supabase] Supabase not configured — contactAPI, protocolsAPI, userPreferencesAPI and realtimeAPI will be unavailable.');
+}
+
+export const supabase = isConfigured
+  ? createClient(env.supabaseUrl, env.supabaseAnonKey, {
+      auth: {
+        persistSession:   false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+      },
+      realtime: {
+        params: {
+          eventsPerSecond: 10,
+        },
+        timeout: 20_000,
+      },
+      global: {
+        headers: {
+          'x-app-name': 'ethernal-fund',
+        },
+      },
+    })
+  : null;
+
 export interface ContactMessage {
-  id?: number;
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
+  id?:             number;
+  name:            string;
+  email:           string;
+  subject:         string;
+  message:         string;
   wallet_address?: string | null;
-  created_at?: string;
-  read?: boolean;
+  created_at?:     string;
+  read?:           boolean;
+}
+
+export interface DeFiProtocol {
+  id:               number;
+  protocol_address: string;
+  name:             string;
+  apy:              number;
+  risk_level:       number;        // 1=Low, 2=Medium, 3=High
+  is_active:        boolean;
+  is_verified:      boolean;
+  total_deposited:  number;
+  protocol_type?:   string;
+  description?:     string;
+  website_url?:     string;
+  added_timestamp:  string;
+  last_updated:     string;
+  verified_at?:     string;
+  verified_by?:     string;
+}
+
+export interface UserPreferenceDB {
+  id:                      number;
+  user_address:            string;
+  selected_protocol?:      string;
+  auto_compound:           boolean;
+  risk_tolerance:          number;  // 1=Low, 2=Medium, 3=High
+  strategy_type:           number;  // 0=Manual, 1=BestAPY, 2=RiskAdjusted, 3=Diversified
+  diversification_percent: number;
+  rebalance_threshold:     number;
+  total_deposited:         number;
+  total_withdrawn:         number;
+  lifetime_earnings:       number;
+  last_config_update:      string;
+}
+
+export interface UserProtocolDeposit {
+  id:               number;
+  user_address:     string;
+  protocol_address: string;
+  total_deposited:  number;
+  total_withdrawn:  number;
+  current_balance:  number;
+  earned_interest:  number;
+  first_deposit_at?: string;
+  last_deposit_at?:  string;
+}
+
+export interface RoutingHistory {
+  id:                    number;
+  user_address:          string;
+  protocol_address:      string;
+  amount:                number;
+  transaction_hash:      string;
+  block_number?:         number;
+  strategy_used?:        number;
+  protocol_apy_at_time?: number;
+  status:                'pending' | 'confirmed' | 'failed';
+  routed_at:             string;
+  confirmed_at?:         string;
+}
+
+export interface GlobalProtocolStats {
+  total_protocols:   number;
+  active_protocols:  number;
+  verified_protocols: number;
+  total_tvl:         number;
+  average_apy:       number;
+}
+
+function requireSupabase(caller: string) {
+  if (!supabase) {
+    throw new Error(
+      `[supabase] ${caller} called but Supabase is not configured. ` +
+      'Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env file.',
+    );
+  }
+  return supabase;
 }
 
 export const contactAPI = {
   async create(data: Omit<ContactMessage, 'id' | 'created_at' | 'read'>) {
-    const { data: result, error } = await supabase
+    const client = requireSupabase('contactAPI.create');
+    const { data: result, error } = await client
       .from('contact_messages')
       .insert([data])
       .select()
@@ -30,21 +132,21 @@ export const contactAPI = {
     return result as ContactMessage;
   },
 
-  async getAll(unreadOnly: boolean = false) {
-    let query = supabase
+  async getAll(unreadOnly = false) {
+    const client = requireSupabase('contactAPI.getAll');
+    let query = client
       .from('contact_messages')
       .select('*')
       .order('created_at', { ascending: false });
-    if (unreadOnly) {
-      query = query.eq('read', false);
-    }
+    if (unreadOnly) query = query.eq('read', false);
     const { data, error } = await query;
     if (error) throw error;
     return data as ContactMessage[];
   },
 
   async markAsRead(id: number) {
-    const { error } = await supabase
+    const client = requireSupabase('contactAPI.markAsRead');
+    const { error } = await client
       .from('contact_messages')
       .update({ read: true })
       .eq('id', id);
@@ -52,7 +154,8 @@ export const contactAPI = {
   },
 
   async delete(id: number) {
-    const { error } = await supabase
+    const client = requireSupabase('contactAPI.delete');
+    const { error } = await client
       .from('contact_messages')
       .delete()
       .eq('id', id);
@@ -60,89 +163,22 @@ export const contactAPI = {
   },
 };
 
-export interface DeFiProtocol {
-  id: number;
-  protocol_address: string;
-  name: string;
-  apy: number;
-  risk_level: number;                               // 1=Low, 2=Medium, 3=High
-  is_active: boolean;
-  is_verified: boolean;
-  total_deposited: number;
-  protocol_type?: string;
-  description?: string;
-  website_url?: string;
-  added_timestamp: string;
-  last_updated: string;
-  verified_at?: string;
-  verified_by?: string;
-}
-
-export interface UserPreferenceDB {
-  id: number;
-  user_address: string;
-  selected_protocol?: string;
-  auto_compound: boolean;
-  risk_tolerance: number;                           // 1=Low, 2=Medium, 3=High
-  strategy_type: number;                            // 0=Manual, 1=BestAPY, 2=RiskAdjusted, 3=Diversified
-  diversification_percent: number;
-  rebalance_threshold: number;
-  total_deposited: number;
-  total_withdrawn: number;
-  lifetime_earnings: number;
-  last_config_update: string;
-}
-
-export interface UserProtocolDeposit {
-  id: number;
-  user_address: string;
-  protocol_address: string;
-  total_deposited: number;
-  total_withdrawn: number;
-  current_balance: number;
-  earned_interest: number;
-  first_deposit_at?: string;
-  last_deposit_at?: string;
-}
-
-export interface RoutingHistory {
-  id: number;
-  user_address: string;
-  protocol_address: string;
-  amount: number;
-  transaction_hash: string;
-  block_number?: number;
-  strategy_used?: number;
-  protocol_apy_at_time?: number;
-  status: 'pending' | 'confirmed' | 'failed';
-  routed_at: string;
-  confirmed_at?: string;
-}
-
-export interface GlobalProtocolStats {
-  total_protocols: number;
-  active_protocols: number;
-  verified_protocols: number;
-  total_tvl: number;
-  average_apy: number;
-}
-
 export const protocolsAPI = {
   async getAll(activeOnly = true) {
-    let query = supabase
+    const client = requireSupabase('protocolsAPI.getAll');
+    let query = client
       .from('defi_protocols')
       .select('*')
       .order('apy', { ascending: false });
-    if (activeOnly) {
-      query = query.eq('is_active', true);
-    }
+    if (activeOnly) query = query.eq('is_active', true);
     const { data, error } = await query;
     if (error) throw error;
     return data as DeFiProtocol[];
   },
 
   async getByAddress(protocolAddress: string) {
-    const { data, error } = await supabase
+    const client = requireSupabase('protocolsAPI.getByAddress');
+    const { data, error } = await client
       .from('defi_protocols')
       .select('*')
       .eq('protocol_address', protocolAddress.toLowerCase())
@@ -152,7 +188,8 @@ export const protocolsAPI = {
   },
 
   async getByRisk(riskLevel: number) {
-    const { data, error } = await supabase
+    const client = requireSupabase('protocolsAPI.getByRisk');
+    const { data, error } = await client
       .from('defi_protocols')
       .select('*')
       .eq('is_active', true)
@@ -163,7 +200,8 @@ export const protocolsAPI = {
   },
 
   async getVerified() {
-    const { data, error } = await supabase
+    const client = requireSupabase('protocolsAPI.getVerified');
+    const { data, error } = await client
       .from('defi_protocols')
       .select('*')
       .eq('is_active', true)
@@ -174,13 +212,15 @@ export const protocolsAPI = {
   },
 
   async getGlobalStats() {
-    const { data, error } = await supabase.rpc('get_global_protocol_stats');
+    const client = requireSupabase('protocolsAPI.getGlobalStats');
+    const { data, error } = await client.rpc('get_global_protocol_stats');
     if (error) throw error;
     return data as GlobalProtocolStats;
   },
 
   async syncFromContract(protocol: Omit<DeFiProtocol, 'id'>) {
-    const { data, error } = await supabase
+    const client = requireSupabase('protocolsAPI.syncFromContract');
+    const { data, error } = await client
       .from('defi_protocols')
       .upsert(protocol, { onConflict: 'protocol_address' })
       .select()
@@ -192,7 +232,8 @@ export const protocolsAPI = {
 
 export const userPreferencesAPI = {
   async get(userAddress: string) {
-    const { data, error } = await supabase
+    const client = requireSupabase('userPreferencesAPI.get');
+    const { data, error } = await client
       .from('user_preferences')
       .select('*')
       .eq('user_address', userAddress.toLowerCase())
@@ -203,9 +244,10 @@ export const userPreferencesAPI = {
 
   async upsert(
     userAddress: string,
-    prefs: Partial<Omit<UserPreferenceDB, 'id' | 'user_address'>>
+    prefs: Partial<Omit<UserPreferenceDB, 'id' | 'user_address'>>,
   ) {
-    const { data, error } = await supabase
+    const client = requireSupabase('userPreferencesAPI.upsert');
+    const { data, error } = await client
       .from('user_preferences')
       .upsert(
         {
@@ -213,7 +255,7 @@ export const userPreferencesAPI = {
           ...prefs,
           last_config_update: new Date().toISOString(),
         },
-        { onConflict: 'user_address' }
+        { onConflict: 'user_address' },
       )
       .select()
       .single();
@@ -222,7 +264,8 @@ export const userPreferencesAPI = {
   },
 
   async getDeposits(userAddress: string) {
-    const { data, error } = await supabase
+    const client = requireSupabase('userPreferencesAPI.getDeposits');
+    const { data, error } = await client
       .from('user_protocol_deposits')
       .select('*')
       .eq('user_address', userAddress.toLowerCase())
@@ -232,7 +275,8 @@ export const userPreferencesAPI = {
   },
 
   async getRoutingHistory(userAddress: string, limit = 50) {
-    const { data, error } = await supabase
+    const client = requireSupabase('userPreferencesAPI.getRoutingHistory');
+    const { data, error } = await client
       .from('routing_history')
       .select('*')
       .eq('user_address', userAddress.toLowerCase())
@@ -246,16 +290,17 @@ export const userPreferencesAPI = {
     userAddress: string,
     protocolAddress: string,
     amount: number,
-    txHash: string
+    txHash: string,
   ) {
-    const { data, error } = await supabase
+    const client = requireSupabase('userPreferencesAPI.recordRouting');
+    const { data, error } = await client
       .from('routing_history')
       .insert({
-        user_address: userAddress.toLowerCase(),
+        user_address:     userAddress.toLowerCase(),
         protocol_address: protocolAddress.toLowerCase(),
         amount,
         transaction_hash: txHash,
-        status: 'pending',
+        status:           'pending',
       })
       .select()
       .single();
@@ -264,10 +309,11 @@ export const userPreferencesAPI = {
   },
 
   async confirmRouting(txHash: string) {
-    const { data, error } = await supabase
+    const client = requireSupabase('userPreferencesAPI.confirmRouting');
+    const { data, error } = await client
       .from('routing_history')
       .update({
-        status: 'confirmed',
+        status:       'confirmed',
         confirmed_at: new Date().toISOString(),
       })
       .eq('transaction_hash', txHash)
@@ -280,47 +326,46 @@ export const userPreferencesAPI = {
 
 export const realtimeAPI = {
   onProtocolsChange(callback: () => void) {
-    return supabase
+    const client = requireSupabase('realtimeAPI.onProtocolsChange');
+    return client
       .channel('protocols-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'defi_protocols' },
-        callback
-      )
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'defi_protocols' }, callback)
       .subscribe();
   },
 
   onUserDepositsChange(userAddress: string, callback: () => void) {
-    return supabase
+    const client = requireSupabase('realtimeAPI.onUserDepositsChange');
+    return client
       .channel(`deposits-${userAddress}`)
       .on(
         'postgres_changes',
         {
-          event: '*',
+          event:  '*',
           schema: 'public',
-          table: 'user_protocol_deposits',
+          table:  'user_protocol_deposits',
           filter: `user_address=eq.${userAddress.toLowerCase()}`,
         },
-        callback
+        callback,
       )
       .subscribe();
   },
 
   onNewRouting(
     userAddress: string,
-    callback: (payload: { new: RoutingHistory }) => void
+    callback: (payload: { new: RoutingHistory }) => void,
   ) {
-    return supabase
+    const client = requireSupabase('realtimeAPI.onNewRouting');
+    return client
       .channel(`routing-${userAddress}`)
       .on(
         'postgres_changes',
         {
-          event: 'INSERT',
+          event:  'INSERT',
           schema: 'public',
-          table: 'routing_history',
+          table:  'routing_history',
           filter: `user_address=eq.${userAddress.toLowerCase()}`,
         },
-        callback
+        callback,
       )
       .subscribe();
   },
