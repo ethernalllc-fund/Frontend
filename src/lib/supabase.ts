@@ -120,6 +120,17 @@ function requireSupabase(caller: string) {
   return supabase;
 }
 
+
+/**
+ * Returns the Supabase client for direct usage (e.g. admin pages).
+ * Throws a descriptive error if Supabase is not configured.
+ * Use this instead of importing `supabase` directly to avoid TS null errors.
+ *
+ * @example
+ * const client = getSupabase();
+ * const { data } = await client.from('contact_messages').select('*');
+ */
+export const getSupabase = () => requireSupabase('getSupabase');
 export const contactAPI = {
   async create(data: Omit<ContactMessage, 'id' | 'created_at' | 'read'>) {
     const client = requireSupabase('contactAPI.create');

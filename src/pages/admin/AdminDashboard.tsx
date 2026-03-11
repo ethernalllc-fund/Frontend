@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { useReadContracts } from 'wagmi';
 import { formatUnits } from 'viem';
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
 import { TREASURY_ABI, PERSONAL_FUND_FACTORY_ABI as FACTORY_ABI } from '@/contracts/abis';
 import { TREASURY_ADDRESS, FACTORY_ADDRESS } from '@/config/addresses';
 
@@ -59,13 +59,12 @@ export default function AdminDashboard() {
     setLoadingOff(true);
     setOffchainError(null);
     try {
-      const sb = getSupabase();
       const [messagesRes, tvlRes] = await Promise.all([
-        sb
+        getSupabase()
           .from('contact_messages')
           .select('id', { count: 'exact', head: true })
           .eq('read', false),
-        sb
+        getSupabase()
           .from(TVL_TABLE)
           .select('tvl_usd')
           .order('created_at', { ascending: false })
