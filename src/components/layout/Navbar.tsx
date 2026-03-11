@@ -1,6 +1,7 @@
-import { useState, useEffect, startTransition } from 'react';
+import { useState, useEffect, useRef, startTransition } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAccount, useDisconnect, useBalance, useChainId, useSwitchChain } from 'wagmi';
+import { formatUnits } from 'viem';
 import { useAppKit } from '@reown/appkit/react';
 import { useTranslation } from 'react-i18next';
 
@@ -22,8 +23,6 @@ import {
 import { LanguageSwitcher } from '@/components/common/LanguageSwitcher';
 import logo from '@/assets/ethernal_sombra.jpg';
 
-type BalanceData = { value: bigint; decimals: number; symbol: string } | undefined;
-
 const Navbar: React.FC = () => {
   const location = useLocation();
   const { t } = useTranslation();
@@ -36,11 +35,15 @@ const Navbar: React.FC = () => {
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+  const [headerHeight, setHeaderHeight] = useState(0);
 
+  // Close mobile menu on route change
   useEffect(() => {
     startTransition(() => setIsMobileMenuOpen(false));
   }, [location.pathname]);
 
+  // Lock body scroll when mobile menu is open
   useEffect(() => {
     document.body.style.overflow = isMobileMenuOpen ? 'hidden' : 'unset';
     return () => {
@@ -48,15 +51,32 @@ const Navbar: React.FC = () => {
     };
   }, [isMobileMenuOpen]);
 
+  // Measure real header height for mobile menu offset
+  useEffect(() => {
+    if (!headerRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry) setHeaderHeight(entry.contentRect.height);
+    });
+    observer.observe(headerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   const isCorrectNetwork = isValidChain(chainId);
   const chainConfig = appConfig.chain;
   const faucetUrl = getFaucetUrl();
+
   const formatAddress = (addr: string) =>
     `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 
-  const formatBalance = (bal: BalanceData) => {
+  // Fixed: use viem's formatUnits to safely handle bigint
+  const formatBalance = (bal: typeof balance) => {
     if (!bal) return '0';
-    return parseFloat(bal.value.toString()).toFixed(4);
+    const formatted = parseFloat(formatUnits(bal.value, bal.decimals));
+    return formatted.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 4,
+    });
   };
 
   const isActive = (path: string) =>
@@ -72,7 +92,7 @@ const Navbar: React.FC = () => {
   ];
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+    <header ref={headerRef} className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
 
         {/* ── Logo ── */}
@@ -90,7 +110,7 @@ const Navbar: React.FC = () => {
         </Link>
 
         {/* ── Desktop Nav ── */}
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden md:flex items-center gap-8" aria-label="Main navigation">
           {navLinks.map((link) => (
             <Link key={link.path} to={link.path} className={isActive(link.path)}>
               {link.label}
@@ -115,6 +135,7 @@ const Navbar: React.FC = () => {
                   className="flex items-center gap-2 px-4 py-2 bg-linear-to-r from-forest-green to-dark-blue text-white rounded-lg hover:opacity-90 transition"
                   aria-label={t('wallet.connectedWallet')}
                   aria-expanded={isDropdownOpen}
+                  aria-haspopup="true"
                 >
                   <Wallet size={18} />
                   <span className="text-sm font-medium">{formatAddress(address!)}</span>
@@ -134,8 +155,11 @@ const Navbar: React.FC = () => {
                     />
 
                     {/* Dropdown */}
-                    <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
-
+                    <div
+                      className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden"
+                      role="dialog"
+                      aria-label={t('wallet.connectedWallet')}
+                    >
                       {/* Wallet address header */}
                       <div className="p-4 bg-linear-to-r from-forest-green/10 to-dark-blue/10 border-b border-gray-200">
                         <div className="flex items-center justify-between mb-2">
@@ -262,9 +286,7 @@ const Navbar: React.FC = () => {
             <button
               onClick={() => { void open(isConnected ? { view: 'Account' } : undefined); }}
               className="p-2 bg-linear-to-r from-forest-green to-dark-blue text-white rounded-lg hover:opacity-90 transition"
-              aria-label={
-                isConnected ? t('wallet.connectedWallet') : t('nav.connectWallet')
-              }
+              aria-label={isConnected ? t('wallet.connectedWallet') : t('nav.connectWallet')}
             >
               <Wallet size={20} />
             </button>
@@ -274,6 +296,7 @@ const Navbar: React.FC = () => {
               className="p-2 text-gray-700 hover:text-forest-green transition"
               aria-label={isMobileMenuOpen ? t('nav.closeMenu') : t('nav.openMenu')}
               aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-menu"
             >
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -291,8 +314,16 @@ const Navbar: React.FC = () => {
             aria-hidden="true"
           />
 
-          <div className="fixed top-18.25 left-0 right-0 bottom-0 bg-white z-50 md:hidden overflow-y-auto">
-            <nav className="flex flex-col p-6 space-y-4">
+          {/* Fixed offset calculated from real header height */}
+          <div
+            id="mobile-menu"
+            className="fixed left-0 right-0 bottom-0 bg-white z-50 md:hidden overflow-y-auto"
+            style={{ top: headerHeight }}
+          >
+            <nav
+              className="flex flex-col p-6 space-y-4"
+              aria-label="Mobile navigation"
+            >
               {navLinks.map((link) => (
                 <Link
                   key={link.path}

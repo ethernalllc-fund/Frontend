@@ -14,7 +14,7 @@ const Footer: React.FC = () => {
 
           {/* ── Brand ── */}
           <div>
-            <div className="flex items-center gap-3 mb-4">
+            <Link to="/" className="flex items-center gap-3 mb-4 group w-fit">
               <div className="w-10 h-10 bg-white rounded-lg p-1.5 flex items-center justify-center">
                 <img
                   src={logo}
@@ -22,8 +22,10 @@ const Footer: React.FC = () => {
                   className="w-full h-full object-contain"
                 />
               </div>
-              <span className="text-xl font-bold">Ethernal</span>
-            </div>
+              <span className="text-xl font-bold group-hover:text-yellow-400 transition">
+                Ethernal
+              </span>
+            </Link>
             <p className="text-gray-400 text-sm">{t('footer.tagline')}</p>
           </div>
 
@@ -59,7 +61,7 @@ const Footer: React.FC = () => {
             <h3 className="font-semibold mb-4">{t('footer.followUs')}</h3>
             <div className="flex gap-4 mb-4">
               <a
-                href="https://github.com/ethernal.fund"
+                href="https://github.com/ethernalllc-fund"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center hover:bg-green-600 transition"
@@ -72,7 +74,7 @@ const Footer: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center hover:bg-green-600 transition"
-                aria-label="Twitter"
+                aria-label="Twitter / X"
               >
                 <Twitter size={20} />
               </a>
@@ -93,7 +95,12 @@ const Footer: React.FC = () => {
                 <Mail size={20} />
               </a>
             </div>
-            <p className="text-gray-400 text-sm">contact@ethernal.fund</p>
+            <a
+              href="mailto:contact@ethernal.fund"
+              className="text-gray-400 hover:text-yellow-400 transition text-sm"
+            >
+              contact@ethernal.fund
+            </a>
           </div>
         </div>
 
@@ -109,11 +116,11 @@ const Footer: React.FC = () => {
             <Link to="/privacy" className="text-yellow-400 hover:text-yellow-300 transition text-sm">
               {t('footer.privacy')}
             </Link>
-            <span className="text-gray-600 hidden sm:inline">|</span>
+            <span className="text-gray-600 hidden sm:inline" aria-hidden="true">|</span>
             <Link to="/terms" className="text-yellow-400 hover:text-yellow-300 transition text-sm">
               {t('footer.terms')}
             </Link>
-            <span className="text-gray-600 hidden sm:inline">|</span>
+            <span className="text-gray-600 hidden sm:inline" aria-hidden="true">|</span>
             <Link to="/disclaimer" className="text-yellow-400 hover:text-yellow-300 transition text-sm">
               {t('footer.disclaimer')}
             </Link>

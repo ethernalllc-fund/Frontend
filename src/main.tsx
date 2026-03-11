@@ -1,3 +1,4 @@
+import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import { WagmiProvider } from 'wagmi';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -7,25 +8,27 @@ import './i18n/config';
 import { wagmiConfig, queryClient } from './config/web3';
 import { RetirementProvider } from '@/components/context/RetirementContext';
 
-if (import.meta.env['DEV']) {
-  const id = import.meta.env['VITE_WALLETCONNECT_PROJECT_ID'];
+if (import.meta.env.DEV) {
+  const id = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
 
   console.log(
     [
       '🚀 Ethernal Frontend Starting...',
-      `📍 Mode: ${import.meta.env['MODE']}`,
-      `🔗 API URL: ${import.meta.env['VITE_API_URL']}`,
+      `📍 Mode: ${import.meta.env.MODE}`,
+      `🔗 API URL: ${import.meta.env.VITE_API_URL}`,
       `⛓️  WalletConnect Project ID: ${id ? '✅ Set' : '❌ Missing'}`,
     ].join('\n')
   );
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <WagmiProvider config={wagmiConfig}>
-    <QueryClientProvider client={queryClient}>
-      <RetirementProvider>
-        <App />
-      </RetirementProvider>
-    </QueryClientProvider>
-  </WagmiProvider>
+  <StrictMode>
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <RetirementProvider>
+          <App />
+        </RetirementProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  </StrictMode>
 );

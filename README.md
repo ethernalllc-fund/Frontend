@@ -47,8 +47,6 @@ Ethernal-Eternal/
 | DateTime            | `0x5BAF1093f814933A57fEc03369b096298b254ffc` |
 | Treasury            | `0xaED0b89de18B03f1eAea92CA5e0dc6CFCD2E9A7b` |
 | ProtocolRegistry    | `0x639818C51fb56827fAc0a446c886F8fAa11f86d1` |
-| Token (stub)        | `0x3a7253e65efF8624C77848A2A49B1966C682BD82` |
-| Governance (stub)   | `0xd311d1B9D13F70edF7af352A751A2786AD332AF5` |
 | UserPreferences     | `0xd591be275DF02Fd49685A9aEEf89C5a6dCF49D25` |
 | PersonalFund        | `0x92A9454c3Db04C73ADdae8029023Ab47782a29Cb` |
 | PersonalFundFactory | `0x50bcc3E1583F8fc7D00d7050a3Bc2E3035fD5495` |
