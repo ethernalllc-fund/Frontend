@@ -3,7 +3,7 @@ import { parseUnits, type Address } from 'viem';
 export const FEE_BASIS_POINTS = 500n;
 export const BASIS_POINTS     = 10_000n;
 export const PLAN_CONSTRAINTS = {
-  minPrincipal:         0n,
+  minPrincipal:         parseUnits('1', 6),  // minimum $1 USDC — contract rejects 0
   maxPrincipal:         parseUnits('100000', 6),
   minMonthlyDeposit:    parseUnits('50', 6),
   minAge:               18n,
@@ -118,6 +118,8 @@ export function validatePlan(plan: RetirementPlan): PlanValidationError[] {
   const monthlyWei        = toUSDCWei(plan.monthlyDeposit);
   const desiredMonthlyWei = toUSDCWei(plan.desiredMonthlyIncome);
 
+  if (principalWei < c.minPrincipal)
+    errors.push({ field: 'principal', message: `Principal must be at least ${Number(c.minPrincipal) / 1_000_000} USDC` });
   if (principalWei > c.maxPrincipal)
     errors.push({ field: 'principal', message: `Principal cannot exceed ${Number(c.maxPrincipal) / 1_000_000} USDC` });
   if (monthlyWei < c.minMonthlyDeposit)

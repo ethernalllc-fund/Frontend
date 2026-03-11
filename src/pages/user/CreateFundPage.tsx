@@ -1,24 +1,3 @@
-/**
- * CreateFundPage.tsx
- *
- * Flujo completo de creación del fondo en una sola página multi-step.
- * Reemplaza CreateContractPage + ContractCreatedPage.
- *
- * STEPS:
- *   0 → GUARD         – verificar que ya no tiene fondo / red correcta
- *   1 → REVIEW        – revisar parámetros del plan + elegir protocolo de inversión
- *   2 → BALANCE CHECK – leer balance USDC on-chain (lectura pura, 0 gas)
- *   3 → APPROVE       – ERC-20 approve (1 tx) — solo si allowance < importe
- *   4 → CREATE        – llamada a factory.createFund (1 tx)
- *   5 → SUCCESS       – animación + resumen + redirect a dashboard
- *
- * Patrón "approve → execute" (como Uniswap, Aave, Curve):
- *   · Balance check sin gas: useReadContract(balanceOf)
- *   · Allowance check sin gas: useReadContract(allowance)
- *   · Si allowance >= importe → salta el paso APPROVE
- *   · Feedback granular en cada transacción (pending / confirming / confirmed)
- */
-
 import { useEffect, useMemo, useRef, useState, startTransition } from 'react';
 import { useNavigate }              from 'react-router-dom';
 import { useChainId, useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
@@ -30,7 +9,7 @@ import { useHasFund }               from '@/hooks/funds/useHasFund';
 import { useUSDCApproval }          from '@/hooks/usdc/useUSDCApproval';
 import { useUSDCBalance, useUSDCAllowance } from '@/hooks/usdc/useUSDC';
 import { getContractAddress }       from '@/config';
-import { derivePlanValues, initialDepositAmount, buildCreateFundArgs } from '@/types/retirement_types';
+import { derivePlanValues, initialDepositAmount, buildCreateFundArgs, validatePlan } from '@/types/retirement_types';
 import type { RetirementPlan }      from '@/types/retirement_types';
 import { InvestmentSelector }       from '@/components/retirement/InvestmentSelector';
 import type { InvestmentSelection } from '@/components/retirement/InvestmentSelector';
@@ -43,13 +22,10 @@ import {
   TrendingUp, Zap, BarChart3,
 } from 'lucide-react';
 
-
 const EXPECTED_CHAIN_ID  = 421614;
 const ZERO_ADDR          = '0x0000000000000000000000000000000000000000' as const;
 const ARBISCAN           = 'https://sepolia.arbiscan.io/tx/';
 const SUCCESS_REDIRECT   = 4000;
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function fmtUSD(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -62,8 +38,6 @@ function fmtYrs(n: number): string {
   return `${n} año${n !== 1 ? 's' : ''}`;
 }
 
-// ─── Step types ───────────────────────────────────────────────────────────────
-
 type Step = 'review' | 'balance' | 'approve' | 'create' | 'success';
 
 const STEPS: { id: Step; label: string }[] = [
@@ -74,9 +48,6 @@ const STEPS: { id: Step; label: string }[] = [
   { id: 'success', label: '¡Listo!'   },
 ];
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
-
-/** Stepper bar at the top */
 const StepBar: React.FC<{ current: Step }> = ({ current }) => {
   const idx = STEPS.findIndex((s) => s.id === current);
   return (
@@ -119,22 +90,18 @@ const StepBar: React.FC<{ current: Step }> = ({ current }) => {
   );
 };
 
-/** Pill badge */
 const Pill: React.FC<{ color: string; children: React.ReactNode }> = ({ color, children }) => (
   <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold ${color}`}>
     {children}
   </span>
 );
 
-/** Labelled value row */
 const Row: React.FC<{ label: string; value: string; accent?: boolean }> = ({ label, value, accent }) => (
   <div className="flex justify-between items-center py-2.5 border-b border-gray-100 last:border-0">
     <span className="text-gray-500 text-sm">{label}</span>
     <strong className={`text-sm ${accent ? 'text-indigo-700 text-base' : 'text-gray-800'}`}>{value}</strong>
   </div>
 );
-
-// ─── Tx progress indicator (reutilizable en Approve y Create) ─────────────────
 
 interface TxStageProps {
   isWalletPending:  boolean;
@@ -202,8 +169,6 @@ const TxStage: React.FC<TxStageProps> = ({
   </div>
 );
 
-// ─── Main component ───────────────────────────────────────────────────────────
-
 const CreateFundPage: React.FC = () => {
   const navigate                      = useNavigate();
   const { address }                   = useAccount();
@@ -214,34 +179,25 @@ const CreateFundPage: React.FC = () => {
 
   const factoryAddress = getContractAddress(chainId, 'personalFundFactory') as `0x${string}` | undefined;
 
-  // ─── Local state ────────────────────────────────────────────────────────
   const [step,               setStep]               = useState<Step>('review');
   const [plan,               setPlan]               = useState<RetirementPlan | null>(null);
   const [investmentSel,      setInvestmentSel]      = useState<InvestmentSelection | null>(null);
   const [selError,           setSelError]           = useState<string | null>(null);
 
-  // Step: balance
-
-
-  // Step: approve
   const [approveDone,        setApproveDone]        = useState(false);
   const [approvalConfirmed,  setApprovalConfirmed]  = useState(false); // approve confirmado on-chain
   const [approveHash,        setApproveHash]        = useState<`0x${string}` | undefined>();
   const [approveError,       setApproveError]       = useState<Error | null>(null);
   const [approveWallet,      setApproveWallet]      = useState(false);
   const [approveConfirming,  setApproveConfirming]  = useState(false);
-
-  // Step: create
   const [createHash,         setCreateHash]         = useState<`0x${string}` | undefined>();
   const [createError,        setCreateError]        = useState<Error | null>(null);
   const [createWallet,       setCreateWallet]       = useState(false);
   const [createConfirming,   setCreateConfirming]   = useState(false);
   const [createDone,         setCreateDone]         = useState(false);
 
-
   const redirectRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // ─── Sync planData from context ────────────────────────────────────────
   useEffect(() => {
     if (!planData) { void navigate('/calculator', { replace: true }); return; }
     if (isConnected) startTransition(() => setPlan(planData));
@@ -249,20 +205,11 @@ const CreateFundPage: React.FC = () => {
 
   useEffect(() => () => { if (redirectRef.current) clearTimeout(redirectRef.current); }, []);
 
-  // ─── Derived plan values ────────────────────────────────────────────────
   const derived = useMemo(() => plan ? derivePlanValues(plan) : null, [plan]);
-
-  /** Amount en micro-USDC que el usuario necesita aprobar.
-   *  El contrato verifica allowance >= principal + monthlyDeposit (sin fee).
-   *  El fee lo calcula el contrato internamente después del transferFrom. */
   const requiredUsdc: bigint = useMemo(
     () => plan ? initialDepositAmount(plan) : 0n,
     [plan],
   );
-
-  // ─── On-chain reads (balance & allowance) — NO gas, just RPC calls ─────
-  // Usa los hooks existentes que leen la dirección USDC desde usdcUtils.getUSDCAddress(chainId)
-  // sin cascada — una sola llamada por dato, siempre activas mientras hay wallet conectada.
 
   const {
     data:    usdcBalanceWei,
@@ -281,9 +228,6 @@ const CreateFundPage: React.FC = () => {
   const requiredNum      = derived?.initialDepositUsdc ?? 0;
   const hasEnoughBalance = usdcBalanceNum >= requiredNum;
   const needsApproval    = allowanceNum < requiredNum;
-
-  // ─── Step APPROVE — useUSDCApproval acepta wei directamente ─────────────
-  // usdcAmount (bigint wei) → formatUnits(, 6) → string dólares que espera el hook
   const approvalAmountStr = useMemo(
     () => formatUnits(requiredUsdc, 6),
     [requiredUsdc],
@@ -305,7 +249,6 @@ const CreateFundPage: React.FC = () => {
     },
   });
 
-  // ─── Step CREATE — useWriteContract nativo, sin capa USDC ────────────────
   const {
     writeContract:  writeCreate,
     data:           createTxHash,
@@ -336,7 +279,6 @@ const CreateFundPage: React.FC = () => {
     setCreateConfirming(false);
   }, [createWriteError]);
 
-  // ─── Guard: wrong network ───────────────────────────────────────────────
   if (!loadingFund && chainId !== EXPECTED_CHAIN_ID) {
     return (
       <Guard icon={<AlertCircle className="w-20 h-20 text-red-500 mx-auto" />} color="red"
@@ -347,7 +289,6 @@ const CreateFundPage: React.FC = () => {
     );
   }
 
-  // ─── Guard: already has fund ────────────────────────────────────────────
   if (!loadingFund && hasFund && fundAddress && step !== 'success') {
     return (
       <Guard icon={<Info className="w-20 h-20 text-amber-500 mx-auto" />} color="amber"
@@ -367,13 +308,18 @@ const CreateFundPage: React.FC = () => {
     );
   }
 
-  // ─── Handlers ───────────────────────────────────────────────────────────
-
   const handleReviewContinue = () => {
     setSelError(null);
     if (!investmentSel) { setSelError('Selecciona un método de inversión para continuar.'); return; }
+
+    // Validate plan params before advancing — catches principal=0 and other constraint violations
+    const planErrors = validatePlan(plan);
+    if (planErrors.length > 0) {
+      setSelError(planErrors.map(e => e.message).join(' · '));
+      return;
+    }
+
     setStep('balance');
-    // refetch on entering balance step
     setTimeout(() => { void refetchBalance(); void refetchAllowance(); }, 100);
   };
 
@@ -416,7 +362,6 @@ const CreateFundPage: React.FC = () => {
         abi:          PERSONAL_FUND_FACTORY_ABI,
         functionName: 'createPersonalFund',
         args:         buildCreateFundArgs({ ...plan, selectedProtocol: investmentSel.protocolAddress }),
-        gas:          3_000_000n,
         maxFeePerGas:         100_000_000n, // 0.1 gwei — siempre > baseFee de Arbitrum Sepolia (~0.02 gwei)
         maxPriorityFeePerGas:   1_000_000n, // 0.001 gwei
       });
@@ -426,8 +371,6 @@ const CreateFundPage: React.FC = () => {
       setCreateWallet(false);
     }
   };
-
-  // ─── RENDER ─────────────────────────────────────────────────────────────
 
   return (
     <div className="min-h-screen bg-linear-to-br from-indigo-50 via-purple-50 to-pink-50 py-10 px-4">
@@ -464,9 +407,6 @@ const CreateFundPage: React.FC = () => {
           <div className="p-6 sm:p-8">
             <StepBar current={step} />
 
-            {/* ══════════════════════════════════════════════════════════
-                STEP 1 — REVIEW
-            ══════════════════════════════════════════════════════════ */}
             {step === 'review' && (
               <div className="space-y-6">
                 <div>
@@ -542,11 +482,6 @@ const CreateFundPage: React.FC = () => {
               </div>
             )}
 
-            {/* ══════════════════════════════════════════════════════════
-                STEP 2 — BALANCE CHECK
-                Lectura on-chain sin gas (eth_call). El usuario ve su
-                balance real antes de autorizar cualquier movimiento.
-            ══════════════════════════════════════════════════════════ */}
             {step === 'balance' && (
               <div className="space-y-6">
                 <div className="text-center">
@@ -675,11 +610,6 @@ const CreateFundPage: React.FC = () => {
               </div>
             )}
 
-            {/* ══════════════════════════════════════════════════════════
-                STEP 3 — APPROVE
-                Firma ERC-20 approve(factory, amount). Solo muestra si
-                allowance < requiredAmount (verificado en el paso anterior).
-            ══════════════════════════════════════════════════════════ */}
             {step === 'approve' && (
               <div className="space-y-6">
                 <div className="text-center">
@@ -748,10 +678,6 @@ const CreateFundPage: React.FC = () => {
               </div>
             )}
 
-            {/* ══════════════════════════════════════════════════════════
-                STEP 4 — CREATE
-                factory.createFund(...) — mueve USDC + crea el contrato.
-            ══════════════════════════════════════════════════════════ */}
             {step === 'create' && (
               <div className="space-y-6">
                 <div className="text-center">
@@ -800,9 +726,6 @@ const CreateFundPage: React.FC = () => {
               </div>
             )}
 
-            {/* ══════════════════════════════════════════════════════════
-                STEP 5 — SUCCESS
-            ══════════════════════════════════════════════════════════ */}
             {step === 'success' && (
               <div className="space-y-6 text-center">
                 {/* Animated check */}
@@ -876,8 +799,6 @@ const CreateFundPage: React.FC = () => {
 };
 
 export default CreateFundPage;
-
-// ─── Guard component (used for error states) ─────────────────────────────────
 
 interface GuardProps {
   icon:       React.ReactNode;
