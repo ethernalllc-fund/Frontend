@@ -38,12 +38,10 @@ const Navbar: React.FC = () => {
   const headerRef = useRef<HTMLElement>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
 
-  // Close mobile menu on route change
   useEffect(() => {
     startTransition(() => setIsMobileMenuOpen(false));
   }, [location.pathname]);
 
-  // Lock body scroll when mobile menu is open
   useEffect(() => {
     document.body.style.overflow = isMobileMenuOpen ? 'hidden' : 'unset';
     return () => {
@@ -65,11 +63,9 @@ const Navbar: React.FC = () => {
   const isCorrectNetwork = isValidChain(chainId);
   const chainConfig = appConfig.chain;
   const faucetUrl = getFaucetUrl();
-
   const formatAddress = (addr: string) =>
     `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 
-  // Fixed: use viem's formatUnits to safely handle bigint
   const formatBalance = (bal: typeof balance) => {
     if (!bal) return '0';
     const formatted = parseFloat(formatUnits(bal.value, bal.decimals));
