@@ -1,74 +1,100 @@
-import { useEffect } from "react";
-import { useCreatePersonalFund } from "@/hooks/useCreatePersonalFund";
-import { usePersonalFundFactory } from "@/hooks/funds/usePersonalFundFactory";
-import { useProtocolStatus } from "@/hooks/funds/useProtocolStatus";
-import { parseUnits } from "viem";
-
-const PROTOCOL_ADDRESS = "0x6e1371974d923397ece9ee7525ac50ad7087c77f" as `0x${string}`;
+import { useEffect } from 'react';
+import { useCreatePersonalFund }  from '@/hooks/useCreatePersonalFund';
+import { usePersonalFundFactory } from '@/hooks/funds/usePersonalFundFactory';
+import { useProtocolStatus }      from '@/hooks/funds/useProtocolStatus';
+import { getContractAddresses }   from '@/config/addresses';
+import { useChainId }             from 'wagmi';
+import { parseUnits }             from 'viem';
 
 export function CreateFundForm() {
+  const chainId          = useChainId();
+  const addresses        = getContractAddresses(chainId);
+
+  const PROTOCOL_ADDRESS = addresses?.mockDeFiProtocol;
+
   const { createFund, isPending, isConfirming, isSuccess, error, receipt } =
     useCreatePersonalFund();
+
   const { refetch } = usePersonalFundFactory();
-  const {
-    data: isProtocolActive,
-    isLoading: isCheckingProtocol,
-    isError: isProtocolError,
-  } = useProtocolStatus(PROTOCOL_ADDRESS);
+  const { status: protocolStatus, isVerified } = useProtocolStatus(PROTOCOL_ADDRESS);
+
+  const isCheckingProtocol = protocolStatus === 'loading';
+  const isProtocolError    = protocolStatus === 'error';
+  const isProtocolActive   = protocolStatus === 'active';
+  const isUnavailable      = protocolStatus === 'unavailable';
 
   useEffect(() => {
     if (isSuccess) refetch();
   }, [isSuccess, refetch]);
 
   const handleCreate = () => {
-    if (!isProtocolActive) return;
+    if (!isProtocolActive || !PROTOCOL_ADDRESS) return;
 
     createFund({
-      principal:        parseUnits("1000", 6),
-      monthlyDeposit:   parseUnits("100", 6),
+      principal:        parseUnits('1000', 6),
+      monthlyDeposit:   parseUnits('100',  6),
       currentAge:       30n,
       retirementAge:    65n,
-      desiredMonthly:   parseUnits("2000", 6),
+      desiredMonthly:   parseUnits('2000', 6),
       yearsPayments:    20n,
       interestRate:     500n,
-      timelockYears:    10n,
+      timelockYears:    15n,              
       selectedProtocol: PROTOCOL_ADDRESS,
     });
   };
 
-  const isButtonDisabled = isPending || isConfirming || !isProtocolActive || isCheckingProtocol;
+  const isButtonDisabled =
+    isPending          ||
+    isConfirming       ||
+    !isProtocolActive  ||
+    isCheckingProtocol ||
+    !PROTOCOL_ADDRESS;
 
   const buttonLabel = isPending
-    ? "Confirmá en tu wallet..."
+    ? 'Confirmá en tu wallet...'
     : isConfirming
-    ? "Minando transacción..."
+    ? 'Minando transacción...'
     : isCheckingProtocol
-    ? "Verificando protocolo..."
+    ? 'Verificando protocolo...'
     : !isProtocolActive
-    ? "Protocolo no disponible"
-    : "Crear mi fondo";
+    ? 'Protocolo no disponible'
+    : 'Crear mi fondo';
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Protocol status badge */}
+
       {isCheckingProtocol && (
         <p className="text-sm text-yellow-500">
           🔄 Verificando estado del protocolo...
         </p>
       )}
+
       {isProtocolError && (
         <p className="text-sm text-red-400">
           ⚠️ No se pudo verificar el protocolo. Intentá de nuevo.
         </p>
       )}
-      {isProtocolActive === false && !isCheckingProtocol && (
+
+      {isUnavailable && (
+        <p className="text-sm text-amber-500">
+          ⚠️ Registry no disponible en esta red.
+        </p>
+      )}
+
+      {protocolStatus === 'inactive' && (
         <p className="text-sm text-red-500 font-medium">
           🚫 Protocolo inactivo — contactá al administrador.
         </p>
       )}
-      {isProtocolActive === true && !isCheckingProtocol && (
+
+      {isProtocolActive && (
         <p className="text-sm text-green-500">
           ✅ Protocolo activo
+          {isVerified && (
+            <span className="ml-2 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold">
+              Verificado
+            </span>
+          )}
         </p>
       )}
 
@@ -82,12 +108,13 @@ export function CreateFundForm() {
 
       {isSuccess && (
         <p className="text-sm text-green-500">
-          ✅ Fondo creado con éxito! Tx:{" "}
+          ✅ Fondo creado con éxito! Tx:{' '}
           <span className="font-mono text-xs break-all">
             {receipt?.transactionHash}
           </span>
         </p>
       )}
+
       {error && (
         <p className="text-sm text-red-500">
           ❌ Error: {error.message}
