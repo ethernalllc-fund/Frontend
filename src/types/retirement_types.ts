@@ -3,7 +3,7 @@ import { parseUnits, type Address } from 'viem';
 export const FEE_BASIS_POINTS = 500n;
 export const BASIS_POINTS     = 10_000n;
 export const PLAN_CONSTRAINTS = {
-  minPrincipal:         parseUnits('1', 6),  // minimum $1 USDC — contract rejects 0
+  minPrincipal:         0n,                 
   maxPrincipal:         parseUnits('100000', 6),
   minMonthlyDeposit:    parseUnits('50', 6),
   minAge:               18n,
@@ -72,7 +72,7 @@ export function monthlyDepositAmount(plan: RetirementPlan): bigint {
 }
 
 export function requiredApprovalAmount(plan: RetirementPlan): bigint {
-  return initialDepositAmount(plan); // solo principal + monthly, sin fee
+  return initialDepositAmount(plan); 
 }
 
 export function buildCreateFundArgs(plan: RetirementPlan): readonly [
@@ -118,8 +118,6 @@ export function validatePlan(plan: RetirementPlan): PlanValidationError[] {
   const monthlyWei        = toUSDCWei(plan.monthlyDeposit);
   const desiredMonthlyWei = toUSDCWei(plan.desiredMonthlyIncome);
 
-  if (principalWei < c.minPrincipal)
-    errors.push({ field: 'principal', message: `Principal must be at least ${Number(c.minPrincipal) / 1_000_000} USDC` });
   if (principalWei > c.maxPrincipal)
     errors.push({ field: 'principal', message: `Principal cannot exceed ${Number(c.maxPrincipal) / 1_000_000} USDC` });
   if (monthlyWei < c.minMonthlyDeposit)
@@ -160,6 +158,24 @@ export function validatePlan(plan: RetirementPlan): PlanValidationError[] {
 
 export function isPlanValid(plan: RetirementPlan): boolean {
   return validatePlan(plan).length === 0;
+}
+
+export interface PlanValidationWarning {
+  field:   keyof RetirementPlan | 'initialDeposit';
+  message: string;
+}
+
+export function warnPlan(plan: RetirementPlan): PlanValidationWarning[] {
+  const warnings: PlanValidationWarning[] = [];
+
+  if (plan.principal === 0) {
+    warnings.push({
+      field:   'principal',
+      message: 'Sin capital inicial — tu fondo arranca solo con el depósito mensual.',
+    });
+  }
+
+  return warnings;
 }
 
 export function createEmptyPlan(): RetirementPlan {
