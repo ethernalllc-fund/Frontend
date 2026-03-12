@@ -340,7 +340,7 @@ const CreateFundPage: React.FC = () => {
   };
 
   const handleApproveNext = () => {
-    void refetchAllowance(); // actualizar UI, pero no bloqueamos en ello
+    void refetchAllowance(); // actualizar UI, pero no bloquea
     setStep('create');
   };
 

@@ -32,7 +32,6 @@ function ScrollToTop() {
   return null;
 }
 
-// ─── 404 Page ─────────────────────────────────────────────────────────────────
 function NotFoundPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4 text-center">
@@ -49,7 +48,6 @@ function NotFoundPage() {
   );
 }
 
-// ─── Error Boundary ───────────────────────────────────────────────────────────
 interface ErrorBoundaryState {
   hasError: boolean;
   error: Error | null;

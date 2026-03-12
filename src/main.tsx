@@ -3,8 +3,6 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
 import './i18n/config';
-// web3.tsx initializes wagmiAdapter + createAppKit as a side-effect on import.
-// It must be imported before any component that calls useAppKit / useAccount.
 import { Web3Provider } from './config/web3';
 import { RetirementProvider } from '@/components/context/RetirementContext';
 
