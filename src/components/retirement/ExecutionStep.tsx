@@ -5,23 +5,10 @@ import { parseUnits, erc20Abi } from 'viem';
 import type { Abi } from 'viem';
 import type { RetirementPlan } from '@/types/retirement_types';
 import { initialDepositAmount, buildCreateFundArgs } from '@/types/retirement_types';
-import { getContractAddresses } from '@/config';
-import { PERSONAL_FUND_FACTORY_ABI } from '@/contracts/abis';
+import { getContractAddresses, getExplorerUrl } from '@/config';
+import { PersonalFundFactoryABI } from '@/contracts/abis';
 
-const ERC20_APPROVE_ABI = [
-  {
-    name:            'approve',
-    type:            'function',
-    stateMutability: 'nonpayable',
-    inputs: [
-      { name: 'spender', type: 'address' },
-      { name: 'amount',  type: 'uint256' },
-    ],
-    outputs: [{ name: '', type: 'bool' }],
-  },
-] as const;
-
-type TransactionStep =
+type TxStep =
   | 'idle'
   | 'approving'
   | 'approved'
@@ -42,7 +29,8 @@ export interface ExecutionStepProps {
   factoryAddress:   `0x${string}`;
   needsApproval:    boolean;
   selectedProtocol: `0x${string}`;
-  onSuccess:        (txHash: `0x${string}`, fundAddress?: string) => void;
+
+  onSuccess: (txHash: `0x${string}`, fundAddress?: `0x${string}`) => void;
 }
 
 const parseUSDC = (value: string | number): bigint =>
@@ -52,71 +40,43 @@ const parseUSDC = (value: string | number): bigint =>
   );
 
 function extractRevertReason(error: unknown): string | null {
-  const msg = String(error);
-  const match = msg.match(/reverted with reason:\s*(.+?)(?:\.|Raw Call|$)/i);
-  if (match?.[1]) return match[1].trim();
+  const msg    = String(error);
+  const match  = msg.match(/reverted with reason:\s*(.+?)(?:\.|Raw Call|$)/i);
+  if (match?.[1])  return match[1].trim();
   const match2 = msg.match(/execution reverted:\s*(.+?)(?:\.|$)/i);
   if (match2?.[1]) return match2[1].trim();
   return null;
 }
 
-function enrichGasError(display: ErrorDisplay, rawError: unknown): ErrorDisplay {
-  const msg = String(rawError);
-  const revertReason = extractRevertReason(rawError);
-  if (revertReason) return display;
+function formatErrorForUI(error: unknown): ErrorDisplay {
+  const msg          = String(error);
+  const revertReason = extractRevertReason(error);
 
-  if (
-    msg.includes('max fee per gas less than block base fee') ||
-    msg.includes('maxFeePerGas') ||
-    msg.includes('baseFee')
-  ) {
-    return {
-      ...display,
-      title:   'Gas Fee Insuficiente',
-      message: 'El gas fee configurado es menor que el fee base de la red en este momento.',
+  if (revertReason) {
+    const r = revertReason.toLowerCase();
+    if (r.includes('allowance')) return {
+      title:   'USDC no Aprobado',
+      message: 'El contrato no tiene suficiente allowance de USDC.',
+      details: revertReason,
       suggestions: [
-        'Espera 30-60 segundos y reintenta (el base fee fluctúa constantemente)',
-        'Al confirmar en tu wallet, aumenta manualmente el "Max fee" y "Max priority fee"',
-        'Asegúrate de tener suficiente ETH para pagar el gas',
+        'Volvé al paso anterior y aprobá el USDC primero',
+        'Asegurate de que el approve se confirmó on-chain antes de crear el contrato',
+        'Si ya aprobaste, esperá 15-30 segundos y reintentá',
       ],
     };
-  }
-  return display;
-}
-
-function formatErrorForUI(error: unknown): ErrorDisplay {
-  const msg = String(error);
-  const revertReason = extractRevertReason(error);
-  if (revertReason) {
-    if (revertReason.toLowerCase().includes('allowance')) {
-      return {
-        title:   'USDC no Aprobado',
-        message: `El contrato no tiene suficiente allowance de USDC.`,
-        details: revertReason,
-        suggestions: [
-          'Volvé al paso anterior y aprobá el USDC primero',
-          'Asegurate de que el approve se confirmó on-chain antes de crear el contrato',
-          'Si ya aprobaste, esperá 15-30 segundos y reintentá',
-        ],
-      };
-    }
-    if (revertReason.toLowerCase().includes('insufficient usdc')) {
-      return {
-        title:   'USDC Insuficiente',
-        message: revertReason,
-        suggestions: ['Verificá tu balance de USDC en el paso de verificación'],
-      };
-    }
-    if (revertReason.toLowerCase().includes('mismatch') || revertReason.toLowerCase().includes('address')) {
-      return {
-        title:   'Error de Dirección',
-        message: revertReason,
-        suggestions: ['Recargá la página e intentá nuevamente'],
-      };
-    }
+    if (r.includes('insufficient usdc')) return {
+      title:       'USDC Insuficiente',
+      message:     revertReason,
+      suggestions: ['Verificá tu balance de USDC en el paso de verificación'],
+    };
+    if (r.includes('mismatch') || r.includes('address')) return {
+      title:       'Error de Dirección',
+      message:     revertReason,
+      suggestions: ['Recargá la página e intentá nuevamente'],
+    };
     return {
-      title:   'Transacción Rechazada por el Contrato',
-      message: revertReason,
+      title:       'Transacción Rechazada por el Contrato',
+      message:     revertReason,
       suggestions: ['Revisá los parámetros e intentá nuevamente'],
     };
   }
@@ -127,16 +87,45 @@ function formatErrorForUI(error: unknown): ErrorDisplay {
   if (msg.includes('insufficient funds'))
     return {
       title:       'Fondos Insuficientes',
-      message:     'No tienes suficiente ETH para pagar el gas.',
-      suggestions: ['Obtén ETH de un faucet de testnet'],
+      message:     'No tenés suficiente ETH/MATIC para pagar el gas.',
+      suggestions: ['Obtené gas de un faucet de testnet'],
     };
 
-  return {
-    title:   'Error en la Transacción',
-    message: 'Ocurrió un error inesperado.',
-    details: msg.slice(0, 300),
-    suggestions: ['Intenta nuevamente', 'Verifica tu wallet y saldo'],
+  if (
+    msg.includes('max fee per gas less than block base fee') ||
+    msg.includes('maxFeePerGas') ||
+    msg.includes('baseFee')
+  ) return {
+    title:   'Gas Fee Insuficiente',
+    message: 'El gas fee configurado es menor que el fee base de la red en este momento.',
+    suggestions: [
+      'Esperá 30-60 segundos y reintentá (el base fee fluctúa constantemente)',
+      'Al confirmar en tu wallet, aumentá manualmente el "Max fee" y "Max priority fee"',
+      'Asegurate de tener suficiente gas para pagar las transacciones',
+    ],
   };
+
+  return {
+    title:       'Error en la Transacción',
+    message:     'Ocurrió un error inesperado.',
+    details:     msg.slice(0, 300),
+    suggestions: ['Intentá nuevamente', 'Verificá tu wallet y saldo'],
+  };
+}
+
+function extractFundAddress(
+  logs: { topics: readonly string[]; data: string }[],
+): `0x${string}` | undefined {
+  for (const log of logs) {
+    if (log.topics.length >= 3) {
+      const raw = log.topics[2];
+      if (raw && raw.length === 66) {
+        const addr = `0x${raw.slice(26)}` as `0x${string}`;
+        if (addr !== '0x0000000000000000000000000000000000000000') return addr;
+      }
+    }
+  }
+  return undefined;
 }
 
 export function ExecutionStep({
@@ -147,18 +136,18 @@ export function ExecutionStep({
   onSuccess,
 }: ExecutionStepProps) {
   const { address: account, chain } = useAccount();
-  const publicClient = usePublicClient();
-  const [step,               setStep              ] = useState<TransactionStep>('idle');
-  const [errorDisplay,       setErrorDisplay       ] = useState<ErrorDisplay | null>(null);
-  const [allowanceConfirmed, setAllowanceConfirmed ] = useState(false);
+  const publicClient                = usePublicClient();
+
+  const [step,               setStep             ] = useState<TxStep>('idle');
+  const [errorDisplay,       setErrorDisplay      ] = useState<ErrorDisplay | null>(null);
+  const [allowanceConfirmed, setAllowanceConfirmed] = useState(false);
 
   const successFiredRef = useRef(false);
+
   const chainId     = chain?.id ?? 421614;
   const addresses   = getContractAddresses(chainId);
   const usdcAddress = addresses?.usdc;
-  const explorerUrl = chainId === 421614
-    ? 'https://sepolia.arbiscan.io'
-    : 'https://amoy.polygonscan.com';
+  const explorerBase = getExplorerUrl(chainId);
 
   const principalWei      = parseUSDC(plan.principal);
   const monthlyDepositWei = parseUSDC(plan.monthlyDeposit);
@@ -171,7 +160,10 @@ export function ExecutionStep({
     error:         approvalWriteError,
   } = useWriteContract();
 
-  const { isSuccess: isApprovalSuccess } = useWaitForTransactionReceipt({ hash: approvalHash });
+  const { isSuccess: isApprovalSuccess } = useWaitForTransactionReceipt({
+    hash:  approvalHash,
+    query: { enabled: Boolean(approvalHash) },
+  });
 
   const {
     writeContract: writeCreateFund,
@@ -184,116 +176,124 @@ export function ExecutionStep({
     isSuccess: isTxSuccess,
     data:      receipt,
     error:     receiptError,
-  } = useWaitForTransactionReceipt({ hash: txHash });
+  } = useWaitForTransactionReceipt({
+    hash:  txHash,
+    query: { enabled: Boolean(txHash) },
+  });
 
   const handleCreateFund = useCallback(() => {
     if (!account || !chain) {
       setErrorDisplay({
         title:       'Wallet no conectada',
         message:     'La wallet se desconectó durante el proceso',
-        suggestions: ['Reconecta tu wallet e intenta nuevamente'],
+        suggestions: ['Reconectá tu wallet e intentá nuevamente'],
       });
       setStep('error');
       return;
     }
 
     setStep('creating');
+
     if (import.meta.env.DEV) {
       console.log('[ExecutionStep] createPersonalFund params:', {
         principal:            `${plan.principal} USDC → ${principalWei} wei`,
         monthlyDeposit:       `${plan.monthlyDeposit} USDC → ${monthlyDepositWei} wei`,
-        approvalAmount:       `${approvalAmountWei} wei (principal + monthly, sin fee)`,
+        approvalAmount:       `${approvalAmountWei} wei`,
         currentAge:           plan.currentAge,
         retirementAge:        plan.retirementAge,
         desiredMonthlyIncome: plan.desiredMonthlyIncome,
         yearsPayments:        plan.yearsPayments,
         interestRate:         `${plan.interestRate}% → ${Math.round(plan.interestRate * 100)} bps`,
         timelockYears:        plan.timelockYears,
+        chainId,
       });
     }
 
-    const createArgs = buildCreateFundArgs({
-      ...plan,
-      selectedProtocol: selectedProtocol,
-    });
-
     writeCreateFund({
       address:      factoryAddress,
-      abi:          PERSONAL_FUND_FACTORY_ABI as Abi,
+      abi:          PersonalFundFactoryABI as Abi,
       functionName: 'createPersonalFund',
-      args:         createArgs,
+      args:         buildCreateFundArgs({ ...plan, selectedProtocol }),
       account,
       chain,
-      gas: 500_000n,
+      gas:          500_000n,
     });
   }, [
-    account, chain, factoryAddress, selectedProtocol,
+    account, chain, chainId, factoryAddress, selectedProtocol,
     plan, principalWei, monthlyDepositWei, approvalAmountWei, writeCreateFund,
   ]);
 
   useEffect(() => {
-    if (isApprovalSuccess && approvalHash && step === 'approving') {
-      setStep('approved');
-      setAllowanceConfirmed(false);
+    if (!isApprovalSuccess || !approvalHash || step !== 'approving') return;
 
-      if (!publicClient || !account || !usdcAddress) {
-        setAllowanceConfirmed(true);
-        return;
+    setStep('approved');
+    setAllowanceConfirmed(false);
+
+    // Fast-path: no public client — proceed immediately
+    if (!publicClient || !account || !usdcAddress) {
+      setAllowanceConfirmed(true);
+      return;
+    }
+
+    let cancelled      = false;
+    let attempts       = 0;
+    const MAX_ATTEMPTS = 6;
+    const INTERVAL_MS  = 2_000;
+
+    const poll = async () => {
+      if (cancelled) return;
+      attempts++;
+      try {
+        const allowance = await publicClient.readContract({
+          address:      usdcAddress,
+          abi:          erc20Abi,
+          functionName: 'allowance',
+          args:         [account, factoryAddress],
+        }) as bigint;
+
+        if (import.meta.env.DEV) {
+          console.log(`[ExecutionStep] Allowance poll #${attempts}: ${allowance} / required: ${approvalAmountWei}`);
+        }
+
+        if (allowance >= approvalAmountWei) {
+          if (!cancelled) setAllowanceConfirmed(true);
+          return;
+        }
+      } catch (e) {
+        console.warn('[ExecutionStep] Allowance poll error:', e);
       }
 
-      let attempts = 0;
-      const MAX_ATTEMPTS = 6;
-      const INTERVAL_MS  = 2_000;
+      if (attempts < MAX_ATTEMPTS) {
+        setTimeout(poll, INTERVAL_MS);
+      } else {
+        console.warn('[ExecutionStep] Allowance not confirmed after max attempts — proceeding anyway');
+        if (!cancelled) setAllowanceConfirmed(true);
+      }
+    };
 
-      const poll = async () => {
-        attempts++;
-        try {
-          const allowance = await publicClient.readContract({
-            address:      usdcAddress,
-            abi:          erc20Abi,
-            functionName: 'allowance',
-            args:         [account, factoryAddress],
-          }) as bigint;
+    const timer = setTimeout(poll, 1_000);
+    return () => { cancelled = true; clearTimeout(timer); };
 
-          if (import.meta.env.DEV) {
-            console.log(`[ExecutionStep] Allowance poll #${attempts}:`, allowance.toString());
-            console.log(`[ExecutionStep] Required:`, approvalAmountWei.toString());
-          }
-
-          if (allowance >= approvalAmountWei) {
-            setAllowanceConfirmed(true);
-            return;
-          }
-        } catch (e) {
-          console.warn('[ExecutionStep] Allowance poll error:', e);
-        }
-
-        if (attempts < MAX_ATTEMPTS) {
-          setTimeout(poll, INTERVAL_MS);
-        } else {
-          console.warn('[ExecutionStep] Allowance not confirmed after max attempts — proceeding anyway');
-          setAllowanceConfirmed(true);
-        }
-      };
-
-      setTimeout(poll, 1_000);
-    }
-  }, [isApprovalSuccess, approvalHash, step, publicClient, account, usdcAddress, factoryAddress, approvalAmountWei]);
+  }, [isApprovalSuccess, approvalHash, step]);
 
   useEffect(() => {
-    if (step !== 'approved') return;
-    if (!allowanceConfirmed) return;
+    if (step !== 'approved' || !allowanceConfirmed) return;
     handleCreateFund();
   }, [step, allowanceConfirmed, handleCreateFund]);
 
   useEffect(() => {
+    if (txHash && step === 'creating') setStep('confirming');
+  }, [txHash, step]);
+
+  useEffect(() => {
     if (!isTxSuccess || !receipt || step !== 'confirming') return;
     if (successFiredRef.current) return;
+
     if (!Array.isArray(receipt.logs)) {
       setErrorDisplay({
         title:       'Error de Receipt',
         message:     'Error procesando la confirmación de la transacción',
-        suggestions: ['Recarga la página y verifica en el explorador de bloques'],
+        suggestions: ['Recargá la página y verificá en el explorador de bloques'],
       });
       setStep('error');
       return;
@@ -302,50 +302,48 @@ export function ExecutionStep({
     successFiredRef.current = true;
     setStep('success');
 
-    const hash = txHash as `0x${string}`;
-    queueMicrotask(() => {
-      onSuccess(hash);
-    });
+    const hash        = txHash as `0x${string}`;
+    const fundAddress = extractFundAddress(
+      receipt.logs as { topics: readonly string[]; data: string }[],
+    );
+
+    if (import.meta.env.DEV) {
+      console.log('[ExecutionStep] Success. fundAddress:', fundAddress ?? 'not found in logs');
+    }
+
+    queueMicrotask(() => { onSuccess(hash, fundAddress); });
   }, [isTxSuccess, receipt, step, txHash, onSuccess]);
 
   useEffect(() => {
     if (approvalWriteError && step === 'approving') {
-      const display = enrichGasError(formatErrorForUI(approvalWriteError), approvalWriteError);
-      setErrorDisplay(display);
+      setErrorDisplay(formatErrorForUI(approvalWriteError));
       setStep('error');
     }
   }, [approvalWriteError, step]);
 
   useEffect(() => {
     if (createWriteError && (step === 'creating' || step === 'approved')) {
-      const display = enrichGasError(formatErrorForUI(createWriteError), createWriteError);
-      setErrorDisplay(display);
+      setErrorDisplay(formatErrorForUI(createWriteError));
       setStep('error');
     }
   }, [createWriteError, step]);
 
   useEffect(() => {
     if (receiptError && step === 'confirming') {
-      const display = enrichGasError(formatErrorForUI(receiptError), receiptError);
-      setErrorDisplay(display);
+      setErrorDisplay(formatErrorForUI(receiptError));
       setStep('error');
     }
   }, [receiptError, step]);
 
-  useEffect(() => {
-    if (txHash && step === 'creating' && !isCreatePending) {
-      setStep('confirming');
-    }
-  }, [txHash, step, isCreatePending]);
-
   const handleStart = () => {
     setErrorDisplay(null);
     successFiredRef.current = false;
+
     if (!account || !chain) {
       setErrorDisplay({
         title:       'Wallet no conectada',
-        message:     'Por favor conecta tu wallet para continuar',
-        suggestions: ['Conecta tu wallet usando el botón de la barra superior'],
+        message:     'Por favor conectá tu wallet para continuar',
+        suggestions: ['Conectá tu wallet usando el botón de la barra superior'],
       });
       setStep('error');
       return;
@@ -353,37 +351,33 @@ export function ExecutionStep({
 
     if (!usdcAddress) {
       setErrorDisplay({
-        title:       'Red no soportada',
-        message:     `USDC no está configurado para la red ${chainId}`,
-        suggestions: ['Cambia a Arbitrum Sepolia o Polygon Amoy'],
+        title:   'Red no soportada',
+        message: `No hay contratos deployados en la red conectada (chainId: ${chainId}).`,
+        suggestions: ['Cambiá a una red soportada (Arbitrum Sepolia, Polygon Amoy)'],
       });
       setStep('error');
       return;
     }
 
     if (import.meta.env.DEV) {
-      console.log('[ExecutionStep] Starting with amounts:', {
-        usdcAddress,
-        factoryAddress,
+      console.log('[ExecutionStep] Starting:', {
+        chainId, usdcAddress, factoryAddress,
         principal:      principalWei.toString(),
         monthlyDeposit: monthlyDepositWei.toString(),
         approvalAmount: approvalAmountWei.toString(),
-        chainId,
       });
     }
 
     if (needsApproval) {
       setStep('approving');
-
-      const MAX_UINT256 = BigInt('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff');
       writeApproval({
         address:      usdcAddress,
-        abi:          ERC20_APPROVE_ABI,
+        abi:          erc20Abi,
         functionName: 'approve',
-        args:         [factoryAddress, MAX_UINT256],
+        args:         [factoryAddress, BigInt('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff')],
         account,
         chain,
-        gas:          500_000n,
+        gas: 500_000n,
       });
     } else {
       handleCreateFund();
@@ -397,13 +391,44 @@ export function ExecutionStep({
     successFiredRef.current = false;
   };
 
+  const showIdlePanel     = step === 'idle';
   const showApprovedPanel = step === 'approved';
-  const showProgressPanel = step !== 'idle' && step !== 'approved' && step !== 'error';
+  const showProgressPanel = !['idle', 'approved', 'error', 'success'].includes(step);
 
   return (
     <div className="space-y-6">
 
-      {/* Aprobación completada */}
+      {showIdlePanel && (
+        <div className="bg-linear-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border-2 border-purple-200">
+          <h3 className="text-xl font-bold text-gray-800 mb-4">
+            Listo para crear tu contrato
+          </h3>
+          <p className="text-gray-700 mb-6">
+            {needsApproval
+              ? 'Se ejecutarán 2 transacciones: aprobación de USDC y creación del contrato.'
+              : 'Se ejecutará 1 transacción para crear tu contrato.'}
+          </p>
+          <button
+            onClick={handleStart}
+            disabled={isApprovalPending || isCreatePending}
+            className="w-full bg-linear-to-r from-purple-600 to-pink-600
+                       hover:from-purple-700 hover:to-pink-700 text-white font-bold
+                       text-xl py-4 rounded-xl shadow-lg transition-all
+                       hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed
+                       disabled:scale-100"
+          >
+            {isApprovalPending || isCreatePending ? (
+              <span className="flex items-center justify-center gap-3">
+                <Loader2 className="animate-spin" size={24} />
+                Procesando...
+              </span>
+            ) : (
+              'Iniciar Creación'
+            )}
+          </button>
+        </div>
+      )}
+
       {showApprovedPanel && (
         <div className="bg-amber-50 rounded-xl p-6 border-2 border-amber-200">
           <div className="flex items-start gap-3">
@@ -412,24 +437,68 @@ export function ExecutionStep({
               <h3 className="text-lg font-bold text-amber-800 mb-2">
                 Aprobación Completada ✅
               </h3>
-              {allowanceConfirmed ? (
-                <p className="text-amber-700 flex items-center gap-2">
-                  <Loader2 className="animate-spin" size={16} />
-                  Creando tu contrato...
-                </p>
-              ) : (
-                <p className="text-amber-700 flex items-center gap-2">
-                  <Loader2 className="animate-spin" size={16} />
-                  Verificando allowance on-chain...
-                </p>
-              )}
+              <p className="text-amber-700 flex items-center gap-2">
+                <Loader2 className="animate-spin" size={16} />
+                {allowanceConfirmed
+                  ? 'Creando tu contrato...'
+                  : 'Verificando allowance on-chain...'}
+              </p>
             </div>
           </div>
         </div>
       )}
 
-      {/* Error */}
-      {errorDisplay && (
+      {showProgressPanel && (
+        <div className="space-y-4">
+          <h3 className="text-xl font-bold text-gray-800 text-center">
+            Ejecutando transacciones...
+          </h3>
+
+          <div className="space-y-3">
+            {needsApproval && (
+              <StepRow
+                active={['approving', 'approved', 'creating', 'confirming', 'success'].includes(step)}
+                done={['approved', 'creating', 'confirming', 'success'].includes(step)}
+                spinning={step === 'approving'}
+                label="Paso 1: Aprobar USDC"
+                txHash={approvalHash}
+                explorerBase={explorerBase}
+              />
+            )}
+            <StepRow
+              active={['creating', 'confirming', 'success'].includes(step)}
+              done={step === 'success'}
+              spinning={step === 'creating' || step === 'confirming'}
+              label={`Paso ${needsApproval ? '2' : '1'}: Crear Contrato`}
+              txHash={txHash}
+              explorerBase={explorerBase}
+            />
+          </div>
+
+          <div className="bg-amber-50 rounded-lg p-3">
+            <p className="text-sm text-amber-800">
+              {step === 'approving'  ? '⏳ Confirmá la aprobación en tu wallet'
+              : step === 'creating'  ? '⏳ Confirmá la transacción en tu wallet'
+              :                        '⏳ Esperando confirmación en la blockchain...'}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {step === 'success' && (
+        <div className="bg-green-50 rounded-xl p-6 border-2 border-green-300 text-center">
+          <CheckCircle className="text-green-600 mx-auto mb-3" size={40} />
+          <h3 className="text-xl font-bold text-green-800 mb-1">
+            ¡Contrato creado exitosamente!
+          </h3>
+          <p className="text-green-700 text-sm">
+            Tu fondo de retiro está activo en la blockchain.
+          </p>
+        </div>
+      )}
+
+      {/* ── Error ──────────────────────────────────────────────────────────── */}
+      {errorDisplay && step === 'error' && (
         <div className="bg-red-100 rounded-xl p-6 border-2 border-red-200">
           <div className="flex items-start gap-3">
             <AlertCircle className="text-red-600 shrink-0 mt-1" size={24} />
@@ -440,7 +509,9 @@ export function ExecutionStep({
               {errorDisplay.details && (
                 <details className="text-xs text-red-600 mb-3">
                   <summary className="cursor-pointer font-semibold">Detalles técnicos</summary>
-                  <p className="mt-2 font-mono bg-red-50 p-2 rounded">{errorDisplay.details}</p>
+                  <p className="mt-2 font-mono bg-red-50 p-2 rounded break-all">
+                    {errorDisplay.details}
+                  </p>
                 </details>
               )}
 
@@ -457,8 +528,9 @@ export function ExecutionStep({
 
           <div className="mt-4 space-y-2 pl-9">
             <a
-              href={`${explorerUrl}/address/${factoryAddress}`}
-              target="_blank" rel="noopener noreferrer"
+              href={`${explorerBase}/address/${factoryAddress}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm"
             >
               <ExternalLink size={16} />
@@ -466,8 +538,9 @@ export function ExecutionStep({
             </a>
             {usdcAddress && (
               <a
-                href={`${explorerUrl}/address/${usdcAddress}`}
-                target="_blank" rel="noopener noreferrer"
+                href={`${explorerBase}/address/${usdcAddress}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm"
               >
                 <ExternalLink size={16} />
@@ -483,91 +556,20 @@ export function ExecutionStep({
           </div>
         </div>
       )}
-
-      {/* Progreso */}
-      {showProgressPanel && (
-        <div className="space-y-4">
-          <h3 className="text-xl font-bold text-gray-800 text-center">
-            Ejecutando transacciones...
-          </h3>
-
-          <div className="space-y-3">
-            {needsApproval && (
-              <StepRow
-                active={['approving', 'approved', 'creating', 'confirming', 'success'].includes(step)}
-                done={['approved', 'creating', 'confirming', 'success'].includes(step)}
-                spinning={step === 'approving'}
-                label="Paso 1: Aprobar USDC"
-                txHash={approvalHash}
-                explorerUrl={explorerUrl}
-              />
-            )}
-            <StepRow
-              active={['creating', 'confirming', 'success'].includes(step)}
-              done={step === 'success'}
-              spinning={step === 'creating' || step === 'confirming'}
-              label={`Paso ${needsApproval ? '2' : '1'}: Crear Contrato`}
-              txHash={txHash}
-              explorerUrl={explorerUrl}
-            />
-          </div>
-
-          <div className="bg-amber-50 rounded-lg p-3">
-            <p className="text-sm text-amber-800">
-              {step === 'approving'  && '⏳ Confirma la aprobación en tu wallet'}
-              {step === 'creating'   && '⏳ Confirma la transacción en tu wallet'}
-              {step === 'confirming' && '⏳ Esperando confirmación en la blockchain...'}
-              {step === 'success'    && '✅ ¡Contrato creado exitosamente!'}
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Idle — botón de inicio */}
-      {step === 'idle' && (
-        <div className="bg-linear-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border-2 border-purple-200">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">
-            Listo para crear tu contrato
-          </h3>
-          <p className="text-gray-700 mb-6">
-            {needsApproval
-              ? 'Se ejecutarán 2 transacciones: aprobación de USDC y creación del contrato.'
-              : 'Se ejecutará 1 transacción para crear tu contrato.'}
-          </p>
-          <button
-            onClick={handleStart}
-            disabled={isApprovalPending || isCreatePending}
-            className="w-full bg-linear-to-r from-purple-600 to-pink-600
-                       hover:from-purple-700 hover:to-pink-700 text-white font-bold
-                       text-xl py-4 rounded-xl shadow-lg transition-all transform
-                       hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed
-                       disabled:scale-100"
-          >
-            {isApprovalPending || isCreatePending ? (
-              <span className="flex items-center justify-center gap-3">
-                <Loader2 className="animate-spin" size={24} />
-                Procesando...
-              </span>
-            ) : (
-              'Iniciar Creación'
-            )}
-          </button>
-        </div>
-      )}
     </div>
   );
 }
 
 interface StepRowProps {
-  active:      boolean;
-  done:        boolean;
-  spinning:    boolean;
-  label:       string;
-  txHash:      `0x${string}` | undefined;
-  explorerUrl: string;
+  active:       boolean;
+  done:         boolean;
+  spinning:     boolean;
+  label:        string;
+  txHash:       `0x${string}` | undefined;
+  explorerBase: string;
 }
 
-function StepRow({ active, done, spinning, label, txHash, explorerUrl }: StepRowProps) {
+function StepRow({ active, done, spinning, label, txHash, explorerBase }: StepRowProps) {
   return (
     <div className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
       active ? 'bg-green-100' : 'bg-gray-100'
@@ -588,9 +590,11 @@ function StepRow({ active, done, spinning, label, txHash, explorerUrl }: StepRow
               {txHash.slice(0, 10)}...{txHash.slice(-8)}
             </p>
             <a
-              href={`${explorerUrl}/tx/${txHash}`}
-              target="_blank" rel="noopener noreferrer"
+              href={`${explorerBase}/tx/${txHash}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-blue-600 hover:text-blue-800"
+              aria-label="Ver transacción en explorador"
             >
               <ExternalLink size={12} />
             </a>

@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { formatUnits } from 'viem';
 import { useChainId } from 'wagmi';
 import { useBalanceVerification } from '@/hooks/funds/useBalanceVerification';
-import { CheckCircle, XCircle, AlertCircle, Loader2, ExternalLink } from 'lucide-react';
+import { CheckCircle, XCircle, AlertCircle, Loader2, ExternalLink, RefreshCw } from 'lucide-react';
 import type { RetirementPlan } from '@/types/retirement_types';
 import { initialDepositAmount, calcFee } from '@/types/retirement_types';
 
@@ -13,21 +13,33 @@ interface VerificationStepProps {
 
 interface CheckItemProps {
   passed:   boolean;
+  loading?: boolean;
   title:    string;
   children: React.ReactNode;
 }
 
-function CheckItem({ passed, title, children }: CheckItemProps) {
+function CheckItem({ passed, loading = false, title, children }: CheckItemProps) {
+  const borderColor = loading
+    ? 'bg-gray-50 border-gray-200'
+    : passed
+      ? 'bg-green-50 border-green-200'
+      : 'bg-red-50 border-red-300';
+
+  const iconColor = loading ? 'text-gray-400' : passed ? 'text-green-600' : 'text-red-600';
+  const titleColor = loading ? 'text-gray-600' : passed ? 'text-green-800' : 'text-red-800';
+
   return (
-    <div className={`rounded-xl p-5 border-2 transition-all ${
-      passed ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-300'
-    }`}>
+    <div className={`rounded-xl p-5 border-2 transition-all ${borderColor}`}>
       <div className="flex items-start gap-4">
-        <div className={`shrink-0 mt-1 ${passed ? 'text-green-600' : 'text-red-600'}`}>
-          {passed ? <CheckCircle size={28} /> : <XCircle size={28} />}
+        <div className={`shrink-0 mt-1 ${iconColor}`}>
+          {loading
+            ? <Loader2 size={28} className="animate-spin" />
+            : passed
+              ? <CheckCircle size={28} />
+              : <XCircle size={28} />}
         </div>
         <div className="flex-1">
-          <h4 className={`font-bold text-lg mb-2 ${passed ? 'text-green-800' : 'text-red-800'}`}>
+          <h4 className={`font-bold text-lg mb-2 ${titleColor}`}>
             {title}
           </h4>
           {children}
@@ -39,6 +51,7 @@ function CheckItem({ passed, title, children }: CheckItemProps) {
 
 export function VerificationStep({ plan, onVerificationComplete }: VerificationStepProps) {
   const chainId = useChainId();
+
   const {
     hasEnoughUSDC,
     hasEnoughGas,
@@ -49,24 +62,32 @@ export function VerificationStep({ plan, onVerificationComplete }: VerificationS
     requiredUSDC,
     requiredGas,
     isLoading,
+    refetch,
   } = useBalanceVerification(plan);
 
-  const allChecksPass = hasEnoughUSDC && hasEnoughGas;
-  const gasToken      = chainId === 421614 ? 'ETH' : 'POL';
+  const allChecksPass    = hasEnoughUSDC && hasEnoughGas;
+  const gasToken         = chainId === 421614 ? 'ETH' : 'POL';
   const depositAmountWei = initialDepositAmount(plan);
   const feeAmountWei     = calcFee(depositAmountWei);
 
-  useEffect(() => {
-    if (allChecksPass) {
-      onVerificationComplete(!hasEnoughAllowance);
-    }
-  }, [allChecksPass, hasEnoughAllowance, onVerificationComplete]);
+  const faucetUrl = chainId === 421614
+    ? 'https://faucet.quicknode.com/arbitrum/sepolia'
+    : 'https://faucet.polygon.technology/';
 
-  if (isLoading) {
+  const completedRef = useRef(false);
+
+  useEffect(() => {
+    if (isLoading || !allChecksPass || completedRef.current) return;
+    completedRef.current = true;
+    onVerificationComplete(!hasEnoughAllowance);
+  }, [isLoading, allChecksPass, hasEnoughAllowance, onVerificationComplete]);
+
+  if (isLoading && usdcBalance === 0n && gasBalance === 0n) {
     return (
       <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-8 text-center">
         <Loader2 className="w-12 h-12 text-blue-600 mx-auto mb-4 animate-spin" />
         <p className="text-lg text-blue-800 font-semibold">Verificando balances...</p>
+        <p className="text-sm text-blue-600 mt-1">Consultando la blockchain...</p>
       </div>
     );
   }
@@ -74,15 +95,29 @@ export function VerificationStep({ plan, onVerificationComplete }: VerificationS
   return (
     <div className="space-y-6">
       <div className="bg-linear-to-r from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-2xl p-6">
-        <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-          <AlertCircle className="text-indigo-600" size={28} />
-          Verificación de Requisitos
-        </h3>
+
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
+            <AlertCircle className="text-indigo-600" size={28} />
+            Verificación de Requisitos
+          </h3>
+          <button
+            onClick={() => refetch?.()}
+            disabled={isLoading}
+            className="flex items-center gap-1.5 text-xs text-indigo-600 hover:text-indigo-800
+                       bg-indigo-100 hover:bg-indigo-200 px-3 py-1.5 rounded-lg transition
+                       disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="Actualizar balances"
+          >
+            <RefreshCw size={12} className={isLoading ? 'animate-spin' : ''} />
+            Actualizar
+          </button>
+        </div>
 
         <div className="space-y-4">
 
-          {/* Check 1: Balance USDC */}
-          <CheckItem passed={hasEnoughUSDC} title="Balance USDC">
+          <CheckItem passed={hasEnoughUSDC} loading={isLoading} title="Balance USDC">
             <div className="space-y-2 text-sm">
               <div className="flex justify-between items-center">
                 <span className="text-gray-700">Requerido:</span>
@@ -90,6 +125,8 @@ export function VerificationStep({ plan, onVerificationComplete }: VerificationS
                   {formatUnits(requiredUSDC, 6)} USDC
                 </strong>
               </div>
+
+              {/* Breakdown */}
               <div className="bg-white/60 rounded-lg p-3 space-y-1 text-xs">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Depósito (principal + mes 1):</span>
@@ -100,26 +137,26 @@ export function VerificationStep({ plan, onVerificationComplete }: VerificationS
                   <span className="font-mono">{formatUnits(feeAmountWei, 6)} USDC</span>
                 </div>
               </div>
+
               <div className="flex justify-between items-center pt-2 border-t">
                 <span className="text-gray-700">Tu balance:</span>
                 <strong className={hasEnoughUSDC ? 'text-green-700' : 'text-red-700'}>
                   {formatUnits(usdcBalance, 6)} USDC
                 </strong>
               </div>
-              {!hasEnoughUSDC && (
+
+              {!hasEnoughUSDC && !isLoading && (
                 <div className="mt-3 bg-red-100 rounded-lg p-3">
                   <p className="text-red-800 font-semibold text-xs mb-2">⚠ Balance insuficiente</p>
                   <p className="text-red-700 text-xs mb-3">
                     Te faltan {formatUnits(requiredUSDC - usdcBalance, 6)} USDC
                   </p>
                   <a
-                    href={chainId === 421614
-                      ? 'https://faucet.quicknode.com/arbitrum/sepolia'
-                      : 'https://faucet.polygon.technology/'
-                    }
+                    href={faucetUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-xs bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition"
+                    className="inline-flex items-center gap-2 text-xs bg-red-600 hover:bg-red-700
+                               text-white font-semibold py-2 px-4 rounded-lg transition"
                   >
                     <ExternalLink size={14} />
                     Obtener USDC en Faucet
@@ -129,7 +166,7 @@ export function VerificationStep({ plan, onVerificationComplete }: VerificationS
             </div>
           </CheckItem>
 
-          <CheckItem passed={hasEnoughGas} title={`Balance de Gas (${gasToken})`}>
+          <CheckItem passed={hasEnoughGas} loading={isLoading} title={`Balance de Gas (${gasToken})`}>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between items-center">
                 <span className="text-gray-700">Requerido (estimado):</span>
@@ -143,20 +180,19 @@ export function VerificationStep({ plan, onVerificationComplete }: VerificationS
                   {formatUnits(gasBalance, 18)} {gasToken}
                 </strong>
               </div>
-              {!hasEnoughGas && (
+
+              {!hasEnoughGas && !isLoading && (
                 <div className="mt-3 bg-red-100 rounded-lg p-3">
                   <p className="text-red-800 font-semibold text-xs mb-2">⚠ Gas insuficiente</p>
                   <p className="text-red-700 text-xs mb-3">
                     Necesitas {gasToken} para pagar el gas de las transacciones
                   </p>
                   <a
-                    href={chainId === 421614
-                      ? 'https://faucet.quicknode.com/arbitrum/sepolia'
-                      : 'https://faucet.polygon.technology/'
-                    }
+                    href={faucetUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-xs bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition"
+                    className="inline-flex items-center gap-2 text-xs bg-red-600 hover:bg-red-700
+                               text-white font-semibold py-2 px-4 rounded-lg transition"
                   >
                     <ExternalLink size={14} />
                     Obtener {gasToken} en Faucet
@@ -166,7 +202,7 @@ export function VerificationStep({ plan, onVerificationComplete }: VerificationS
             </div>
           </CheckItem>
 
-          <CheckItem passed={hasEnoughAllowance} title="Aprobación USDC">
+          <CheckItem passed={hasEnoughAllowance} loading={isLoading} title="Aprobación USDC">
             <div className="space-y-2 text-sm">
               {hasEnoughAllowance ? (
                 <div className="text-green-700">
@@ -192,48 +228,52 @@ export function VerificationStep({ plan, onVerificationComplete }: VerificationS
           </CheckItem>
         </div>
 
-        {/* Summary — falla */}
-        {!allChecksPass && (
+        {/* Failures */}
+        {!allChecksPass && !isLoading && (
           <div className="mt-6 bg-red-100 border-2 border-red-300 rounded-xl p-5">
             <div className="flex items-start gap-3">
               <AlertCircle className="text-red-600 shrink-0 mt-0.5" size={24} />
               <div className="flex-1">
                 <h4 className="font-bold text-red-800 mb-2">
-                  Debes resolver los problemas antes de continuar
+                  Resolvé los siguientes problemas antes de continuar
                 </h4>
                 <ul className="space-y-1 text-sm text-red-700">
                   {!hasEnoughUSDC && <li>• Balance USDC insuficiente</li>}
                   {!hasEnoughGas  && <li>• Balance de {gasToken} insuficiente para gas</li>}
                 </ul>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Aprobación pendiente */}
-        {allChecksPass && !hasEnoughAllowance && (
-          <div className="mt-6 bg-blue-50 border-2 border-blue-200 rounded-xl p-5">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="text-blue-600 shrink-0 mt-0.5" size={24} />
-              <div className="flex-1">
-                <h4 className="font-bold text-blue-800 mb-1">Aprobación requerida</h4>
-                <p className="text-sm text-blue-700">
-                  Se necesitarán <strong>2 transacciones</strong>: una para aprobar USDC y otra para crear el contrato.
+                <p className="text-xs text-red-600 mt-3">
+                  Obtén fondos del faucet y luego presiona "Actualizar" para verificar de nuevo.
                 </p>
               </div>
             </div>
           </div>
         )}
 
-        {/* Todo OK */}
-        {allChecksPass && hasEnoughAllowance && (
+        {/* Approval required */}
+        {allChecksPass && !hasEnoughAllowance && !isLoading && (
+          <div className="mt-6 bg-blue-50 border-2 border-blue-200 rounded-xl p-5">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="text-blue-600 shrink-0 mt-0.5" size={24} />
+              <div className="flex-1">
+                <h4 className="font-bold text-blue-800 mb-1">Aprobación requerida</h4>
+                <p className="text-sm text-blue-700">
+                  Se necesitarán <strong>2 transacciones</strong>: una para aprobar
+                  USDC y otra para crear el contrato.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* All good */}
+        {allChecksPass && hasEnoughAllowance && !isLoading && (
           <div className="mt-6 bg-green-100 border-2 border-green-300 rounded-xl p-5">
             <div className="flex items-center gap-3">
               <CheckCircle className="text-green-600 shrink-0" size={24} />
               <div className="flex-1">
                 <h4 className="font-bold text-green-800">✓ Todo listo para crear tu contrato</h4>
                 <p className="text-sm text-green-700 mt-1">
-                  Puedes proceder directamente con <strong>1 transacción</strong>.
+                  Podés proceder directamente con <strong>1 transacción</strong>.
                 </p>
               </div>
             </div>

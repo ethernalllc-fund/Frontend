@@ -6,14 +6,25 @@ import { formatUnits }              from 'viem';
 import { useRetirementPlan }        from '@/components/context/RetirementContext';
 import { useWallet }                from '@/hooks/web3';
 import { useHasFund }               from '@/hooks/funds/useHasFund';
-import { useUSDCApproval }          from '@/hooks/usdc/useUSDCApproval';
 import { useUSDCBalance, useUSDCAllowance } from '@/hooks/usdc/useUSDC';
-import { getContractAddress }       from '@/config';
-import { derivePlanValues, initialDepositAmount, buildCreateFundArgs, validatePlan } from '@/types/retirement_types';
+import { useUSDCApproval }          from '@/hooks/usdc/useUSDCApproval';
+import {
+  getContractAddress,
+  isChainActive,
+  getChainName,
+  getExplorerUrl,
+  ACTIVE_CHAINS,
+} from '@/config';
+import {
+  derivePlanValues,
+  initialDepositAmount,
+  buildCreateFundArgs,
+  validatePlan,
+} from '@/types/retirement_types';
 import type { RetirementPlan }      from '@/types/retirement_types';
 import { InvestmentSelector }       from '@/components/retirement/InvestmentSelector';
 import type { InvestmentSelection } from '@/components/retirement/InvestmentSelector';
-import { PERSONAL_FUND_FACTORY_ABI }                   from '@/contracts/abis';
+import { PersonalFundFactoryABI } from '@/contracts/abis';
 
 import {
   ArrowLeft, ArrowRight, CheckCircle, AlertCircle,
@@ -22,10 +33,8 @@ import {
   TrendingUp, Zap, BarChart3,
 } from 'lucide-react';
 
-const EXPECTED_CHAIN_ID  = 421614;
-const ZERO_ADDR          = '0x0000000000000000000000000000000000000000' as const;
-const ARBISCAN           = 'https://sepolia.arbiscan.io/tx/';
-const SUCCESS_REDIRECT   = 4000;
+const ZERO_ADDR        = '0x0000000000000000000000000000000000000000' as const;
+const SUCCESS_REDIRECT = 4_000; // ms before auto-navigating to dashboard
 
 function fmtUSD(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -41,33 +50,31 @@ function fmtYrs(n: number): string {
 type Step = 'review' | 'balance' | 'approve' | 'create' | 'success';
 
 const STEPS: { id: Step; label: string }[] = [
-  { id: 'review',  label: 'Revisión'  },
-  { id: 'balance', label: 'Balance'   },
-  { id: 'approve', label: 'Aprobar'   },
-  { id: 'create',  label: 'Crear'     },
-  { id: 'success', label: '¡Listo!'   },
+  { id: 'review',  label: 'Revisión' },
+  { id: 'balance', label: 'Balance'  },
+  { id: 'approve', label: 'Aprobar'  },
+  { id: 'create',  label: 'Crear'    },
+  { id: 'success', label: '¡Listo!'  },
 ];
 
 const StepBar: React.FC<{ current: Step }> = ({ current }) => {
-  const idx = STEPS.findIndex((s) => s.id === current);
+  const idx = STEPS.findIndex(s => s.id === current);
   return (
     <div className="flex items-center gap-0 mb-10">
       {STEPS.map((s, i) => {
-        const done    = i < idx;
-        const active  = i === idx;
-        const future  = i > idx;
+        const done   = i < idx;
+        const active = i === idx;
+        const future = i > idx;
         return (
           <div key={s.id} className="flex items-center flex-1 last:flex-none">
             <div className="flex flex-col items-center">
-              <div
-                className={`
-                  w-9 h-9 rounded-full flex items-center justify-center font-black text-sm
-                  transition-all duration-500
-                  ${done   ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200'  : ''}
-                  ${active ? 'bg-indigo-600  text-white shadow-lg shadow-indigo-200 scale-110' : ''}
-                  ${future ? 'bg-gray-200    text-gray-400'                            : ''}
-                `}
-              >
+              <div className={`
+                w-9 h-9 rounded-full flex items-center justify-center font-black text-sm
+                transition-all duration-500
+                ${done   ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200'       : ''}
+                ${active ? 'bg-indigo-600  text-white shadow-lg shadow-indigo-200 scale-110' : ''}
+                ${future ? 'bg-gray-200    text-gray-400'                                   : ''}
+              `}>
                 {done ? <CheckCircle size={18} /> : i + 1}
               </div>
               <p className={`
@@ -104,25 +111,24 @@ const Row: React.FC<{ label: string; value: string; accent?: boolean }> = ({ lab
 );
 
 interface TxStageProps {
-  isWalletPending:  boolean;
-  isConfirming:     boolean;
-  isConfirmed:      boolean;
-  error:            Error | null;
-  label:            string;
-  hash?:            `0x${string}`;
+  isWalletPending: boolean;
+  isConfirming:    boolean;
+  isConfirmed:     boolean;
+  error:           Error | null;
+  label:           string;
+  hash?:           `0x${string}`;
+  explorerBase:    string;
 }
 
 const TxStage: React.FC<TxStageProps> = ({
-  isWalletPending, isConfirming, isConfirmed, error, label, hash,
+  isWalletPending, isConfirming, isConfirmed, error, label, hash, explorerBase,
 }) => (
   <div className="space-y-3">
-    {/* Status badge */}
     <div className={`
       flex items-center gap-3 p-4 rounded-2xl border-2 transition-all
       ${isConfirmed ? 'bg-emerald-50 border-emerald-300'
         : error     ? 'bg-red-50    border-red-300'
-        : 'bg-indigo-50 border-indigo-200'
-      }
+        :              'bg-indigo-50 border-indigo-200'}
     `}>
       {isConfirmed
         ? <CheckCircle className="text-emerald-500 shrink-0" size={24} />
@@ -131,19 +137,21 @@ const TxStage: React.FC<TxStageProps> = ({
         : <RefreshCw className="animate-spin text-indigo-500 shrink-0" size={24} />
       }
       <div>
-        <p className={`font-bold text-sm ${isConfirmed ? 'text-emerald-800' : error ? 'text-red-800' : 'text-indigo-800'}`}>
-          {isConfirmed ? `${label} confirmada ✓`
-            : error    ? 'Transacción rechazada'
+        <p className={`font-bold text-sm ${
+          isConfirmed ? 'text-emerald-800' : error ? 'text-red-800' : 'text-indigo-800'
+        }`}>
+          {isConfirmed       ? `${label} confirmada ✓`
+            : error          ? 'Transacción rechazada'
             : isConfirming   ? 'Confirmando en la red…'
             : isWalletPending ? 'Esperando firma en tu wallet…'
-            : label
-          }
+            : label}
         </p>
-        {error && <p className="text-xs text-red-600 mt-0.5 line-clamp-2">{error.message}</p>}
+        {error && (
+          <p className="text-xs text-red-600 mt-0.5 line-clamp-2">{error.message}</p>
+        )}
       </div>
     </div>
 
-    {/* Progress bar */}
     {(isWalletPending || isConfirming) && (
       <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
         <div
@@ -153,48 +161,86 @@ const TxStage: React.FC<TxStageProps> = ({
       </div>
     )}
 
-    {/* Explorer link */}
     {hash && (
       <a
-        href={`${ARBISCAN}${hash}`}
+        href={`${explorerBase}/tx/${hash}`}
         target="_blank"
         rel="noopener noreferrer"
         className="flex items-center gap-1.5 text-xs text-indigo-600 hover:text-indigo-800 transition"
       >
         <Zap size={12} />
-        Ver en Arbiscan
+        Ver en el explorador
         <ArrowRight size={10} />
       </a>
     )}
   </div>
 );
 
+interface GuardProps {
+  icon:       React.ReactNode;
+  color:      'red' | 'amber';
+  title:      string;
+  body:       React.ReactNode;
+  cta:        { label: string; onClick: () => void };
+  secondary?: { label: string; onClick: () => void };
+}
+
+const Guard: React.FC<GuardProps> = ({ icon, color, title, body, cta, secondary }) => {
+  const bg  = color === 'red' ? 'from-red-50   to-orange-50' : 'from-amber-50 to-orange-50';
+  const btn = color === 'red' ? 'bg-red-600 hover:bg-red-700' : 'bg-amber-600 hover:bg-amber-700';
+  return (
+    <div className={`min-h-screen bg-linear-to-br ${bg} flex items-center justify-center px-4`}>
+      <div className="bg-white rounded-3xl shadow-2xl p-10 text-center max-w-md border border-gray-200">
+        <div className="mb-6">{icon}</div>
+        <h1 className="text-3xl font-black text-gray-800 mb-4">{title}</h1>
+        <div className="text-gray-700 mb-8 text-sm">{body}</div>
+        <button
+          onClick={cta.onClick}
+          className={`${btn} text-white font-bold py-4 px-8 rounded-2xl text-lg transition w-full mb-3`}
+        >
+          {cta.label}
+        </button>
+        {secondary && (
+          <button
+            onClick={secondary.onClick}
+            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-8 rounded-2xl text-base transition w-full"
+          >
+            {secondary.label}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const CreateFundPage: React.FC = () => {
-  const navigate                      = useNavigate();
-  const { address }                   = useAccount();
-  const chainId                       = useChainId();
-  const { planData }                  = useRetirementPlan();
-  const { isConnected }               = useWallet();
-  const { hasFund, fundAddress, isLoading: loadingFund } = useHasFund();
+  const navigate                   = useNavigate();
+  const { address }                = useAccount();
+  const chainId                    = useChainId();
+  const { planData }               = useRetirementPlan();
+  const { isConnected }            = useWallet();
+  const {
+    hasFund,
+    fundAddress,
+    isLoading: loadingFund,
+  } = useHasFund();
 
+  // Reads from config — no hardcoded chain IDs or addresses in this component
   const factoryAddress = getContractAddress(chainId, 'personalFundFactory') as `0x${string}` | undefined;
+  const explorerBase   = getExplorerUrl(chainId);
+  const activeChainNames = ACTIVE_CHAINS.map(c => c.name).join(', ');
 
-  const [step,               setStep]               = useState<Step>('review');
-  const [plan,               setPlan]               = useState<RetirementPlan | null>(null);
-  const [investmentSel,      setInvestmentSel]      = useState<InvestmentSelection | null>(null);
-  const [selError,           setSelError]           = useState<string | null>(null);
-
-  const [approveDone,        setApproveDone]        = useState(false);
-  const [approvalConfirmed,  setApprovalConfirmed]  = useState(false); // approve confirmado on-chain
-  const [approveHash,        setApproveHash]        = useState<`0x${string}` | undefined>();
-  const [approveError,       setApproveError]       = useState<Error | null>(null);
-  const [approveWallet,      setApproveWallet]      = useState(false);
-  const [approveConfirming,  setApproveConfirming]  = useState(false);
-  const [createHash,         setCreateHash]         = useState<`0x${string}` | undefined>();
-  const [createError,        setCreateError]        = useState<Error | null>(null);
-  const [createWallet,       setCreateWallet]       = useState(false);
-  const [createConfirming,   setCreateConfirming]   = useState(false);
-  const [createDone,         setCreateDone]         = useState(false);
+  const [step,         setStep]         = useState<Step>('review');
+  const [plan,         setPlan]         = useState<RetirementPlan | null>(null);
+  const [investmentSel, setInvestmentSel] = useState<InvestmentSelection | null>(null);
+  const [selError,     setSelError]     = useState<string | null>(null);
+  const [approveDone,   setApproveDone]   = useState(false);
+  const [approveHash,   setApproveHash]   = useState<`0x${string}` | undefined>();
+  const [approveError,  setApproveError]  = useState<Error | null>(null);
+  const [approvalConfirmed, setApprovalConfirmed] = useState(false);
+  const [createDone,  setCreateDone]  = useState(false);
+  const [createHash,  setCreateHash]  = useState<`0x${string}` | undefined>();
+  const [createError, setCreateError] = useState<Error | null>(null);
 
   const redirectRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -203,87 +249,91 @@ const CreateFundPage: React.FC = () => {
     if (isConnected) startTransition(() => setPlan(planData));
   }, [planData, isConnected, navigate]);
 
-  useEffect(() => () => { if (redirectRef.current) clearTimeout(redirectRef.current); }, []);
+  // Cleanup redirect timer on unmount
+  useEffect(() => () => {
+    if (redirectRef.current) clearTimeout(redirectRef.current);
+  }, []);
 
-  const derived = useMemo(() => plan ? derivePlanValues(plan) : null, [plan]);
-  const requiredUsdc: bigint = useMemo(
-    () => plan ? initialDepositAmount(plan) : 0n,
-    [plan],
-  );
+  const derived       = useMemo(() => plan ? derivePlanValues(plan) : null, [plan]);
+  const requiredUsdc  = useMemo(() => plan ? initialDepositAmount(plan) : 0n, [plan]);
 
+  // ── Balance & allowance ──────────────────────────────────────────────────────
   const {
-    data:    usdcBalanceWei,
+    data: usdcBalanceWei,
     isLoading: loadingBalance,
     refetch: refetchBalance,
   } = useUSDCBalance(address);
 
   const {
-    data:    currentAllowanceWei,
+    data: currentAllowanceWei,
     isLoading: loadingAllowance,
     refetch: refetchAllowance,
   } = useUSDCAllowance(address, factoryAddress ?? undefined);
 
-  const usdcBalanceNum   = usdcBalanceWei        ? Number(formatUnits(usdcBalanceWei, 6))        : 0;
-  const allowanceNum     = currentAllowanceWei   ? Number(formatUnits(currentAllowanceWei, 6))   : 0;
+  const usdcBalanceNum   = usdcBalanceWei      ? Number(formatUnits(usdcBalanceWei,      6)) : 0;
+  const allowanceNum     = currentAllowanceWei ? Number(formatUnits(currentAllowanceWei, 6)) : 0;
   const requiredNum      = derived?.initialDepositUsdc ?? 0;
   const hasEnoughBalance = usdcBalanceNum >= requiredNum;
+  // Re-derived on every render — stays in sync with on-chain state automatically
   const needsApproval    = allowanceNum < requiredNum;
-  const approvalAmountStr = useMemo(
-    () => formatUnits(requiredUsdc, 6),
-    [requiredUsdc],
-  );
 
   const approval = useUSDCApproval({
-    amount:  approvalAmountStr,
+    amount:  useMemo(() => formatUnits(requiredUsdc, 6), [requiredUsdc]),
     spender: factoryAddress ?? ZERO_ADDR,
     onSuccess: (hash) => {
       setApproveHash(hash);
       setApproveDone(true);
-      setApproveConfirming(false);
-      setApprovalConfirmed(true); // marcar que el allowance ya está on-chain
+      setApprovalConfirmed(true);
     },
     onError: (e) => {
       setApproveError(e);
-      setApproveWallet(false);
-      setApproveConfirming(false);
     },
   });
 
+  // ── Create fund tx ────────────────────────────────────────────────────────────
   const {
     writeContract:  writeCreate,
     data:           createTxHash,
+    isPending:      createWallet,
     error:          createWriteError,
   } = useWriteContract();
 
-  const { isSuccess: isCreateSuccess } =
-    useWaitForTransactionReceipt({
-      hash:  createTxHash,
-      query: { enabled: !!createTxHash },
-    });
+  const {
+    isSuccess:  isCreateSuccess,
+    isLoading:  createConfirming,
+  } = useWaitForTransactionReceipt({
+    hash:  createTxHash,
+    query: { enabled: !!createTxHash },
+  });
 
-  // Cuando la tx de create confirma on-chain
+  // When create tx confirms on-chain → success
   useEffect(() => {
     if (!isCreateSuccess || !createTxHash) return;
     setCreateHash(createTxHash);
     setCreateDone(true);
-    setCreateConfirming(false);
     startTransition(() => setStep('success'));
     redirectRef.current = setTimeout(() => navigate('/dashboard'), SUCCESS_REDIRECT);
   }, [isCreateSuccess, createTxHash, navigate]);
 
-  // Errores de create
+  // Create write errors
   useEffect(() => {
     if (!createWriteError) return;
     setCreateError(createWriteError as Error);
-    setCreateWallet(false);
-    setCreateConfirming(false);
   }, [createWriteError]);
 
-  if (!loadingFund && chainId !== EXPECTED_CHAIN_ID) {
+  if (!loadingFund && !isChainActive(chainId)) {
     return (
-      <Guard icon={<AlertCircle className="w-20 h-20 text-red-500 mx-auto" />} color="red"
+      <Guard
+        icon={<AlertCircle className="w-20 h-20 text-red-500 mx-auto" />}
+        color="red"
         title="Red Incorrecta"
-        body={<>Cambia a <strong>Arbitrum Sepolia</strong> (Chain ID 421614) para continuar.</>}
+        body={
+          <>
+            Estás conectado a <strong>{getChainName(chainId)}</strong>.
+            Cambiá a una de las redes soportadas:{' '}
+            <strong>{activeChainNames}</strong>.
+          </>
+        }
         cta={{ label: 'Volver a la Calculadora', onClick: () => navigate('/calculator') }}
       />
     );
@@ -291,9 +341,18 @@ const CreateFundPage: React.FC = () => {
 
   if (!loadingFund && hasFund && fundAddress && step !== 'success') {
     return (
-      <Guard icon={<Info className="w-20 h-20 text-amber-500 mx-auto" />} color="amber"
-        title="Ya Tienes un Fondo"
-        body={<>Solo puedes tener un fondo por wallet. Tu fondo: <code className="text-xs break-all block mt-2 bg-amber-50 p-2 rounded">{fundAddress}</code></>}
+      <Guard
+        icon={<Info className="w-20 h-20 text-amber-500 mx-auto" />}
+        color="amber"
+        title="Ya Tenés un Fondo"
+        body={
+          <>
+            Solo podés tener un fondo por wallet. Tu fondo:{' '}
+            <code className="text-xs break-all block mt-2 bg-amber-50 p-2 rounded">
+              {fundAddress}
+            </code>
+          </>
+        }
         cta={{ label: 'Ir al Dashboard', onClick: () => navigate('/dashboard') }}
         secondary={{ label: 'Volver a la Calculadora', onClick: () => navigate('/calculator') }}
       />
@@ -310,15 +369,15 @@ const CreateFundPage: React.FC = () => {
 
   const handleReviewContinue = () => {
     setSelError(null);
-    if (!investmentSel) { setSelError('Selecciona un método de inversión para continuar.'); return; }
-
-    // Validate plan params before advancing — catches principal=0 and other constraint violations
+    if (!investmentSel) {
+      setSelError('Seleccioná un método de inversión para continuar.');
+      return;
+    }
     const planErrors = validatePlan(plan);
     if (planErrors.length > 0) {
       setSelError(planErrors.map(e => e.message).join(' · '));
       return;
     }
-
     setStep('balance');
     setTimeout(() => { void refetchBalance(); void refetchAllowance(); }, 100);
   };
@@ -329,47 +388,39 @@ const CreateFundPage: React.FC = () => {
 
   const handleApprove = async () => {
     setApproveError(null);
-    setApproveWallet(true);
     try {
       await approval.approve();
-      setApproveConfirming(true);
     } catch (e) {
       setApproveError(e as Error);
-      setApproveWallet(false);
     }
   };
 
   const handleApproveNext = () => {
-    void refetchAllowance(); // actualizar UI, pero no bloquea
+    void refetchAllowance();
     setStep('create');
   };
 
   const handleCreate = () => {
     if (!plan || !investmentSel || !factoryAddress) return;
-
-    // Si el allowance leído es insuficiente pero el approve acababa de confirmar
-    // on-chain, procedemos igual — el contrato lo verifica en cadena, no nosotros.
     if (needsApproval && !approvalConfirmed) {
-      setCreateError(new Error('Aprobación pendiente. Esperá a que el approve confirme antes de continuar.'));
+      setCreateError(new Error(
+        'Aprobación pendiente. Esperá a que el approve confirme antes de continuar.',
+      ));
       return;
     }
 
     setCreateError(null);
-    setCreateWallet(true);
-    try {
-      writeCreate({
-        address:      factoryAddress,
-        abi:          PERSONAL_FUND_FACTORY_ABI,
-        functionName: 'createPersonalFund',
-        args:         buildCreateFundArgs({ ...plan, selectedProtocol: investmentSel.protocolAddress }),
-        maxFeePerGas:         100_000_000n, // 0.1 gwei — siempre > baseFee de Arbitrum Sepolia (~0.02 gwei)
-        maxPriorityFeePerGas:   1_000_000n, // 0.001 gwei
-      });
-      setCreateConfirming(true);
-    } catch (e) {
-      setCreateError(e as Error);
-      setCreateWallet(false);
-    }
+    writeCreate({
+      address:      factoryAddress,
+      abi:          PersonalFundFactoryABI,
+      functionName: 'createPersonalFund',
+      args:         buildCreateFundArgs({
+        ...plan,
+        selectedProtocol: investmentSel.protocolAddress,
+      }),
+      maxFeePerGas:         100_000_000n, // 0.1 gwei — always > Arbitrum Sepolia baseFee (~0.02 gwei)
+      maxPriorityFeePerGas:   1_000_000n, // 0.001 gwei
+    });
   };
 
   return (
@@ -380,10 +431,10 @@ const CreateFundPage: React.FC = () => {
         {step !== 'success' && (
           <button
             onClick={() => {
-              if (step === 'review')  navigate('/calculator');
-              else if (step === 'balance') setStep('review');
-              else if (step === 'approve') setStep('balance');
-              else if (step === 'create')  setStep(needsApproval ? 'approve' : 'balance');
+              if      (step === 'review')   navigate('/calculator');
+              else if (step === 'balance')  setStep('review');
+              else if (step === 'approve')  setStep('balance');
+              else if (step === 'create')   setStep(needsApproval ? 'approve' : 'balance');
             }}
             className="mb-6 flex items-center gap-2 text-indigo-600 hover:text-indigo-800 font-semibold text-sm transition"
           >
@@ -401,7 +452,9 @@ const CreateFundPage: React.FC = () => {
               <Sparkles size={32} className="opacity-90" />
               <h1 className="text-3xl font-black">Crear mi Fondo</h1>
             </div>
-            <p className="text-indigo-100 text-sm">Plan calculado · Arbitrum Sepolia</p>
+            <p className="text-indigo-100 text-sm">
+              Plan calculado · {getChainName(chainId)}
+            </p>
           </div>
 
           <div className="p-6 sm:p-8">
@@ -412,13 +465,13 @@ const CreateFundPage: React.FC = () => {
                 <div>
                   <h2 className="text-xl font-bold text-gray-800 mb-4">Parámetros del Plan</h2>
                   <div className="bg-gray-50 rounded-2xl p-5">
-                    <Row label="Depósito inicial"           value={fmtUSD(derived.initialDepositUsdc)} accent />
-                    <Row label="Ahorro mensual"             value={fmtUSD(plan.monthlyDeposit)} />
-                    <Row label="Edad actual / retiro"       value={`${plan.currentAge} → ${plan.retirementAge} años`} />
-                    <Row label="Ingreso mensual deseado"    value={fmtUSD(plan.desiredMonthlyIncome)} />
-                    <Row label="Años recibiendo ingresos"   value={fmtYrs(plan.yearsPayments)} />
-                    <Row label="Tasa anual esperada"        value={`${plan.interestRate}%`} />
-                    <Row label="Timelock de seguridad"      value={fmtYrs(plan.timelockYears)} />
+                    <Row label="Depósito inicial"         value={fmtUSD(derived.initialDepositUsdc)} accent />
+                    <Row label="Ahorro mensual"           value={fmtUSD(plan.monthlyDeposit)} />
+                    <Row label="Edad actual / retiro"     value={`${plan.currentAge} → ${plan.retirementAge} años`} />
+                    <Row label="Ingreso mensual deseado"  value={fmtUSD(plan.desiredMonthlyIncome)} />
+                    <Row label="Años recibiendo ingresos" value={fmtYrs(plan.yearsPayments)} />
+                    <Row label="Tasa anual esperada"      value={`${plan.interestRate}%`} />
+                    <Row label="Timelock de seguridad"    value={fmtYrs(plan.timelockYears)} />
                   </div>
                 </div>
 
@@ -450,7 +503,7 @@ const CreateFundPage: React.FC = () => {
                     Método de Inversión
                   </h3>
                   <p className="text-gray-500 text-xs mb-4">
-                    Elige cómo quieres hacer crecer tus ahorros de retiro
+                    Elegí cómo querés hacer crecer tus ahorros de retiro
                   </p>
                   <InvestmentSelector
                     onSelectionComplete={setInvestmentSel}
@@ -467,7 +520,8 @@ const CreateFundPage: React.FC = () => {
                 <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
                   <Lock size={18} className="text-amber-600 shrink-0 mt-0.5" />
                   <p className="text-amber-800 text-sm">
-                    Una vez creado el contrato, <strong>estos parámetros no podrán modificarse</strong>.
+                    Una vez creado el contrato,{' '}
+                    <strong>estos parámetros no podrán modificarse</strong>.
                     El timelock de {fmtYrs(plan.timelockYears)} es permanente.
                   </p>
                 </div>
@@ -499,19 +553,19 @@ const CreateFundPage: React.FC = () => {
                 ) : (
                   <>
                     {/* Balance card */}
-                    <div className={`
-                      rounded-2xl p-5 border-2 transition-all
-                      ${hasEnoughBalance
-                        ? 'bg-emerald-50 border-emerald-300'
-                        : 'bg-red-50    border-red-300'}
-                    `}>
+                    <div className={`rounded-2xl p-5 border-2 transition-all ${
+                      hasEnoughBalance ? 'bg-emerald-50 border-emerald-300' : 'bg-red-50 border-red-300'
+                    }`}>
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
                           <Wallet size={22} className={hasEnoughBalance ? 'text-emerald-600' : 'text-red-500'} />
                           <span className="font-bold text-gray-700">Tu Balance USDC</span>
                         </div>
                         <Pill color={hasEnoughBalance ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}>
-                          {hasEnoughBalance ? <><CheckCircle size={12} />Suficiente</> : <><AlertCircle size={12} />Insuficiente</>}
+                          {hasEnoughBalance
+                            ? <><CheckCircle size={12} />Suficiente</>
+                            : <><AlertCircle size={12} />Insuficiente</>
+                          }
                         </Pill>
                       </div>
                       <p className={`text-3xl font-black ${hasEnoughBalance ? 'text-emerald-700' : 'text-red-700'}`}>
@@ -528,12 +582,9 @@ const CreateFundPage: React.FC = () => {
                     </div>
 
                     {/* Allowance card */}
-                    <div className={`
-                      rounded-2xl p-5 border-2
-                      ${!needsApproval
-                        ? 'bg-emerald-50 border-emerald-300'
-                        : 'bg-blue-50    border-blue-200'}
-                    `}>
+                    <div className={`rounded-2xl p-5 border-2 ${
+                      !needsApproval ? 'bg-emerald-50 border-emerald-300' : 'bg-blue-50 border-blue-200'
+                    }`}>
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
                           <ShieldCheck size={22} className={!needsApproval ? 'text-emerald-600' : 'text-blue-500'} />
@@ -547,10 +598,7 @@ const CreateFundPage: React.FC = () => {
                         </Pill>
                       </div>
                       <p className={`text-2xl font-black ${!needsApproval ? 'text-emerald-700' : 'text-blue-700'}`}>
-                        {!needsApproval
-                          ? fmtUSD(requiredNum)
-                          : fmtUSD(allowanceNum)
-                        }
+                        {!needsApproval ? fmtUSD(requiredNum) : fmtUSD(allowanceNum)}
                       </p>
                       {needsApproval && (
                         <p className="text-blue-600 text-xs mt-1">
@@ -571,7 +619,9 @@ const CreateFundPage: React.FC = () => {
                         </div>
                       )}
                       <div className="flex items-center gap-3 text-sm text-gray-700">
-                        <div className={`w-6 h-6 rounded-full font-bold flex items-center justify-center text-xs shrink-0 ${needsApproval ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
+                        <div className={`w-6 h-6 rounded-full font-bold flex items-center justify-center text-xs shrink-0 ${
+                          needsApproval ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
+                        }`}>
                           {needsApproval ? 2 : 1}
                         </div>
                         <span><strong>Crear fondo</strong> — factory.createFund + depósito inicial</span>
@@ -581,10 +631,10 @@ const CreateFundPage: React.FC = () => {
                     {!hasEnoughBalance && (
                       <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl p-4">
                         <AlertCircle size={18} className="text-red-500 shrink-0 mt-0.5" />
-                        <div className="text-sm text-red-700">
-                          <strong>Balance insuficiente.</strong> Obtén más USDC en el faucet de la
-                          calculadora antes de continuar.
-                        </div>
+                        <p className="text-sm text-red-700">
+                          <strong>Balance insuficiente.</strong> Obtené más USDC en el faucet de
+                          la calculadora antes de continuar.
+                        </p>
                       </div>
                     )}
 
@@ -622,46 +672,45 @@ const CreateFundPage: React.FC = () => {
                   </p>
                 </div>
 
-                {/* What is an approval — educational */}
                 <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5 space-y-2 text-sm text-blue-800">
                   <p className="font-bold flex items-center gap-2">
                     <Info size={16} />
                     ¿Qué es el Approve?
                   </p>
                   <p>
-                    En Ethereum, los tokens ERC-20 (como USDC) requieren que
-                    <strong> autorices explícitamente</strong> a un contrato antes de que pueda
+                    En Ethereum, los tokens ERC-20 (como USDC) requieren que{' '}
+                    <strong>autoricés explícitamente</strong> a un contrato antes de que pueda
                     moverlos. Es un estándar de seguridad: el contrato sólo puede gastar hasta
-                    el importe que apruebas.
+                    el importe que aprobás.
                   </p>
                   <p className="text-blue-600 text-xs">
                     Esta aprobación no mueve ningún fondo. El movimiento ocurre en el siguiente paso.
                   </p>
                 </div>
 
-                {/* Amount being approved */}
                 <div className="bg-gray-50 rounded-2xl p-5 border border-gray-200">
-                  <Row label="Contrato receptor"  value="PersonalFundFactory" />
+                  <Row label="Contrato receptor"   value="PersonalFundFactory" />
                   <Row label="Token"               value="USDC (6 decimales)" />
                   <Row label="Importe a autorizar" value={fmtUSD(requiredNum)} accent />
                 </div>
 
                 <TxStage
-                  isWalletPending={approveWallet && !approveDone}
-                  isConfirming={approveConfirming && !approveDone}
+                  isWalletPending={approval.isApproving && !approveDone}
+                  isConfirming={approval.isConfirming && !approveDone}
                   isConfirmed={approveDone}
                   error={approveError}
                   label="Aprobación USDC"
                   hash={approveHash}
+                  explorerBase={explorerBase}
                 />
 
                 {!approveDone ? (
                   <button
                     onClick={handleApprove}
-                    disabled={approveWallet || approveConfirming}
+                    disabled={approval.isApproving || approval.isConfirming}
                     className="w-full bg-linear-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 disabled:from-gray-300 disabled:to-gray-300 text-white font-black text-lg py-5 rounded-2xl shadow-xl transition-all hover:scale-[1.02] flex items-center justify-center gap-3"
                   >
-                    {approveWallet || approveConfirming
+                    {approval.isApproving || approval.isConfirming
                       ? <><RefreshCw className="animate-spin" size={22} />Esperando…</>
                       : <><ShieldCheck size={22} />Aprobar USDC</>
                     }
@@ -690,7 +739,6 @@ const CreateFundPage: React.FC = () => {
                   </p>
                 </div>
 
-                {/* Final summary */}
                 <div className="bg-gray-50 rounded-2xl p-5 border border-gray-200">
                   <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">
                     Resumen de la transacción
@@ -709,6 +757,7 @@ const CreateFundPage: React.FC = () => {
                   error={createError}
                   label="Creación del fondo"
                   hash={createHash}
+                  explorerBase={explorerBase}
                 />
 
                 {!createDone && (
@@ -728,7 +777,6 @@ const CreateFundPage: React.FC = () => {
 
             {step === 'success' && (
               <div className="space-y-6 text-center">
-                {/* Animated check */}
                 <div className="py-4">
                   <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
                     <CheckCircle size={52} className="text-emerald-500" />
@@ -737,13 +785,16 @@ const CreateFundPage: React.FC = () => {
                   <p className="text-gray-500">Tu contrato personal vive en la blockchain.</p>
                 </div>
 
-                {/* Tx hash + address */}
                 <div className="bg-emerald-50 rounded-2xl p-5 border-2 border-emerald-200 text-left space-y-3">
                   {createHash && (
                     <div>
                       <p className="text-xs text-gray-500 font-semibold mb-1">Transaction Hash</p>
-                      <a href={`${ARBISCAN}${createHash}`} target="_blank" rel="noopener noreferrer"
-                        className="font-mono text-xs text-indigo-600 hover:text-indigo-800 break-all">
+                      <a
+                        href={`${explorerBase}/tx/${createHash}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-mono text-xs text-indigo-600 hover:text-indigo-800 break-all"
+                      >
                         {createHash}
                       </a>
                     </div>
@@ -756,7 +807,6 @@ const CreateFundPage: React.FC = () => {
                   )}
                 </div>
 
-                {/* What's next */}
                 <div className="bg-indigo-50 rounded-2xl p-5 border border-indigo-200 text-left">
                   <p className="font-bold text-indigo-800 mb-3 flex items-center gap-2">
                     <TrendingUp size={18} />
@@ -765,11 +815,12 @@ const CreateFundPage: React.FC = () => {
                   <ul className="space-y-2 text-sm text-gray-700">
                     <li className="flex items-start gap-2">
                       <CheckCircle size={14} className="text-emerald-500 mt-0.5 shrink-0" />
-                      Realiza depósitos mensuales de <strong>{fmtUSD(plan.monthlyDeposit)}</strong> para alcanzar tu meta.
+                      Realizá depósitos mensuales de{' '}
+                      <strong>{fmtUSD(plan.monthlyDeposit)}</strong> para alcanzar tu meta.
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle size={14} className="text-emerald-500 mt-0.5 shrink-0" />
-                      Monitorea tu progreso y el rendimiento DeFi desde el Dashboard.
+                      Monitoreá tu progreso y el rendimiento DeFi desde el Dashboard.
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle size={14} className="text-emerald-500 mt-0.5 shrink-0" />
@@ -786,7 +837,7 @@ const CreateFundPage: React.FC = () => {
                   <ArrowRight size={24} />
                 </button>
                 <p className="text-xs text-gray-400">
-                  Redirigiendo automáticamente en {SUCCESS_REDIRECT / 1000}s…
+                  Redirigiendo automáticamente en {SUCCESS_REDIRECT / 1_000}s…
                 </p>
               </div>
             )}
@@ -799,34 +850,3 @@ const CreateFundPage: React.FC = () => {
 };
 
 export default CreateFundPage;
-
-interface GuardProps {
-  icon:       React.ReactNode;
-  color:      'red' | 'amber';
-  title:      string;
-  body:       React.ReactNode;
-  cta:        { label: string; onClick: () => void };
-  secondary?: { label: string; onClick: () => void };
-}
-
-const Guard: React.FC<GuardProps> = ({ icon, color, title, body, cta, secondary }) => {
-  const bg  = color === 'red' ? 'from-red-50 to-orange-50'   : 'from-amber-50 to-orange-50';
-  const btn = color === 'red' ? 'bg-red-600 hover:bg-red-700' : 'bg-amber-600 hover:bg-amber-700';
-  return (
-    <div className={`min-h-screen bg-linear-to-br ${bg} flex items-center justify-center px-4`}>
-      <div className="bg-white rounded-3xl shadow-2xl p-10 text-center max-w-md border border-gray-200">
-        <div className="mb-6">{icon}</div>
-        <h1 className="text-3xl font-black text-gray-800 mb-4">{title}</h1>
-        <div className="text-gray-700 mb-8 text-sm">{body}</div>
-        <button onClick={cta.onClick} className={`${btn} text-white font-bold py-4 px-8 rounded-2xl text-lg transition w-full mb-3`}>
-          {cta.label}
-        </button>
-        {secondary && (
-          <button onClick={secondary.onClick} className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-8 rounded-2xl text-base transition w-full">
-            {secondary.label}
-          </button>
-        )}
-      </div>
-    </div>
-  );
-};
