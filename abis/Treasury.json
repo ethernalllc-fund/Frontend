@@ -1,6 +1,6 @@
 {
   "contractName": "Treasury",
-  "address": "0x0793E6dE6d00C5e4797b27F178758885d3a5d5e6",
+  "address": "0x782A654DeecF0036bD3377f50092eda494Adb80d",
   "abi": [
     {
       "name": "FeeReceived",
@@ -221,12 +221,89 @@
       "type": "event"
     },
     {
+      "name": "AdminPushed",
+      "inputs": [
+        {
+          "name": "targetContract",
+          "type": "address",
+          "indexed": true
+        },
+        {
+          "name": "newAdmin",
+          "type": "address",
+          "indexed": true
+        },
+        {
+          "name": "pushedBy",
+          "type": "address",
+          "indexed": true
+        },
+        {
+          "name": "timestamp",
+          "type": "uint256",
+          "indexed": false
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "name": "AdminChanged",
+      "inputs": [
+        {
+          "name": "oldAdmin",
+          "type": "address",
+          "indexed": true
+        },
+        {
+          "name": "newAdmin",
+          "type": "address",
+          "indexed": true
+        },
+        {
+          "name": "timestamp",
+          "type": "uint256",
+          "indexed": false
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
       "stateMutability": "nonpayable",
       "type": "function",
       "name": "configure",
       "inputs": [
         {
           "name": "_factory",
+          "type": "address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "name": "changeAdmin",
+      "inputs": [
+        {
+          "name": "_newAdmin",
+          "type": "address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "name": "pushAdmin",
+      "inputs": [
+        {
+          "name": "_targetContract",
+          "type": "address"
+        },
+        {
+          "name": "_newAdmin",
           "type": "address"
         }
       ],
@@ -678,18 +755,6 @@
           "type": "address[]"
         }
       ]
-    },
-    {
-      "stateMutability": "nonpayable",
-      "type": "function",
-      "name": "changeAdmin",
-      "inputs": [
-        {
-          "name": "_newAdmin",
-          "type": "address"
-        }
-      ],
-      "outputs": []
     },
     {
       "stateMutability": "nonpayable",

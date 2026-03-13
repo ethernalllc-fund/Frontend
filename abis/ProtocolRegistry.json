@@ -1,6 +1,6 @@
 {
   "contractName": "ProtocolRegistry",
-  "address": "0x12D247f33D415D495522f34BdDf931CcDF24cd06",
+  "address": "0x8236F34D948e6665A6d4675E692995B73CC0737C",
   "abi": [
     {
       "name": "ProtocolAdded",
@@ -167,12 +167,34 @@
       "type": "event"
     },
     {
-      "stateMutability": "nonpayable",
-      "type": "function",
-      "name": "setTreasury",
+      "name": "AdminSet",
       "inputs": [
         {
-          "name": "_treasury",
+          "name": "oldAdmin",
+          "type": "address",
+          "indexed": true
+        },
+        {
+          "name": "newAdmin",
+          "type": "address",
+          "indexed": true
+        },
+        {
+          "name": "timestamp",
+          "type": "uint256",
+          "indexed": false
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "name": "setAdmin",
+      "inputs": [
+        {
+          "name": "_newAdmin",
           "type": "address"
         }
       ],
@@ -197,6 +219,18 @@
       "inputs": [
         {
           "name": "_manager",
+          "type": "address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "name": "setTreasury",
+      "inputs": [
+        {
+          "name": "_newTreasury",
           "type": "address"
         }
       ],
@@ -573,18 +607,6 @@
       ]
     },
     {
-      "stateMutability": "nonpayable",
-      "type": "function",
-      "name": "changeAdmin",
-      "inputs": [
-        {
-          "name": "_newAdmin",
-          "type": "address"
-        }
-      ],
-      "outputs": []
-    },
-    {
       "stateMutability": "view",
       "type": "function",
       "name": "admin",
@@ -769,8 +791,14 @@
     {
       "stateMutability": "nonpayable",
       "type": "constructor",
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "_treasury",
+          "type": "address"
+        }
+      ],
       "outputs": []
     }
-  ]
+  ],
+  "constructorArgs": "000000000000000000000000782a654deecf0036bd3377f50092eda494adb80d"
 }

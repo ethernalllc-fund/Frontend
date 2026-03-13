@@ -1,6 +1,6 @@
 {
   "contractName": "PersonalFundFactory",
-  "address": "0x9105166f0c2Ba72411Ca96f2cDdEE80B49535719",
+  "address": "0xb6351cF3f42475c78e9c94AAD391C9f689d8898F",
   "abi": [
     {
       "name": "FundCreated",
@@ -55,14 +55,44 @@
       "type": "event"
     },
     {
+      "name": "AdminSet",
+      "inputs": [
+        {
+          "name": "oldAdmin",
+          "type": "address",
+          "indexed": true
+        },
+        {
+          "name": "newAdmin",
+          "type": "address",
+          "indexed": true
+        },
+        {
+          "name": "timestamp",
+          "type": "uint256",
+          "indexed": false
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "name": "setAdmin",
+      "inputs": [
+        {
+          "name": "_newAdmin",
+          "type": "address"
+        }
+      ],
+      "outputs": []
+    },
+    {
       "stateMutability": "nonpayable",
       "type": "function",
       "name": "configure",
       "inputs": [
-        {
-          "name": "_treasury",
-          "type": "address"
-        },
         {
           "name": "_usdc",
           "type": "address"
@@ -198,18 +228,6 @@
     {
       "stateMutability": "nonpayable",
       "type": "function",
-      "name": "changeAdmin",
-      "inputs": [
-        {
-          "name": "_newAdmin",
-          "type": "address"
-        }
-      ],
-      "outputs": []
-    },
-    {
-      "stateMutability": "nonpayable",
-      "type": "function",
       "name": "updateUserPreferences",
       "inputs": [
         {
@@ -314,23 +332,6 @@
     {
       "stateMutability": "view",
       "type": "function",
-      "name": "predictFundAddress",
-      "inputs": [
-        {
-          "name": "_user",
-          "type": "address"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "",
-          "type": "address"
-        }
-      ]
-    },
-    {
-      "stateMutability": "view",
-      "type": "function",
       "name": "calculateInitialDeposit",
       "inputs": [
         {
@@ -416,6 +417,10 @@
         {
           "name": "",
           "type": "address"
+        },
+        {
+          "name": "",
+          "type": "address"
         }
       ]
     },
@@ -480,6 +485,18 @@
         {
           "name": "",
           "type": "address"
+        }
+      ]
+    },
+    {
+      "stateMutability": "view",
+      "type": "function",
+      "name": "configured",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
         }
       ]
     },
@@ -700,10 +717,14 @@
         {
           "name": "_personalFundImplementation",
           "type": "address"
+        },
+        {
+          "name": "_treasury",
+          "type": "address"
         }
       ],
       "outputs": []
     }
   ],
-  "constructorArgs": "000000000000000000000000b2b11e9e76315be0eb748568af43964ad3e85a00"
+  "constructorArgs": "00000000000000000000000001bdc8990d3f11420a62b2a4edb54bfca2023a94000000000000000000000000782a654deecf0036bd3377f50092eda494adb80d"
 }

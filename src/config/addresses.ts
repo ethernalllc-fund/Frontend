@@ -50,7 +50,7 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     dateTime:            '0x290666a203559c623E8c304A3b9381763641fcc6', 
     protocolRegistry:    '0x6C48DC974E1aE64caD4BFDA46fF5155ef69D4a02', 
     userPreferences:     '0x35dddF3516488d3F7c0E6CEe64dCDf26f536F6EE', 
-    treasury:            '0x4A0D8E6bC6b73946bDdA5B6a1Fff7a1656758fFa', 
+    treasury:            '0x782A654DeecF0036bD3377f50092eda494Adb80d', 
     mockDeFiProtocol:    '0xC9b1389D49a052Ddc7784139919a312a776b4AED', 
   },
 

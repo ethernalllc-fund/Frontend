@@ -1,6 +1,6 @@
 {
   "contractName": "PersonalFund",
-  "address": "0xB2b11E9e76315bE0eb748568AF43964aD3e85A00",
+  "address": "0x01BDc8990D3f11420A62b2a4EDB54bFCA2023a94",
   "abi": [
     {
       "name": "Initialized",
@@ -484,13 +484,6 @@
     {
       "stateMutability": "nonpayable",
       "type": "function",
-      "name": "approveEarlyRetirement",
-      "inputs": [],
-      "outputs": []
-    },
-    {
-      "stateMutability": "nonpayable",
-      "type": "function",
       "name": "configureAutoWithdrawal",
       "inputs": [
         {
@@ -531,6 +524,13 @@
       "stateMutability": "nonpayable",
       "type": "function",
       "name": "withdrawAll",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "name": "approveEarlyRetirement",
       "inputs": [],
       "outputs": []
     },

@@ -1,11 +1,11 @@
 {
   "network": "arbitrum-sepolia",
   "chain_id": 421614,
-  "generated": "2026-03-09T14:55:54.669622+00:00",
+  "generated": "2026-03-13T03:22:57.486772+00:00",
   "usdc": "0x6e1371974D923397ecE9eE7525ac50ad7087c77f",
   "contracts": {
     "DateTime": {
-      "address": "0x0C97086FaA8A93E98cb77649179D8a2A2A3b1954",
+      "address": "0x609905ac6441B63Ffc0e5DF8fc4E1C25c02abE1C",
       "abi": [
         {
           "stateMutability": "view",
@@ -276,1462 +276,8 @@
         }
       ]
     },
-    "ProtocolRegistry": {
-      "address": "0x12D247f33D415D495522f34BdDf931CcDF24cd06",
-      "abi": [
-        {
-          "name": "ProtocolAdded",
-          "inputs": [
-            {
-              "name": "protocolAddress",
-              "type": "address",
-              "indexed": true
-            },
-            {
-              "name": "name",
-              "type": "string",
-              "indexed": false
-            },
-            {
-              "name": "apy",
-              "type": "uint256",
-              "indexed": false
-            },
-            {
-              "name": "riskLevel",
-              "type": "uint8",
-              "indexed": false
-            },
-            {
-              "name": "timestamp",
-              "type": "uint256",
-              "indexed": false
-            }
-          ],
-          "anonymous": false,
-          "type": "event"
-        },
-        {
-          "name": "ProtocolUpdated",
-          "inputs": [
-            {
-              "name": "protocolAddress",
-              "type": "address",
-              "indexed": true
-            },
-            {
-              "name": "apy",
-              "type": "uint256",
-              "indexed": false
-            },
-            {
-              "name": "isActive",
-              "type": "bool",
-              "indexed": false
-            },
-            {
-              "name": "timestamp",
-              "type": "uint256",
-              "indexed": false
-            }
-          ],
-          "anonymous": false,
-          "type": "event"
-        },
-        {
-          "name": "ProtocolVerified",
-          "inputs": [
-            {
-              "name": "protocolAddress",
-              "type": "address",
-              "indexed": true
-            },
-            {
-              "name": "verifier",
-              "type": "address",
-              "indexed": true
-            },
-            {
-              "name": "timestamp",
-              "type": "uint256",
-              "indexed": false
-            }
-          ],
-          "anonymous": false,
-          "type": "event"
-        },
-        {
-          "name": "ProtocolRemoved",
-          "inputs": [
-            {
-              "name": "protocolAddress",
-              "type": "address",
-              "indexed": true
-            },
-            {
-              "name": "reason",
-              "type": "string",
-              "indexed": false
-            },
-            {
-              "name": "timestamp",
-              "type": "uint256",
-              "indexed": false
-            }
-          ],
-          "anonymous": false,
-          "type": "event"
-        },
-        {
-          "name": "DepositRecorded",
-          "inputs": [
-            {
-              "name": "protocolAddress",
-              "type": "address",
-              "indexed": true
-            },
-            {
-              "name": "amount",
-              "type": "uint256",
-              "indexed": false
-            },
-            {
-              "name": "totalDeposited",
-              "type": "uint256",
-              "indexed": false
-            },
-            {
-              "name": "timestamp",
-              "type": "uint256",
-              "indexed": false
-            }
-          ],
-          "anonymous": false,
-          "type": "event"
-        },
-        {
-          "name": "ManagerAdded",
-          "inputs": [
-            {
-              "name": "manager",
-              "type": "address",
-              "indexed": true
-            },
-            {
-              "name": "timestamp",
-              "type": "uint256",
-              "indexed": false
-            }
-          ],
-          "anonymous": false,
-          "type": "event"
-        },
-        {
-          "name": "ManagerRemoved",
-          "inputs": [
-            {
-              "name": "manager",
-              "type": "address",
-              "indexed": true
-            },
-            {
-              "name": "timestamp",
-              "type": "uint256",
-              "indexed": false
-            }
-          ],
-          "anonymous": false,
-          "type": "event"
-        },
-        {
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "setTreasury",
-          "inputs": [
-            {
-              "name": "_treasury",
-              "type": "address"
-            }
-          ],
-          "outputs": []
-        },
-        {
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "addAuthorizedManager",
-          "inputs": [
-            {
-              "name": "_manager",
-              "type": "address"
-            }
-          ],
-          "outputs": []
-        },
-        {
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "removeAuthorizedManager",
-          "inputs": [
-            {
-              "name": "_manager",
-              "type": "address"
-            }
-          ],
-          "outputs": []
-        },
-        {
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "addDeFiProtocol",
-          "inputs": [
-            {
-              "name": "_protocolAddress",
-              "type": "address"
-            },
-            {
-              "name": "_name",
-              "type": "string"
-            },
-            {
-              "name": "_apy",
-              "type": "uint256"
-            },
-            {
-              "name": "_riskLevel",
-              "type": "uint8"
-            }
-          ],
-          "outputs": []
-        },
-        {
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "verifyProtocol",
-          "inputs": [
-            {
-              "name": "_protocolAddress",
-              "type": "address"
-            }
-          ],
-          "outputs": []
-        },
-        {
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "updateProtocolAPY",
-          "inputs": [
-            {
-              "name": "_protocolAddress",
-              "type": "address"
-            },
-            {
-              "name": "_newAPY",
-              "type": "uint256"
-            }
-          ],
-          "outputs": []
-        },
-        {
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "toggleProtocolStatus",
-          "inputs": [
-            {
-              "name": "_protocolAddress",
-              "type": "address"
-            }
-          ],
-          "outputs": []
-        },
-        {
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "removeProtocol",
-          "inputs": [
-            {
-              "name": "_protocolAddress",
-              "type": "address"
-            },
-            {
-              "name": "_reason",
-              "type": "string"
-            }
-          ],
-          "outputs": []
-        },
-        {
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "updateTotalDeposited",
-          "inputs": [
-            {
-              "name": "_protocolAddress",
-              "type": "address"
-            },
-            {
-              "name": "_newTotal",
-              "type": "uint256"
-            }
-          ],
-          "outputs": []
-        },
-        {
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "recordDeposit",
-          "inputs": [
-            {
-              "name": "_protocolAddress",
-              "type": "address"
-            },
-            {
-              "name": "_amount",
-              "type": "uint256"
-            }
-          ],
-          "outputs": []
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "getProtocol",
-          "inputs": [
-            {
-              "name": "_protocolAddress",
-              "type": "address"
-            }
-          ],
-          "outputs": [
-            {
-              "name": "",
-              "type": "tuple",
-              "components": [
-                {
-                  "name": "protocolAddress",
-                  "type": "address"
-                },
-                {
-                  "name": "name",
-                  "type": "string"
-                },
-                {
-                  "name": "apy",
-                  "type": "uint256"
-                },
-                {
-                  "name": "isActive",
-                  "type": "bool"
-                },
-                {
-                  "name": "totalDeposited",
-                  "type": "uint256"
-                },
-                {
-                  "name": "riskLevel",
-                  "type": "uint8"
-                },
-                {
-                  "name": "addedTimestamp",
-                  "type": "uint256"
-                },
-                {
-                  "name": "lastUpdated",
-                  "type": "uint256"
-                },
-                {
-                  "name": "verified",
-                  "type": "bool"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "getActiveProtocols",
-          "inputs": [],
-          "outputs": [
-            {
-              "name": "",
-              "type": "address[100]"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "getActiveProtocolsList",
-          "inputs": [],
-          "outputs": [
-            {
-              "name": "",
-              "type": "address[]"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "getVerifiedProtocols",
-          "inputs": [],
-          "outputs": [
-            {
-              "name": "",
-              "type": "address[]"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "getProtocolsByRisk",
-          "inputs": [
-            {
-              "name": "_riskLevel",
-              "type": "uint8"
-            }
-          ],
-          "outputs": [
-            {
-              "name": "",
-              "type": "address[100]"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "getTopProtocolsByAPY",
-          "inputs": [
-            {
-              "name": "_limit",
-              "type": "uint256"
-            }
-          ],
-          "outputs": [
-            {
-              "name": "",
-              "type": "address[]"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "getTotalValueLocked",
-          "inputs": [],
-          "outputs": [
-            {
-              "name": "",
-              "type": "uint256"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "getProtocolStats",
-          "inputs": [
-            {
-              "name": "_protocolAddress",
-              "type": "address"
-            }
-          ],
-          "outputs": [
-            {
-              "name": "",
-              "type": "uint256"
-            },
-            {
-              "name": "",
-              "type": "uint256"
-            },
-            {
-              "name": "",
-              "type": "bool"
-            },
-            {
-              "name": "",
-              "type": "bool"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "getGlobalStats",
-          "inputs": [],
-          "outputs": [
-            {
-              "name": "",
-              "type": "tuple",
-              "components": [
-                {
-                  "name": "totalProtocols",
-                  "type": "uint256"
-                },
-                {
-                  "name": "activeProtocols",
-                  "type": "uint256"
-                },
-                {
-                  "name": "totalValueLocked",
-                  "type": "uint256"
-                },
-                {
-                  "name": "averageAPY",
-                  "type": "uint256"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "isProtocolActive",
-          "inputs": [
-            {
-              "name": "_protocolAddress",
-              "type": "address"
-            }
-          ],
-          "outputs": [
-            {
-              "name": "",
-              "type": "bool"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "isProtocolVerified",
-          "inputs": [
-            {
-              "name": "_protocolAddress",
-              "type": "address"
-            }
-          ],
-          "outputs": [
-            {
-              "name": "",
-              "type": "bool"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "getProtocolCount",
-          "inputs": [],
-          "outputs": [
-            {
-              "name": "",
-              "type": "uint256"
-            },
-            {
-              "name": "",
-              "type": "uint256"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "getAllProtocols",
-          "inputs": [],
-          "outputs": [
-            {
-              "name": "",
-              "type": "address[]"
-            }
-          ]
-        },
-        {
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "changeAdmin",
-          "inputs": [
-            {
-              "name": "_newAdmin",
-              "type": "address"
-            }
-          ],
-          "outputs": []
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "admin",
-          "inputs": [],
-          "outputs": [
-            {
-              "name": "",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "treasury",
-          "inputs": [],
-          "outputs": [
-            {
-              "name": "",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "protocols",
-          "inputs": [
-            {
-              "name": "arg0",
-              "type": "address"
-            }
-          ],
-          "outputs": [
-            {
-              "name": "",
-              "type": "tuple",
-              "components": [
-                {
-                  "name": "protocolAddress",
-                  "type": "address"
-                },
-                {
-                  "name": "name",
-                  "type": "string"
-                },
-                {
-                  "name": "apy",
-                  "type": "uint256"
-                },
-                {
-                  "name": "isActive",
-                  "type": "bool"
-                },
-                {
-                  "name": "totalDeposited",
-                  "type": "uint256"
-                },
-                {
-                  "name": "riskLevel",
-                  "type": "uint8"
-                },
-                {
-                  "name": "addedTimestamp",
-                  "type": "uint256"
-                },
-                {
-                  "name": "lastUpdated",
-                  "type": "uint256"
-                },
-                {
-                  "name": "verified",
-                  "type": "bool"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "protocolAddresses",
-          "inputs": [
-            {
-              "name": "arg0",
-              "type": "uint256"
-            }
-          ],
-          "outputs": [
-            {
-              "name": "",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "protocolCount",
-          "inputs": [],
-          "outputs": [
-            {
-              "name": "",
-              "type": "uint256"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "activeProtocolCount",
-          "inputs": [],
-          "outputs": [
-            {
-              "name": "",
-              "type": "uint256"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "authorizedManagers",
-          "inputs": [
-            {
-              "name": "arg0",
-              "type": "address"
-            }
-          ],
-          "outputs": [
-            {
-              "name": "",
-              "type": "bool"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "managerCount",
-          "inputs": [],
-          "outputs": [
-            {
-              "name": "",
-              "type": "uint256"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "totalValueLocked",
-          "inputs": [],
-          "outputs": [
-            {
-              "name": "",
-              "type": "uint256"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "protocolsByRiskLevel",
-          "inputs": [
-            {
-              "name": "arg0",
-              "type": "uint8"
-            },
-            {
-              "name": "arg1",
-              "type": "uint256"
-            }
-          ],
-          "outputs": [
-            {
-              "name": "",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "stateMutability": "nonpayable",
-          "type": "constructor",
-          "inputs": [],
-          "outputs": []
-        }
-      ]
-    },
-    "UserPreferences": {
-      "address": "0x79B2168B1914771B54FdfBD92655b908fFF65579",
-      "abi": [
-        {
-          "name": "UserConfigUpdated",
-          "inputs": [
-            {
-              "name": "user",
-              "type": "address",
-              "indexed": true
-            },
-            {
-              "name": "selectedProtocol",
-              "type": "address",
-              "indexed": true
-            },
-            {
-              "name": "autoCompound",
-              "type": "bool",
-              "indexed": false
-            },
-            {
-              "name": "riskTolerance",
-              "type": "uint8",
-              "indexed": false
-            },
-            {
-              "name": "timestamp",
-              "type": "uint256",
-              "indexed": false
-            }
-          ],
-          "anonymous": false,
-          "type": "event"
-        },
-        {
-          "name": "RoutingStrategyUpdated",
-          "inputs": [
-            {
-              "name": "user",
-              "type": "address",
-              "indexed": true
-            },
-            {
-              "name": "strategyType",
-              "type": "uint8",
-              "indexed": false
-            },
-            {
-              "name": "timestamp",
-              "type": "uint256",
-              "indexed": false
-            }
-          ],
-          "anonymous": false,
-          "type": "event"
-        },
-        {
-          "name": "DepositRouted",
-          "inputs": [
-            {
-              "name": "user",
-              "type": "address",
-              "indexed": true
-            },
-            {
-              "name": "protocol",
-              "type": "address",
-              "indexed": true
-            },
-            {
-              "name": "amount",
-              "type": "uint256",
-              "indexed": false
-            },
-            {
-              "name": "timestamp",
-              "type": "uint256",
-              "indexed": false
-            }
-          ],
-          "anonymous": false,
-          "type": "event"
-        },
-        {
-          "name": "ContractAuthorized",
-          "inputs": [
-            {
-              "name": "contract",
-              "type": "address",
-              "indexed": true
-            },
-            {
-              "name": "timestamp",
-              "type": "uint256",
-              "indexed": false
-            }
-          ],
-          "anonymous": false,
-          "type": "event"
-        },
-        {
-          "name": "ContractRevoked",
-          "inputs": [
-            {
-              "name": "contract",
-              "type": "address",
-              "indexed": true
-            },
-            {
-              "name": "timestamp",
-              "type": "uint256",
-              "indexed": false
-            }
-          ],
-          "anonymous": false,
-          "type": "event"
-        },
-        {
-          "name": "DefaultProtocolSet",
-          "inputs": [
-            {
-              "name": "protocol",
-              "type": "address",
-              "indexed": true
-            },
-            {
-              "name": "timestamp",
-              "type": "uint256",
-              "indexed": false
-            }
-          ],
-          "anonymous": false,
-          "type": "event"
-        },
-        {
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "configure",
-          "inputs": [
-            {
-              "name": "_protocolRegistry",
-              "type": "address"
-            },
-            {
-              "name": "_treasury",
-              "type": "address"
-            },
-            {
-              "name": "_usdc",
-              "type": "address"
-            },
-            {
-              "name": "_factory",
-              "type": "address"
-            }
-          ],
-          "outputs": []
-        },
-        {
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "authorizeContract",
-          "inputs": [
-            {
-              "name": "_contract",
-              "type": "address"
-            }
-          ],
-          "outputs": []
-        },
-        {
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "revokeContract",
-          "inputs": [
-            {
-              "name": "_contract",
-              "type": "address"
-            }
-          ],
-          "outputs": []
-        },
-        {
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "setDefaultProtocol",
-          "inputs": [
-            {
-              "name": "_protocol",
-              "type": "address"
-            }
-          ],
-          "outputs": []
-        },
-        {
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "setUserConfig",
-          "inputs": [
-            {
-              "name": "_user",
-              "type": "address"
-            },
-            {
-              "name": "_selectedProtocol",
-              "type": "address"
-            },
-            {
-              "name": "_autoCompound",
-              "type": "bool"
-            },
-            {
-              "name": "_riskTolerance",
-              "type": "uint8"
-            }
-          ],
-          "outputs": []
-        },
-        {
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "setRoutingStrategy",
-          "inputs": [
-            {
-              "name": "_strategyType",
-              "type": "uint8"
-            },
-            {
-              "name": "_diversificationPercent",
-              "type": "uint256"
-            },
-            {
-              "name": "_rebalanceThreshold",
-              "type": "uint256"
-            }
-          ],
-          "outputs": []
-        },
-        {
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "routeDeposit",
-          "inputs": [
-            {
-              "name": "_user",
-              "type": "address"
-            },
-            {
-              "name": "_amount",
-              "type": "uint256"
-            }
-          ],
-          "outputs": [
-            {
-              "name": "",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "getUserConfig",
-          "inputs": [
-            {
-              "name": "_user",
-              "type": "address"
-            }
-          ],
-          "outputs": [
-            {
-              "name": "",
-              "type": "tuple",
-              "components": [
-                {
-                  "name": "selectedProtocol",
-                  "type": "address"
-                },
-                {
-                  "name": "autoCompound",
-                  "type": "bool"
-                },
-                {
-                  "name": "riskTolerance",
-                  "type": "uint8"
-                },
-                {
-                  "name": "lastUpdate",
-                  "type": "uint256"
-                },
-                {
-                  "name": "totalDeposited",
-                  "type": "uint256"
-                },
-                {
-                  "name": "totalWithdrawn",
-                  "type": "uint256"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "getUserStrategy",
-          "inputs": [
-            {
-              "name": "_user",
-              "type": "address"
-            }
-          ],
-          "outputs": [
-            {
-              "name": "",
-              "type": "tuple",
-              "components": [
-                {
-                  "name": "strategyType",
-                  "type": "uint8"
-                },
-                {
-                  "name": "diversificationPercent",
-                  "type": "uint256"
-                },
-                {
-                  "name": "rebalanceThreshold",
-                  "type": "uint256"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "getRecommendedProtocol",
-          "inputs": [
-            {
-              "name": "_user",
-              "type": "address"
-            }
-          ],
-          "outputs": [
-            {
-              "name": "",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "getProtocolDeposits",
-          "inputs": [
-            {
-              "name": "_protocol",
-              "type": "address"
-            }
-          ],
-          "outputs": [
-            {
-              "name": "",
-              "type": "uint256"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "getUserProtocolDeposits",
-          "inputs": [
-            {
-              "name": "_user",
-              "type": "address"
-            },
-            {
-              "name": "_protocol",
-              "type": "address"
-            }
-          ],
-          "outputs": [
-            {
-              "name": "",
-              "type": "uint256"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "isContractAuthorized",
-          "inputs": [
-            {
-              "name": "_contract",
-              "type": "address"
-            }
-          ],
-          "outputs": [
-            {
-              "name": "",
-              "type": "bool"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "getUserTotalDeposited",
-          "inputs": [
-            {
-              "name": "_user",
-              "type": "address"
-            }
-          ],
-          "outputs": [
-            {
-              "name": "",
-              "type": "uint256"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "compareProtocols",
-          "inputs": [
-            {
-              "name": "_user",
-              "type": "address"
-            }
-          ],
-          "outputs": [
-            {
-              "name": "",
-              "type": "tuple[]",
-              "components": [
-                {
-                  "name": "protocolAddress",
-                  "type": "address"
-                },
-                {
-                  "name": "apy",
-                  "type": "uint256"
-                },
-                {
-                  "name": "riskLevel",
-                  "type": "uint8"
-                },
-                {
-                  "name": "score",
-                  "type": "uint256"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "changeAdmin",
-          "inputs": [
-            {
-              "name": "_newAdmin",
-              "type": "address"
-            }
-          ],
-          "outputs": []
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "admin",
-          "inputs": [],
-          "outputs": [
-            {
-              "name": "",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "treasury",
-          "inputs": [],
-          "outputs": [
-            {
-              "name": "",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "factory",
-          "inputs": [],
-          "outputs": [
-            {
-              "name": "",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "protocolRegistry",
-          "inputs": [],
-          "outputs": [
-            {
-              "name": "",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "usdc",
-          "inputs": [],
-          "outputs": [
-            {
-              "name": "",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "userConfigs",
-          "inputs": [
-            {
-              "name": "arg0",
-              "type": "address"
-            }
-          ],
-          "outputs": [
-            {
-              "name": "",
-              "type": "tuple",
-              "components": [
-                {
-                  "name": "selectedProtocol",
-                  "type": "address"
-                },
-                {
-                  "name": "autoCompound",
-                  "type": "bool"
-                },
-                {
-                  "name": "riskTolerance",
-                  "type": "uint8"
-                },
-                {
-                  "name": "lastUpdate",
-                  "type": "uint256"
-                },
-                {
-                  "name": "totalDeposited",
-                  "type": "uint256"
-                },
-                {
-                  "name": "totalWithdrawn",
-                  "type": "uint256"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "userStrategies",
-          "inputs": [
-            {
-              "name": "arg0",
-              "type": "address"
-            }
-          ],
-          "outputs": [
-            {
-              "name": "",
-              "type": "tuple",
-              "components": [
-                {
-                  "name": "strategyType",
-                  "type": "uint8"
-                },
-                {
-                  "name": "diversificationPercent",
-                  "type": "uint256"
-                },
-                {
-                  "name": "rebalanceThreshold",
-                  "type": "uint256"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "protocolDeposits",
-          "inputs": [
-            {
-              "name": "arg0",
-              "type": "address"
-            }
-          ],
-          "outputs": [
-            {
-              "name": "",
-              "type": "uint256"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "userProtocolDeposits",
-          "inputs": [
-            {
-              "name": "arg0",
-              "type": "address"
-            },
-            {
-              "name": "arg1",
-              "type": "address"
-            }
-          ],
-          "outputs": [
-            {
-              "name": "",
-              "type": "uint256"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "authorizedContracts",
-          "inputs": [
-            {
-              "name": "arg0",
-              "type": "address"
-            }
-          ],
-          "outputs": [
-            {
-              "name": "",
-              "type": "bool"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
-          "name": "defaultProtocol",
-          "inputs": [],
-          "outputs": [
-            {
-              "name": "",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "stateMutability": "nonpayable",
-          "type": "constructor",
-          "inputs": [],
-          "outputs": []
-        }
-      ]
-    },
     "Treasury": {
-      "address": "0x0793E6dE6d00C5e4797b27F178758885d3a5d5e6",
+      "address": "0x782A654DeecF0036bD3377f50092eda494Adb80d",
       "abi": [
         {
           "name": "FeeReceived",
@@ -1952,12 +498,89 @@
           "type": "event"
         },
         {
+          "name": "AdminPushed",
+          "inputs": [
+            {
+              "name": "targetContract",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "newAdmin",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "pushedBy",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "timestamp",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event"
+        },
+        {
+          "name": "AdminChanged",
+          "inputs": [
+            {
+              "name": "oldAdmin",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "newAdmin",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "timestamp",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event"
+        },
+        {
           "stateMutability": "nonpayable",
           "type": "function",
           "name": "configure",
           "inputs": [
             {
               "name": "_factory",
+              "type": "address"
+            }
+          ],
+          "outputs": []
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "changeAdmin",
+          "inputs": [
+            {
+              "name": "_newAdmin",
+              "type": "address"
+            }
+          ],
+          "outputs": []
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "pushAdmin",
+          "inputs": [
+            {
+              "name": "_targetContract",
+              "type": "address"
+            },
+            {
+              "name": "_newAdmin",
               "type": "address"
             }
           ],
@@ -2412,18 +1035,6 @@
         },
         {
           "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "changeAdmin",
-          "inputs": [
-            {
-              "name": "_newAdmin",
-              "type": "address"
-            }
-          ],
-          "outputs": []
-        },
-        {
-          "stateMutability": "nonpayable",
           "type": "fallback"
         },
         {
@@ -2765,8 +1376,1710 @@
         }
       ]
     },
+    "ProtocolRegistry": {
+      "address": "0x8236F34D948e6665A6d4675E692995B73CC0737C",
+      "abi": [
+        {
+          "name": "ProtocolAdded",
+          "inputs": [
+            {
+              "name": "protocolAddress",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "indexed": false
+            },
+            {
+              "name": "apy",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "name": "riskLevel",
+              "type": "uint8",
+              "indexed": false
+            },
+            {
+              "name": "timestamp",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event"
+        },
+        {
+          "name": "ProtocolUpdated",
+          "inputs": [
+            {
+              "name": "protocolAddress",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "apy",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "name": "isActive",
+              "type": "bool",
+              "indexed": false
+            },
+            {
+              "name": "timestamp",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event"
+        },
+        {
+          "name": "ProtocolVerified",
+          "inputs": [
+            {
+              "name": "protocolAddress",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "verifier",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "timestamp",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event"
+        },
+        {
+          "name": "ProtocolRemoved",
+          "inputs": [
+            {
+              "name": "protocolAddress",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "reason",
+              "type": "string",
+              "indexed": false
+            },
+            {
+              "name": "timestamp",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event"
+        },
+        {
+          "name": "DepositRecorded",
+          "inputs": [
+            {
+              "name": "protocolAddress",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "amount",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "name": "totalDeposited",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "name": "timestamp",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event"
+        },
+        {
+          "name": "ManagerAdded",
+          "inputs": [
+            {
+              "name": "manager",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "timestamp",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event"
+        },
+        {
+          "name": "ManagerRemoved",
+          "inputs": [
+            {
+              "name": "manager",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "timestamp",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event"
+        },
+        {
+          "name": "AdminSet",
+          "inputs": [
+            {
+              "name": "oldAdmin",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "newAdmin",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "timestamp",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event"
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setAdmin",
+          "inputs": [
+            {
+              "name": "_newAdmin",
+              "type": "address"
+            }
+          ],
+          "outputs": []
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "addAuthorizedManager",
+          "inputs": [
+            {
+              "name": "_manager",
+              "type": "address"
+            }
+          ],
+          "outputs": []
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "removeAuthorizedManager",
+          "inputs": [
+            {
+              "name": "_manager",
+              "type": "address"
+            }
+          ],
+          "outputs": []
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setTreasury",
+          "inputs": [
+            {
+              "name": "_newTreasury",
+              "type": "address"
+            }
+          ],
+          "outputs": []
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "addDeFiProtocol",
+          "inputs": [
+            {
+              "name": "_protocolAddress",
+              "type": "address"
+            },
+            {
+              "name": "_name",
+              "type": "string"
+            },
+            {
+              "name": "_apy",
+              "type": "uint256"
+            },
+            {
+              "name": "_riskLevel",
+              "type": "uint8"
+            }
+          ],
+          "outputs": []
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "verifyProtocol",
+          "inputs": [
+            {
+              "name": "_protocolAddress",
+              "type": "address"
+            }
+          ],
+          "outputs": []
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "updateProtocolAPY",
+          "inputs": [
+            {
+              "name": "_protocolAddress",
+              "type": "address"
+            },
+            {
+              "name": "_newAPY",
+              "type": "uint256"
+            }
+          ],
+          "outputs": []
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "toggleProtocolStatus",
+          "inputs": [
+            {
+              "name": "_protocolAddress",
+              "type": "address"
+            }
+          ],
+          "outputs": []
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "removeProtocol",
+          "inputs": [
+            {
+              "name": "_protocolAddress",
+              "type": "address"
+            },
+            {
+              "name": "_reason",
+              "type": "string"
+            }
+          ],
+          "outputs": []
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "updateTotalDeposited",
+          "inputs": [
+            {
+              "name": "_protocolAddress",
+              "type": "address"
+            },
+            {
+              "name": "_newTotal",
+              "type": "uint256"
+            }
+          ],
+          "outputs": []
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "recordDeposit",
+          "inputs": [
+            {
+              "name": "_protocolAddress",
+              "type": "address"
+            },
+            {
+              "name": "_amount",
+              "type": "uint256"
+            }
+          ],
+          "outputs": []
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getProtocol",
+          "inputs": [
+            {
+              "name": "_protocolAddress",
+              "type": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "tuple",
+              "components": [
+                {
+                  "name": "protocolAddress",
+                  "type": "address"
+                },
+                {
+                  "name": "name",
+                  "type": "string"
+                },
+                {
+                  "name": "apy",
+                  "type": "uint256"
+                },
+                {
+                  "name": "isActive",
+                  "type": "bool"
+                },
+                {
+                  "name": "totalDeposited",
+                  "type": "uint256"
+                },
+                {
+                  "name": "riskLevel",
+                  "type": "uint8"
+                },
+                {
+                  "name": "addedTimestamp",
+                  "type": "uint256"
+                },
+                {
+                  "name": "lastUpdated",
+                  "type": "uint256"
+                },
+                {
+                  "name": "verified",
+                  "type": "bool"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getActiveProtocols",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address[100]"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getActiveProtocolsList",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address[]"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getVerifiedProtocols",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address[]"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getProtocolsByRisk",
+          "inputs": [
+            {
+              "name": "_riskLevel",
+              "type": "uint8"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address[100]"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getTopProtocolsByAPY",
+          "inputs": [
+            {
+              "name": "_limit",
+              "type": "uint256"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address[]"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getTotalValueLocked",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getProtocolStats",
+          "inputs": [
+            {
+              "name": "_protocolAddress",
+              "type": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256"
+            },
+            {
+              "name": "",
+              "type": "uint256"
+            },
+            {
+              "name": "",
+              "type": "bool"
+            },
+            {
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getGlobalStats",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "tuple",
+              "components": [
+                {
+                  "name": "totalProtocols",
+                  "type": "uint256"
+                },
+                {
+                  "name": "activeProtocols",
+                  "type": "uint256"
+                },
+                {
+                  "name": "totalValueLocked",
+                  "type": "uint256"
+                },
+                {
+                  "name": "averageAPY",
+                  "type": "uint256"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "isProtocolActive",
+          "inputs": [
+            {
+              "name": "_protocolAddress",
+              "type": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "isProtocolVerified",
+          "inputs": [
+            {
+              "name": "_protocolAddress",
+              "type": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getProtocolCount",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256"
+            },
+            {
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getAllProtocols",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address[]"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "admin",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "treasury",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "protocols",
+          "inputs": [
+            {
+              "name": "arg0",
+              "type": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "tuple",
+              "components": [
+                {
+                  "name": "protocolAddress",
+                  "type": "address"
+                },
+                {
+                  "name": "name",
+                  "type": "string"
+                },
+                {
+                  "name": "apy",
+                  "type": "uint256"
+                },
+                {
+                  "name": "isActive",
+                  "type": "bool"
+                },
+                {
+                  "name": "totalDeposited",
+                  "type": "uint256"
+                },
+                {
+                  "name": "riskLevel",
+                  "type": "uint8"
+                },
+                {
+                  "name": "addedTimestamp",
+                  "type": "uint256"
+                },
+                {
+                  "name": "lastUpdated",
+                  "type": "uint256"
+                },
+                {
+                  "name": "verified",
+                  "type": "bool"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "protocolAddresses",
+          "inputs": [
+            {
+              "name": "arg0",
+              "type": "uint256"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "protocolCount",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "activeProtocolCount",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "authorizedManagers",
+          "inputs": [
+            {
+              "name": "arg0",
+              "type": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "managerCount",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "totalValueLocked",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "protocolsByRiskLevel",
+          "inputs": [
+            {
+              "name": "arg0",
+              "type": "uint8"
+            },
+            {
+              "name": "arg1",
+              "type": "uint256"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "constructor",
+          "inputs": [
+            {
+              "name": "_treasury",
+              "type": "address"
+            }
+          ],
+          "outputs": []
+        }
+      ]
+    },
+    "UserPreferences": {
+      "address": "0x5dA89820567d1b558107D395803D5AF7a15601d7",
+      "abi": [
+        {
+          "name": "UserConfigUpdated",
+          "inputs": [
+            {
+              "name": "user",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "selectedProtocol",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "autoCompound",
+              "type": "bool",
+              "indexed": false
+            },
+            {
+              "name": "riskTolerance",
+              "type": "uint8",
+              "indexed": false
+            },
+            {
+              "name": "timestamp",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event"
+        },
+        {
+          "name": "RoutingStrategyUpdated",
+          "inputs": [
+            {
+              "name": "user",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "strategyType",
+              "type": "uint8",
+              "indexed": false
+            },
+            {
+              "name": "timestamp",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event"
+        },
+        {
+          "name": "DepositRouted",
+          "inputs": [
+            {
+              "name": "user",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "protocol",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "amount",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "name": "timestamp",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event"
+        },
+        {
+          "name": "ContractAuthorized",
+          "inputs": [
+            {
+              "name": "contract",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "timestamp",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event"
+        },
+        {
+          "name": "ContractRevoked",
+          "inputs": [
+            {
+              "name": "contract",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "timestamp",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event"
+        },
+        {
+          "name": "DefaultProtocolSet",
+          "inputs": [
+            {
+              "name": "protocol",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "timestamp",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event"
+        },
+        {
+          "name": "AdminSet",
+          "inputs": [
+            {
+              "name": "oldAdmin",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "newAdmin",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "timestamp",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event"
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setAdmin",
+          "inputs": [
+            {
+              "name": "_newAdmin",
+              "type": "address"
+            }
+          ],
+          "outputs": []
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "configure",
+          "inputs": [
+            {
+              "name": "_protocolRegistry",
+              "type": "address"
+            },
+            {
+              "name": "_usdc",
+              "type": "address"
+            },
+            {
+              "name": "_factory",
+              "type": "address"
+            }
+          ],
+          "outputs": []
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "authorizeContract",
+          "inputs": [
+            {
+              "name": "_contract",
+              "type": "address"
+            }
+          ],
+          "outputs": []
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "revokeContract",
+          "inputs": [
+            {
+              "name": "_contract",
+              "type": "address"
+            }
+          ],
+          "outputs": []
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setDefaultProtocol",
+          "inputs": [
+            {
+              "name": "_protocol",
+              "type": "address"
+            }
+          ],
+          "outputs": []
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setUserConfig",
+          "inputs": [
+            {
+              "name": "_user",
+              "type": "address"
+            },
+            {
+              "name": "_selectedProtocol",
+              "type": "address"
+            },
+            {
+              "name": "_autoCompound",
+              "type": "bool"
+            },
+            {
+              "name": "_riskTolerance",
+              "type": "uint8"
+            }
+          ],
+          "outputs": []
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setRoutingStrategy",
+          "inputs": [
+            {
+              "name": "_strategyType",
+              "type": "uint8"
+            },
+            {
+              "name": "_diversificationPercent",
+              "type": "uint256"
+            },
+            {
+              "name": "_rebalanceThreshold",
+              "type": "uint256"
+            }
+          ],
+          "outputs": []
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "routeDeposit",
+          "inputs": [
+            {
+              "name": "_user",
+              "type": "address"
+            },
+            {
+              "name": "_amount",
+              "type": "uint256"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getUserConfig",
+          "inputs": [
+            {
+              "name": "_user",
+              "type": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "tuple",
+              "components": [
+                {
+                  "name": "selectedProtocol",
+                  "type": "address"
+                },
+                {
+                  "name": "autoCompound",
+                  "type": "bool"
+                },
+                {
+                  "name": "riskTolerance",
+                  "type": "uint8"
+                },
+                {
+                  "name": "lastUpdate",
+                  "type": "uint256"
+                },
+                {
+                  "name": "totalDeposited",
+                  "type": "uint256"
+                },
+                {
+                  "name": "totalWithdrawn",
+                  "type": "uint256"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getUserStrategy",
+          "inputs": [
+            {
+              "name": "_user",
+              "type": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "tuple",
+              "components": [
+                {
+                  "name": "strategyType",
+                  "type": "uint8"
+                },
+                {
+                  "name": "diversificationPercent",
+                  "type": "uint256"
+                },
+                {
+                  "name": "rebalanceThreshold",
+                  "type": "uint256"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getRecommendedProtocol",
+          "inputs": [
+            {
+              "name": "_user",
+              "type": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getProtocolDeposits",
+          "inputs": [
+            {
+              "name": "_protocol",
+              "type": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getUserProtocolDeposits",
+          "inputs": [
+            {
+              "name": "_user",
+              "type": "address"
+            },
+            {
+              "name": "_protocol",
+              "type": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "isContractAuthorized",
+          "inputs": [
+            {
+              "name": "_contract",
+              "type": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getUserTotalDeposited",
+          "inputs": [
+            {
+              "name": "_user",
+              "type": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "compareProtocols",
+          "inputs": [
+            {
+              "name": "_user",
+              "type": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "tuple[]",
+              "components": [
+                {
+                  "name": "protocolAddress",
+                  "type": "address"
+                },
+                {
+                  "name": "apy",
+                  "type": "uint256"
+                },
+                {
+                  "name": "riskLevel",
+                  "type": "uint8"
+                },
+                {
+                  "name": "score",
+                  "type": "uint256"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "admin",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "treasury",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "factory",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "protocolRegistry",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "usdc",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "configured",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "userConfigs",
+          "inputs": [
+            {
+              "name": "arg0",
+              "type": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "tuple",
+              "components": [
+                {
+                  "name": "selectedProtocol",
+                  "type": "address"
+                },
+                {
+                  "name": "autoCompound",
+                  "type": "bool"
+                },
+                {
+                  "name": "riskTolerance",
+                  "type": "uint8"
+                },
+                {
+                  "name": "lastUpdate",
+                  "type": "uint256"
+                },
+                {
+                  "name": "totalDeposited",
+                  "type": "uint256"
+                },
+                {
+                  "name": "totalWithdrawn",
+                  "type": "uint256"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "userStrategies",
+          "inputs": [
+            {
+              "name": "arg0",
+              "type": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "tuple",
+              "components": [
+                {
+                  "name": "strategyType",
+                  "type": "uint8"
+                },
+                {
+                  "name": "diversificationPercent",
+                  "type": "uint256"
+                },
+                {
+                  "name": "rebalanceThreshold",
+                  "type": "uint256"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "protocolDeposits",
+          "inputs": [
+            {
+              "name": "arg0",
+              "type": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "userProtocolDeposits",
+          "inputs": [
+            {
+              "name": "arg0",
+              "type": "address"
+            },
+            {
+              "name": "arg1",
+              "type": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "authorizedContracts",
+          "inputs": [
+            {
+              "name": "arg0",
+              "type": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "defaultProtocol",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "constructor",
+          "inputs": [
+            {
+              "name": "_treasury",
+              "type": "address"
+            }
+          ],
+          "outputs": []
+        }
+      ]
+    },
+    "MockDeFiProtocol": {
+      "address": "0x3D774C2a2456640F2B7d98E6bF0e81C00d9090b8",
+      "abi": [
+        {
+          "name": "Deposited",
+          "inputs": [
+            {
+              "name": "caller",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "amount",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event"
+        },
+        {
+          "name": "Withdrawn",
+          "inputs": [
+            {
+              "name": "caller",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "amount",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event"
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "deposit",
+          "inputs": [
+            {
+              "name": "_amount",
+              "type": "uint256"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "withdraw",
+          "inputs": [
+            {
+              "name": "_amount",
+              "type": "uint256"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "recoverTokens",
+          "inputs": [
+            {
+              "name": "_token",
+              "type": "address"
+            },
+            {
+              "name": "_amount",
+              "type": "uint256"
+            }
+          ],
+          "outputs": []
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getBalance",
+          "inputs": [
+            {
+              "name": "_account",
+              "type": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "admin",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "usdc",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "name",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "totalDeposited",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "balances",
+          "inputs": [
+            {
+              "name": "arg0",
+              "type": "address"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "constructor",
+          "inputs": [
+            {
+              "name": "_usdc",
+              "type": "address"
+            },
+            {
+              "name": "_name",
+              "type": "string"
+            }
+          ],
+          "outputs": []
+        }
+      ]
+    },
     "PersonalFund": {
-      "address": "0xB2b11E9e76315bE0eb748568AF43964aD3e85A00",
+      "address": "0x01BDc8990D3f11420A62b2a4EDB54bFCA2023a94",
       "abi": [
         {
           "name": "Initialized",
@@ -3250,13 +3563,6 @@
         {
           "stateMutability": "nonpayable",
           "type": "function",
-          "name": "approveEarlyRetirement",
-          "inputs": [],
-          "outputs": []
-        },
-        {
-          "stateMutability": "nonpayable",
-          "type": "function",
           "name": "configureAutoWithdrawal",
           "inputs": [
             {
@@ -3297,6 +3603,13 @@
           "stateMutability": "nonpayable",
           "type": "function",
           "name": "withdrawAll",
+          "inputs": [],
+          "outputs": []
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "approveEarlyRetirement",
           "inputs": [],
           "outputs": []
         },
@@ -4167,7 +4480,7 @@
       ]
     },
     "PersonalFundFactory": {
-      "address": "0x9105166f0c2Ba72411Ca96f2cDdEE80B49535719",
+      "address": "0xb6351cF3f42475c78e9c94AAD391C9f689d8898F",
       "abi": [
         {
           "name": "FundCreated",
@@ -4222,14 +4535,44 @@
           "type": "event"
         },
         {
+          "name": "AdminSet",
+          "inputs": [
+            {
+              "name": "oldAdmin",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "newAdmin",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "name": "timestamp",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event"
+        },
+        {
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setAdmin",
+          "inputs": [
+            {
+              "name": "_newAdmin",
+              "type": "address"
+            }
+          ],
+          "outputs": []
+        },
+        {
           "stateMutability": "nonpayable",
           "type": "function",
           "name": "configure",
           "inputs": [
-            {
-              "name": "_treasury",
-              "type": "address"
-            },
             {
               "name": "_usdc",
               "type": "address"
@@ -4365,18 +4708,6 @@
         {
           "stateMutability": "nonpayable",
           "type": "function",
-          "name": "changeAdmin",
-          "inputs": [
-            {
-              "name": "_newAdmin",
-              "type": "address"
-            }
-          ],
-          "outputs": []
-        },
-        {
-          "stateMutability": "nonpayable",
-          "type": "function",
           "name": "updateUserPreferences",
           "inputs": [
             {
@@ -4481,23 +4812,6 @@
         {
           "stateMutability": "view",
           "type": "function",
-          "name": "predictFundAddress",
-          "inputs": [
-            {
-              "name": "_user",
-              "type": "address"
-            }
-          ],
-          "outputs": [
-            {
-              "name": "",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "stateMutability": "view",
-          "type": "function",
           "name": "calculateInitialDeposit",
           "inputs": [
             {
@@ -4583,6 +4897,10 @@
             {
               "name": "",
               "type": "address"
+            },
+            {
+              "name": "",
+              "type": "address"
             }
           ]
         },
@@ -4647,6 +4965,18 @@
             {
               "name": "",
               "type": "address"
+            }
+          ]
+        },
+        {
+          "stateMutability": "view",
+          "type": "function",
+          "name": "configured",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool"
             }
           ]
         },
@@ -4866,6 +5196,10 @@
           "inputs": [
             {
               "name": "_personalFundImplementation",
+              "type": "address"
+            },
+            {
+              "name": "_treasury",
               "type": "address"
             }
           ],

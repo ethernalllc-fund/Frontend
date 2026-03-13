@@ -1,6 +1,6 @@
 {
   "contractName": "UserPreferences",
-  "address": "0x79B2168B1914771B54FdfBD92655b908fFF65579",
+  "address": "0x5dA89820567d1b558107D395803D5AF7a15601d7",
   "abi": [
     {
       "name": "UserConfigUpdated",
@@ -135,16 +135,46 @@
       "type": "event"
     },
     {
+      "name": "AdminSet",
+      "inputs": [
+        {
+          "name": "oldAdmin",
+          "type": "address",
+          "indexed": true
+        },
+        {
+          "name": "newAdmin",
+          "type": "address",
+          "indexed": true
+        },
+        {
+          "name": "timestamp",
+          "type": "uint256",
+          "indexed": false
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "name": "setAdmin",
+      "inputs": [
+        {
+          "name": "_newAdmin",
+          "type": "address"
+        }
+      ],
+      "outputs": []
+    },
+    {
       "stateMutability": "nonpayable",
       "type": "function",
       "name": "configure",
       "inputs": [
         {
           "name": "_protocolRegistry",
-          "type": "address"
-        },
-        {
-          "name": "_treasury",
           "type": "address"
         },
         {
@@ -458,18 +488,6 @@
       ]
     },
     {
-      "stateMutability": "nonpayable",
-      "type": "function",
-      "name": "changeAdmin",
-      "inputs": [
-        {
-          "name": "_newAdmin",
-          "type": "address"
-        }
-      ],
-      "outputs": []
-    },
-    {
       "stateMutability": "view",
       "type": "function",
       "name": "admin",
@@ -526,6 +544,18 @@
         {
           "name": "",
           "type": "address"
+        }
+      ]
+    },
+    {
+      "stateMutability": "view",
+      "type": "function",
+      "name": "configured",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
         }
       ]
     },
@@ -673,8 +703,14 @@
     {
       "stateMutability": "nonpayable",
       "type": "constructor",
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "_treasury",
+          "type": "address"
+        }
+      ],
       "outputs": []
     }
-  ]
+  ],
+  "constructorArgs": "000000000000000000000000782a654deecf0036bd3377f50092eda494adb80d"
 }
