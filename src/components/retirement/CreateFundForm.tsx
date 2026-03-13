@@ -1,21 +1,25 @@
 import { useEffect } from 'react';
-import { useCreatePersonalFund }  from '@/hooks/useCreatePersonalFund';
 import { usePersonalFundFactory } from '@/hooks/funds/usePersonalFundFactory';
 import { useProtocolStatus }      from '@/hooks/funds/useProtocolStatus';
 import { getContractAddresses }   from '@/config/addresses';
 import { useChainId }             from 'wagmi';
-import { parseUnits }             from 'viem';
+import type { RetirementPlan }    from '@/types/retirement_types';
 
-export function CreateFundForm() {
-  const chainId          = useChainId();
-  const addresses        = getContractAddresses(chainId);
+interface CreateFundFormProps {
+  plan:      RetirementPlan;
+  onReady?:  (protocolAddress: `0x${string}`) => void;
+  onSuccess?: (txHash: string) => void;
+}
 
-  const PROTOCOL_ADDRESS = addresses?.mockDeFiProtocol;
+export function CreateFundForm({ plan, onReady, onSuccess: _onSuccess }: CreateFundFormProps) {
+  const chainId   = useChainId();
+  const addresses = getContractAddresses(chainId);
 
-  const { createFund, isPending, isConfirming, isSuccess, error, receipt } =
-    useCreatePersonalFund();
+  const PROTOCOL_ADDRESS = (
+    plan.selectedProtocol ?? addresses?.mockDeFiProtocol
+  ) as `0x${string}` | undefined;
 
-  const { refetch } = usePersonalFundFactory();
+  const { refetch }                        = usePersonalFundFactory();
   const { status: protocolStatus, isVerified } = useProtocolStatus(PROTOCOL_ADDRESS);
 
   const isCheckingProtocol = protocolStatus === 'loading';
@@ -24,45 +28,17 @@ export function CreateFundForm() {
   const isUnavailable      = protocolStatus === 'unavailable';
 
   useEffect(() => {
-    if (isSuccess) refetch();
-  }, [isSuccess, refetch]);
+    if (isProtocolActive && PROTOCOL_ADDRESS) {
+      onReady?.(PROTOCOL_ADDRESS);
+    }
+  }, [isProtocolActive, PROTOCOL_ADDRESS, onReady]);
 
-  const handleCreate = () => {
-    if (!isProtocolActive || !PROTOCOL_ADDRESS) return;
-
-    createFund({
-      principal:        parseUnits('1000', 6),
-      monthlyDeposit:   parseUnits('100',  6),
-      currentAge:       30n,
-      retirementAge:    65n,
-      desiredMonthly:   parseUnits('2000', 6),
-      yearsPayments:    20n,
-      interestRate:     500n,
-      timelockYears:    15n,              
-      selectedProtocol: PROTOCOL_ADDRESS,
-    });
-  };
-
-  const isButtonDisabled =
-    isPending          ||
-    isConfirming       ||
-    !isProtocolActive  ||
-    isCheckingProtocol ||
-    !PROTOCOL_ADDRESS;
-
-  const buttonLabel = isPending
-    ? 'Confirmá en tu wallet...'
-    : isConfirming
-    ? 'Minando transacción...'
-    : isCheckingProtocol
-    ? 'Verificando protocolo...'
-    : !isProtocolActive
-    ? 'Protocolo no disponible'
-    : 'Crear mi fondo';
+  useEffect(() => {
+    if (_onSuccess) refetch();
+  }, [_onSuccess, refetch]);
 
   return (
-    <div className="flex flex-col gap-3">
-
+    <div className="flex flex-col gap-2">
       {isCheckingProtocol && (
         <p className="text-sm text-yellow-500">
           🔄 Verificando estado del protocolo...
@@ -95,29 +71,6 @@ export function CreateFundForm() {
               Verificado
             </span>
           )}
-        </p>
-      )}
-
-      <button
-        onClick={handleCreate}
-        disabled={isButtonDisabled}
-        className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium px-4 py-2 rounded transition-colors"
-      >
-        {buttonLabel}
-      </button>
-
-      {isSuccess && (
-        <p className="text-sm text-green-500">
-          ✅ Fondo creado con éxito! Tx:{' '}
-          <span className="font-mono text-xs break-all">
-            {receipt?.transactionHash}
-          </span>
-        </p>
-      )}
-
-      {error && (
-        <p className="text-sm text-red-500">
-          ❌ Error: {error.message}
         </p>
       )}
     </div>
