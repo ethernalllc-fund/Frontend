@@ -13,12 +13,10 @@ import {
 import { formatUSDCWithSymbol, formatUSDC, isValidUSDCAmount, parseUSDC } from '@/hooks/usdc/usdcUtils';
 import { useUSDCTransaction } from '@/hooks/usdc/useUSDCTransaction';
 import { PERSONAL_FUND_ABI, USER_PREFERENCES_ABI } from '@/contracts/abis';
-import { USER_PREFERENCES_ADDRESS } from '@/contracts/addresses';
+import { USER_PREFERENCES_ADDRESS } from '@/config';
 
 const ZERO_ADDRESS  = '0x0000000000000000000000000000000000000000';
 const ARBISCAN_BASE = 'https://sepolia.arbiscan.io/address/';
-
-// ─── Risk level metadata ───────────────────────────────────────────────────
 const RISK_LEVELS = [
   {
     value: 0,
@@ -58,7 +56,6 @@ const RISK_LEVELS = [
   },
 ] as const;
 
-// ─── Strategy type metadata ────────────────────────────────────────────────
 const STRATEGY_TYPES = [
   {
     value: 0,
@@ -80,7 +77,6 @@ const STRATEGY_TYPES = [
   },
 ] as const;
 
-// ─── Helpers ───────────────────────────────────────────────────────────────
 function formatTimestamp(ts: bigint | undefined): string {
   if (!ts || ts === 0n) return 'Nunca';
   return format(new Date(Number(ts) * 1000), 'MMM dd, yyyy – HH:mm');
@@ -106,7 +102,6 @@ function riskLevelLabel(level: number): string {
   return RISK_LEVELS[level]?.label ?? 'Desconocido';
 }
 
-// ─── Admin content mock (replace with real API/contract data) ─────────────
 const ADMIN_CONTENT = [
   {
     id: 1,
@@ -137,7 +132,6 @@ const ADMIN_CONTENT = [
   },
 ];
 
-// ══════════════════════════════════════════════════════════════════════════
 const DashboardPage: React.FC = () => {
   const navigate    = useNavigate();
   const { address } = useAccount();
@@ -150,13 +144,11 @@ const DashboardPage: React.FC = () => {
     refetchAll,
   } = useEthernal();
 
-  // ─── Deposit modal state ────────────────────────────────────────────────
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [depositAmount,      setDepositAmount]      = useState('');
   const [depositAmountError, setDepositAmountError] = useState<string | null>(null);
   const [depositMode,        setDepositMode]        = useState<'monthly' | 'custom'>('monthly');
 
-  // ─── User Preferences local state ──────────────────────────────────────
   const currentRisk     = userPreferences.userConfig?.riskTolerance ?? 0;
   const currentStrategy = userPreferences.routingStrategy?.strategyType ?? 0;
   const currentProtocol = userPreferences.userConfig?.selectedProtocol ?? ZERO_ADDRESS;
@@ -172,7 +164,6 @@ const DashboardPage: React.FC = () => {
   const effectiveStrategy = pendingStrategy ?? currentStrategy;
   const effectiveProtocol = pendingProtocol ?? (currentProtocol !== ZERO_ADDRESS ? currentProtocol : null);
 
-  // ─── Write: setUserConfig ───────────────────────────────────────────────
   const {
     writeContract:   writeConfig,
     isPending:       isWritingConfig,
@@ -186,7 +177,6 @@ const DashboardPage: React.FC = () => {
     },
   });
 
-  // ─── Write: setRoutingStrategy ──────────────────────────────────────────
   const {
     writeContract:   writeStrategy,
     isPending:       isWritingStrategy,
@@ -202,8 +192,6 @@ const DashboardPage: React.FC = () => {
 
   const isSavingPrefs    = isWritingConfig    || isConfirmingConfig;
   const isSavingStrategy = isWritingStrategy  || isConfirmingStrategy;
-
-  // ─── Fund basics ────────────────────────────────────────────────────────
   const hasFund     = !!factory.userFund && factory.userFund !== ZERO_ADDRESS;
   const fundAddress = factory.userFund;
 
@@ -212,7 +200,6 @@ const DashboardPage: React.FC = () => {
     : '0';
 
   const activeDepositAmount = depositMode === 'monthly' ? monthlyDepositAmount : depositAmount;
-
   const activeDepositAmountBigInt = useMemo<bigint | undefined>(() => {
     if (!activeDepositAmount || parseFloat(activeDepositAmount) <= 0) return undefined;
     try { return parseUSDC(activeDepositAmount); } catch { return undefined; }
@@ -235,7 +222,6 @@ const DashboardPage: React.FC = () => {
     onError: () => {},
   });
 
-  // ─── Progress calc ──────────────────────────────────────────────────────
   const progress = useMemo(() => {
     if (!personalFund.fundInfo || !personalFund.balance) return null;
     const currentBalance  = Number(personalFund.balance) / 1e6;
@@ -262,7 +248,6 @@ const DashboardPage: React.FC = () => {
     };
   }, [personalFund]);
 
-  // ─── Handlers ───────────────────────────────────────────────────────────
   const handleOpenDepositModal  = useCallback(() => {
     setDepositMode('monthly');
     setDepositAmount('');
@@ -343,7 +328,6 @@ const DashboardPage: React.FC = () => {
     }
   }, [address, effectiveStrategy, writeStrategy]);
 
-  // ─── Loading ────────────────────────────────────────────────────────────
   if (isLoading) {
     return (
       <div className="min-h-screen bg-linear-to-br from-indigo-50 to-purple-50 flex items-center justify-center">
@@ -355,7 +339,6 @@ const DashboardPage: React.FC = () => {
     );
   }
 
-  // ══════════════════════════════════════════════════════════════════════
   return (
     <div className="min-h-screen bg-linear-to-br from-indigo-50 via-purple-50 to-pink-50 py-8 sm:py-12 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto">
@@ -547,7 +530,6 @@ const DashboardPage: React.FC = () => {
               )}
             </div>
 
-            {/* ── Inversiones DeFi ── */}
             {hasFund && (
               <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-purple-100 p-6 sm:p-10">
                 <h3 className="text-2xl sm:text-3xl font-black text-gray-800 mb-6 flex items-center gap-3">
@@ -568,10 +550,6 @@ const DashboardPage: React.FC = () => {
 
           {/* ══ RIGHT SIDEBAR ══ */}
           <div className="space-y-6 sm:space-y-8">
-
-            {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-            {/* ── USER PREFERENCES ── */}
-            {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
             <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-purple-100 p-6 sm:p-8">
               <h3 className="text-2xl sm:text-3xl font-black text-gray-800 mb-2 flex items-center gap-3">
                 <Settings className="text-indigo-600" size={32} />
@@ -581,7 +559,6 @@ const DashboardPage: React.FC = () => {
                 Configurá tu perfil de inversión on-chain. Estos parámetros determinan cómo se enrutan tus depósitos.
               </p>
 
-              {/* Current config summary */}
               {userPreferences.userConfig && (
                 <div className="bg-indigo-50 border border-indigo-200 rounded-2xl p-4 mb-6 flex items-start gap-3">
                   <Info size={18} className="text-indigo-500 shrink-0 mt-0.5" />
@@ -595,7 +572,6 @@ const DashboardPage: React.FC = () => {
                 </div>
               )}
 
-              {/* ── Risk Tolerance ── */}
               <div className="mb-6">
                 <p className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3">
                   Nivel de Riesgo
@@ -628,7 +604,6 @@ const DashboardPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* ── Protocol selector ── */}
               <div className="mb-6">
                 <p className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3">
                   Protocolo Preferido
@@ -670,7 +645,6 @@ const DashboardPage: React.FC = () => {
                 )}
               </div>
 
-              {/* Save config feedback */}
               {prefSaveError && (
                 <p className="text-red-600 text-xs mb-3 flex items-start gap-1">
                   <AlertCircle size={14} className="shrink-0 mt-0.5" />
@@ -696,9 +670,6 @@ const DashboardPage: React.FC = () => {
               </button>
             </div>
 
-            {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-            {/* ── PROTOCOL REGISTRY ── */}
-            {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
             <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-purple-100 p-6 sm:p-8">
               <h3 className="text-2xl sm:text-3xl font-black text-gray-800 mb-2 flex items-center gap-3">
                 <Activity className="text-violet-600" size={32} />
@@ -708,7 +679,6 @@ const DashboardPage: React.FC = () => {
                 Estrategia de ruteo de depósitos y métricas de los protocolos verificados.
               </p>
 
-              {/* ── Routing Strategy ── */}
               <div className="mb-6">
                 <p className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3">
                   Estrategia de Inversión
@@ -759,7 +729,6 @@ const DashboardPage: React.FC = () => {
                 </button>
               </div>
 
-              {/* ── Active protocols overview ── */}
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <p className="text-sm font-bold text-gray-700 uppercase tracking-wide">
@@ -810,7 +779,6 @@ const DashboardPage: React.FC = () => {
               </div>
             </div>
 
-            {/* ── Recomendaciones y Educación Financiera ── */}
             <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-purple-100 p-6 sm:p-8">
               <h3 className="text-xl sm:text-2xl font-black text-gray-800 mb-2 flex items-center gap-3">
                 <BookOpen className="text-pink-600" size={26} />
@@ -856,7 +824,6 @@ const DashboardPage: React.FC = () => {
               </div>
             </div>
 
-            {/* ── Soporte ── */}
             <div className="bg-linear-to-r from-pink-50 to-purple-50 rounded-3xl shadow-2xl border-2 border-pink-200 p-6 sm:p-8">
               <h3 className="text-xl sm:text-2xl font-black text-gray-800 mb-4 flex items-center gap-3">
                 <MessageCircle className="text-pink-600" size={28} />
@@ -878,7 +845,6 @@ const DashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ══ DEPOSIT MODAL ══ */}
       {isDepositModalOpen && (
         <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50"
