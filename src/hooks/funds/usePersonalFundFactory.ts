@@ -1,7 +1,7 @@
-import { useReadContract, useAccount } from 'wagmi';
+import { useReadContract, useAccount, useChainId } from 'wagmi';
 import type { Address } from 'viem';
-import { PERSONAL_FUND_FACTORY_ABI } from '@/contracts/abis';
-import { PERSONAL_FUND_FACTORY_ADDRESS } from '@/contracts/addresses';
+import { PersonalFundFactoryABI } from '@/contracts/abis';
+import { getContractAddress } from '@/config';
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -13,12 +13,13 @@ export interface PersonalFundFactoryState {
 }
 
 export function usePersonalFundFactory(address?: Address): PersonalFundFactoryState {
-  const resolvedAddress          = address ?? PERSONAL_FUND_FACTORY_ADDRESS;
+  const chainId                  = useChainId();
+  const resolvedAddress          = address ?? getContractAddress(chainId, 'personalFundFactory');
   const { address: userAddress } = useAccount();
 
   const { data, isLoading, refetch } = useReadContract({
     address:      resolvedAddress,
-    abi:          PERSONAL_FUND_FACTORY_ABI,
+    abi:          PersonalFundFactoryABI,
     functionName: 'getUserFund',
     args:         userAddress ? [userAddress] : undefined,
     query: {
@@ -28,7 +29,7 @@ export function usePersonalFundFactory(address?: Address): PersonalFundFactorySt
     },
   });
 
-  const userFund = data;
+  const userFund = data as `0x${string}` | undefined;
   const hasFund  = !!userFund && userFund !== ZERO_ADDRESS;
 
   return {

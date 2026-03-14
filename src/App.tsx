@@ -38,10 +38,7 @@ function NotFoundPage() {
       <h1 className="text-7xl font-bold text-gray-200 mb-4">404</h1>
       <h2 className="text-2xl font-semibold text-gray-800 mb-2">Page not found</h2>
       <p className="text-gray-500 mb-8">The page you're looking for doesn't exist.</p>
-      <a
-        href="/"
-        className="px-6 py-3 bg-forest-green text-white rounded-lg font-semibold hover:opacity-90 transition"
-      >
+      <a href="/" className="px-6 py-3 bg-forest-green text-white rounded-lg font-semibold hover:opacity-90 transition">
         Go home
       </a>
     </div>
@@ -85,10 +82,7 @@ class ErrorBoundary extends Component<
           >
             Try again
           </button>
-          <a
-            href="/"
-            className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-100 transition"
-          >
+          <a href="/" className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-100 transition">
             Go home
           </a>
         </div>
@@ -124,7 +118,7 @@ function AppContent() {
             <Route path="/contact"    element={<ContactPage />} />
             <Route path="/survey"     element={<SurveyPage />} />
 
-            {/* User */}
+            {/* User — requires connected wallet */}
             <Route
               path="/dashboard"
               element={
@@ -142,9 +136,12 @@ function AppContent() {
               }
             />
 
-            {/* Admin */}
             <Route
               path="/admin"
+              element={<Navigate to="/admin/dashboard" replace />}
+            />
+            <Route
+              path="/admin/dashboard"
               element={
                 <ProtectedRoute requireAuth requireAdmin>
                   <AdminDashboard />
@@ -176,9 +173,10 @@ function AppContent() {
               }
             />
 
-            {/* Redirects */}
-            <Route path="/governance" element={<Navigate to="/dashboard"  replace />} />
-            <Route path="/fund"       element={<Navigate to="/create-fund" replace />} />
+            {/* Legacy redirects */}
+            <Route path="/admin/login" element={<Navigate to="/admin/dashboard" replace />} />
+            <Route path="/governance"  element={<Navigate to="/dashboard"       replace />} />
+            <Route path="/fund"        element={<Navigate to="/create-fund"     replace />} />
 
             {/* 404 */}
             <Route path="*" element={<NotFoundPage />} />

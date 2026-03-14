@@ -1,6 +1,6 @@
-import { useReadContract, useAccount } from 'wagmi';
-import { PERSONAL_FUND_FACTORY_ABI } from '@/contracts/abis';
-import { PERSONAL_FUND_FACTORY_ADDRESS } from '@/contracts/addresses';
+import { useReadContract, useAccount, useChainId } from 'wagmi';
+import { PersonalFundFactoryABI } from '@/contracts/abis';
+import { getContractAddress } from '@/config';
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -14,20 +14,22 @@ export interface UseHasFundResult {
 
 export function useHasFund(): UseHasFundResult {
   const { address } = useAccount();
+  const chainId     = useChainId();
+  const factoryAddress = getContractAddress(chainId, 'personalFundFactory');
 
   const { data, isLoading, isError, refetch } = useReadContract({
-    address:      PERSONAL_FUND_FACTORY_ADDRESS,
-    abi:          PERSONAL_FUND_FACTORY_ABI,
+    address:      factoryAddress,
+    abi:          PersonalFundFactoryABI,
     functionName: 'getUserFund',
     args:         address ? [address] : undefined,
     query: {
-      enabled:         Boolean(address),
+      enabled:         Boolean(address && factoryAddress),
       refetchInterval: 30_000,
       staleTime:       20_000,
     },
   });
 
-  const fundAddress = data;
+  const fundAddress = data as `0x${string}` | undefined;
   const hasFund     = !!fundAddress && fundAddress !== ZERO_ADDRESS;
 
   return {
