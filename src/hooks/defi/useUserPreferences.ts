@@ -1,7 +1,7 @@
 import { useReadContract, useAccount } from 'wagmi';
 import type { Address } from 'viem';
-import { USER_PREFERENCES_ABI } from '@/contracts/abis';
-import { USER_PREFERENCES_ADDRESS } from '@/contracts/addresses';
+import { UserPreferencesABI } from '@/contracts/abis';
+import { USER_PREFERENCES_ADDRESS } from '@/config';
 
 export interface UserConfig {
   selectedProtocol: `0x${string}`;
@@ -28,7 +28,7 @@ export interface UserPreferencesState {
 export function useUserPreferences(address?: Address): UserPreferencesState {
   const resolvedAddress          = address ?? USER_PREFERENCES_ADDRESS;
   const { address: userAddress } = useAccount();
-  const base = { address: resolvedAddress, abi: USER_PREFERENCES_ABI } as const;
+  const base = { address: resolvedAddress, abi: UserPreferencesABI } as const;
 
   const { data: config, isLoading: l1, refetch } = useReadContract({
     ...base,

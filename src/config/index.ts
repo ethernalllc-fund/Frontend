@@ -1,46 +1,30 @@
 export {
   SUPPORTED_CHAINS,
-  TESTNET_CHAINS,
-  MAINNET_CHAINS,
   ACTIVE_CHAINS,
-  DEFAULT_CHAIN,
   ACTIVE_CHAIN_IDS,
+  DEFAULT_CHAIN,
   CHAIN_IDS,
-  TESTNET_CHAIN_IDS,
-  MAINNET_CHAIN_IDS,
   CHAIN_METADATA,
+  TRANSPORT_MAP,
   getChainById,
   getChainMetadata,
   isChainSupported,
   isChainActive,
-  isTestnet,
+  isTestnetChain,
   hasContracts,
   getFaucets,
   getBridge,
   getExplorerUrl,
   getExplorerAddressUrl,
-  getExplorerTokenUrl,
   getChainName,
   getChainShortName,
-  getChainsByPriority,
-  getActiveChains,
-  getTestnetChains,
-  getMainnetChains,
-  getDeployedChains,
-  getPendingChains,
   getChainErrorMessage,
-  getChainStatus,
-  getChainInfo,
-  getDeploymentSummary as getChainDeploymentSummary,
-  validateChainConfig,
 } from './chains'
 
 export type {
   ChainMetadata,
+  SupportedChain,
   SupportedChainId,
-  ActiveChainId,
-  TestnetChainId,
-  MainnetChainId,
 } from './chains'
 
 export {
@@ -49,11 +33,6 @@ export {
   modal,
   queryClient,
   Web3Provider,
-  IS_TESTNET,
-  ACTIVE_CHAINS  as WEB3_ACTIVE_CHAINS,
-  DEFAULT_CHAIN  as WEB3_DEFAULT_CHAIN,
-  isActiveChain,
-  getActiveChain,
 } from './web3'
 
 export {
@@ -72,38 +51,32 @@ export type { MintPreset } from './contracts.config'
 
 export {
   CONTRACT_ADDRESSES,
+  ZERO_ADDRESS,
+  // Named Arbitrum Sepolia addresses (for admin pages and legacy consumers)
   TREASURY_ADDRESS,
   FACTORY_ADDRESS,
   USDC_ADDRESS,
   PROTOCOL_REGISTRY_ADDRESS,
   USER_PREFERENCES_ADDRESS,
   DATETIME_ADDRESS,
-  ZERO_ADDRESS,
   MOCK_USDC_ADDRESS,
   OFFICIAL_USDC_ADDRESS,
-  getCurrentUSDCType,
+  // USDC helpers
   getOfficialUSDC,
   getMockUSDC,
-  hasUSDC,
-  hasMockUSDC,
   getUSDCForChain,
+  hasMockUSDC,
+  getCurrentUSDCType,
+  // Contract address resolution
   getContractAddresses,
   getContractAddress,
-  hasChainConfig,
   isValidAddress,
   isContractDeployed,
   areMainContractsDeployed,
-  isTestnetChain,
+  // Deployment introspection
   getDeployedContracts,
   getPendingContracts,
   getDeploymentProgress,
-  getDeploymentSummary as getAddressDeploymentSummary,
-  getDeploymentStatus,
-  updateChainAddresses,
-  CONTRACT_CATEGORIES,
-  getCategoryContracts,
-  getContractsByCategory,
-  DEPLOYMENT_STATUS,
 } from './addresses'
 
 export type {
@@ -116,22 +89,5 @@ export {
   appConfig,
   isValidChain,
   getFaucetUrl,
-  isTestnet as isTestnetEnv,
+  isTestnet,
 } from './app'
-
-export {
-  default as env,
-  API_URL,
-  FAUCET_URL,
-  SUPABASE_URL,
-  SUPABASE_ANON,
-  CHAIN_ID,
-  EXPLORER_URL,
-  ENABLE_DEBUG,
-  ENABLE_ANALYTICS,
-  ENABLE_FAUCET,
-  ENABLE_EXPERIMENTAL,
-  ENABLE_MOCKS,
-} from '@/lib/env'
-
-export type { AppConfig } from '@/lib/env'

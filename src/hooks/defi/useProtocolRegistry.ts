@@ -1,7 +1,7 @@
 import { useReadContract } from 'wagmi';
 import type { Address } from 'viem';
-import { PROTOCOL_REGISTRY_ABI } from '@/contracts/abis';
-import { PROTOCOL_REGISTRY_ADDRESS } from '@/contracts/addresses';
+import { ProtocolRegistryABI } from '@/contracts/abis';
+import { PROTOCOL_REGISTRY_ADDRESS } from '@/config';
 
 export interface ProtocolInfo {
   protocolAddress: `0x${string}`;
@@ -21,7 +21,7 @@ export interface ProtocolRegistryState {
 
 export function useProtocolRegistry(address?: Address): ProtocolRegistryState {
   const resolvedAddress = address ?? PROTOCOL_REGISTRY_ADDRESS;
-  const base = { address: resolvedAddress, abi: PROTOCOL_REGISTRY_ABI } as const;
+  const base = { address: resolvedAddress, abi: ProtocolRegistryABI } as const;
 
   const { data: active, isLoading: l1, refetch } = useReadContract({
     ...base,
@@ -44,7 +44,7 @@ export function useProtocolRegistry(address?: Address): ProtocolRegistryState {
   return {
     activeProtocols:     (active as ProtocolInfo[] | undefined) ?? [],
     protocolCount:       protocolCount as bigint | undefined,
-    activeProtocolCount: activeCount,
+    activeProtocolCount: activeCount   as bigint | undefined,
     isLoading:           l1 || l2 || l3,
     refetch,
   };

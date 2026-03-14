@@ -1,7 +1,7 @@
 import { useReadContract } from 'wagmi';
 import type { Address } from 'viem';
-import { TREASURY_ABI } from '@/contracts/abis';
-import { TREASURY_ADDRESS } from '@/contracts/addresses';
+import { TreasuryABI } from '@/contracts/abis';
+import { TREASURY_ADDRESS } from '@/config';
 
 export interface TreasuryState {
   totalDeposited: bigint | undefined;
@@ -16,7 +16,7 @@ export function useTreasury(address?: Address): TreasuryState {
 
   const { data: stats, isLoading: l1, refetch } = useReadContract({
     address:      resolvedAddress,
-    abi:          TREASURY_ABI,
+    abi:          TreasuryABI,
     functionName: 'getTreasuryStats',
     query: {
       enabled:         Boolean(resolvedAddress),
@@ -27,7 +27,7 @@ export function useTreasury(address?: Address): TreasuryState {
 
   const { data: balance, isLoading: l2 } = useReadContract({
     address:      resolvedAddress,
-    abi:          TREASURY_ABI,
+    abi:          TreasuryABI,
     functionName: 'getTreasuryBalance',
     query: {
       enabled:         Boolean(resolvedAddress),
@@ -38,7 +38,7 @@ export function useTreasury(address?: Address): TreasuryState {
 
   const { data: fundCount, isLoading: l3 } = useReadContract({
     address:      resolvedAddress,
-    abi:          TREASURY_ABI,
+    abi:          TreasuryABI,
     functionName: 'getFundCount',
     query: {
       enabled:         Boolean(resolvedAddress),
@@ -51,9 +51,9 @@ export function useTreasury(address?: Address): TreasuryState {
 
   return {
     totalDeposited: s?.totalDeposited,
-    fundCount:      fundCount,
-    balance:        balance,
-    isLoading:      l1 || l2 || l3,
+    fundCount:      fundCount as bigint | undefined,
+    balance:        balance   as bigint | undefined,
+    isLoading: l1 || l2 || l3,
     refetch,
   };
 }
