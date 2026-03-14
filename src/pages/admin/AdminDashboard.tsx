@@ -262,7 +262,6 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        {/* Métricas secundarias del Treasury — solo cuando hay datos */}
         {treasuryStats && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
             {[

@@ -170,7 +170,6 @@ export default function AdminTreasury() {
     const map: Record<string, EarlyRetirementRequest> = {};
     pendingDetails.forEach((res, i) => {
       const addr = pendingAddresses[i];
-      // Guard: addr must be defined (it always will be, but satisfies TS)
       if (res.status === 'success' && addr !== undefined) {
         map[addr] = res.result as EarlyRetirementRequest;
       }
