@@ -18,6 +18,7 @@ export interface BalanceVerification {
   hasEnoughGas:       boolean;
   hasEnoughAllowance: boolean;
   isLoading:          boolean;
+  refetch:            () => void;
 }
 
 export function useBalanceVerification(plan: RetirementPlan): BalanceVerification {
@@ -25,13 +26,12 @@ export function useBalanceVerification(plan: RetirementPlan): BalanceVerificatio
   const chainId     = useChainId();
   const usdcAddress = useUSDCAddress();
   const factoryAddress = getContractAddresses(chainId)?.personalFundFactory;
-
-  // Total que debe salir de la wallet: depósito + fee — fuente única de verdad
   const requiredUSDC = requiredApprovalAmount(plan);
 
   const {
     data:      usdcBalanceRaw,
     isLoading: loadingUSDC,
+    refetch:   refetchUSDC,
   } = useReadContract({
     address:      usdcAddress,
     abi:          erc20Abi,
@@ -93,5 +93,6 @@ export function useBalanceVerification(plan: RetirementPlan): BalanceVerificatio
     hasEnoughGas:       gasBalance  >= REQUIRED_GAS,
     hasEnoughAllowance: allowance   >= requiredUSDC,
     isLoading,
+    refetch: () => { void refetchUSDC(); },
   };
 }

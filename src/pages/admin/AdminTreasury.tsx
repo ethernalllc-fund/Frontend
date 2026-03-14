@@ -5,6 +5,7 @@ import {
   useAccount, useReadContracts,
 } from 'wagmi';
 import { parseUnits, formatUnits, isAddress } from 'viem';
+import type { Abi } from 'viem';
 import {
   ArrowLeft, RefreshCw, AlertCircle, CheckCircle,
   XCircle, Clock, DollarSign, Users, FileText,
@@ -12,7 +13,7 @@ import {
 } from 'lucide-react';
 
 import { TREASURY_ABI }     from '@/contracts/abis';
-import { TREASURY_ADDRESS } from '@/config/addresses';
+import { TREASURY_ADDRESS } from '@/config';
 
 const USDC_DECIMALS = 6;
 
@@ -137,17 +138,21 @@ export default function AdminTreasury() {
   const base = { address: TREASURY_ADDRESS, abi: TREASURY_ABI } as const;
 
   const { data: stats,        refetch: refetchStats   } = useReadContract({ ...base, functionName: 'getTreasuryStats' });
-  const { data: balance,      refetch: refetchBalance } = useReadContract({ ...base, functionName: 'getTreasuryBalance' });
+  const { data: balanceRaw,   refetch: refetchBalance } = useReadContract({ ...base, functionName: 'getTreasuryBalance' });
   const { data: feePercentage, refetch: refetchFee    } = useReadContract({ ...base, functionName: 'feePercentage' });
-  const { data: totalWithdrawn }                        = useReadContract({ ...base, functionName: 'totalFeesWithdrawn' });
+  const { data: totalWithdrawnRaw }                     = useReadContract({ ...base, functionName: 'totalFeesWithdrawn' });
   const { data: managerCount  }                         = useReadContract({ ...base, functionName: 'getManagerCount' });
   const { data: requestStats, refetch: refetchRequestStats } = useReadContract({ ...base, functionName: 'getRequestStats' });
   const { data: pendingRaw,   refetch: refetchPending }      = useReadContract({ ...base, functionName: 'getPendingRequests' });
 
+  const balance        = balanceRaw        as bigint | undefined;
+  const totalWithdrawn = totalWithdrawnRaw as bigint | undefined;
+
   const pendingContracts = (pendingRaw as `0x${string}`[] ?? []).map(addr => ({
-    ...base,
+    address:      base.address,
+    abi:          base.abi as Abi,
     functionName: 'getEarlyRetirementRequest' as const,
-    args: [addr] as const,
+    args:         [addr] as const,
   }));
 
   const { data: pendingDetails, refetch: refetchDetails } = useReadContracts({

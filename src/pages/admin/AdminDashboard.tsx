@@ -42,7 +42,7 @@ export default function AdminDashboard() {
     ],
   });
 
-  const usdcBalance   = onchain?.[0].status === 'success' ? onchain[0].result : undefined;
+  const usdcBalance   = onchain?.[0].status === 'success' ? onchain[0].result as bigint : undefined;
   const treasuryStats = onchain?.[1].status === 'success' ? onchain[1].result as {
     totalFeesCollectedUSDC:       bigint;
     totalFeesCollectedAllTime:    bigint;
