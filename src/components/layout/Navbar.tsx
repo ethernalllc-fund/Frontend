@@ -21,7 +21,7 @@ import {
   getFaucetUrl,
 } from '@/config';
 import { LanguageSwitcher } from '@/components/common/LanguageSwitcher';
-import logo from '@/public/logo.svg';
+import logo from '@/assets/logo.svg';
 
 const Navbar: React.FC = () => {
   const location = useLocation();
@@ -49,7 +49,6 @@ const Navbar: React.FC = () => {
     };
   }, [isMobileMenuOpen]);
 
-  // Measure real header height for mobile menu offset
   useEffect(() => {
     if (!headerRef.current) return;
     const observer = new ResizeObserver((entries) => {
