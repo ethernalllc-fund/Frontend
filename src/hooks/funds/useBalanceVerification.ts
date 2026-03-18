@@ -1,4 +1,4 @@
-import { useAccount, useBalance, useReadContract, useChainId } from 'wagmi';
+import { useConnection, useBalance, useReadContract, useChainId } from 'wagmi';
 import { useState, useEffect } from 'react';
 import { erc20Abi } from 'viem';
 import { useUSDCAddress } from '@/hooks/usdc/usdcUtils';
@@ -22,7 +22,7 @@ export interface BalanceVerification {
 }
 
 export function useBalanceVerification(plan: RetirementPlan): BalanceVerification {
-  const { address } = useAccount();
+  const { address } = useConnection();
   const chainId     = useChainId();
   const usdcAddress = useUSDCAddress();
   const factoryAddress = getContractAddresses(chainId)?.personalFundFactory;

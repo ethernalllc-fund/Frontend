@@ -4,13 +4,13 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 vi.mock('wagmi', () => ({
   useWriteContract:             vi.fn(),
   useWaitForTransactionReceipt: vi.fn(),
-  useAccount:                   vi.fn(),
+  useConnection:                   vi.fn(),
 }));
 
 import {
   useWriteContract,
   useWaitForTransactionReceipt,
-  useAccount,
+  useConnection,
 } from 'wagmi';
 import { useCreateContract } from './useCreateContract';
 
@@ -30,7 +30,7 @@ function setupMocks(overrides: {
 } = {}) {
   const writeContract = overrides.writeContract ?? vi.fn();
 
-  vi.mocked(useAccount).mockReturnValue({
+  vi.mocked(useConnection).mockReturnValue({
     address: overrides.userAddress ?? '0xUserAddress' as `0x${string}`,
   } as any);
 
@@ -111,7 +111,7 @@ describe('useCreateContract', () => {
   // useCallback capture el valor correcto en su closure inicial.
 
   it('establece error si la wallet no está conectada', async () => {
-    vi.mocked(useAccount).mockReturnValue({ address: undefined } as any);
+    vi.mocked(useConnection).mockReturnValue({ address: undefined } as any);
     vi.mocked(useWriteContract).mockReturnValue({
       writeContract: vi.fn(), data: undefined, isPending: false, error: null, reset: vi.fn(),
     } as any);

@@ -1,4 +1,4 @@
-import { useReadContract, useAccount } from 'wagmi';
+import { useReadContract, useConnection } from 'wagmi';
 import type { Address } from 'viem';
 import { UserPreferencesABI } from '@/contracts/abis';
 import { USER_PREFERENCES_ADDRESS } from '@/config';
@@ -27,7 +27,7 @@ export interface UserPreferencesState {
 
 export function useUserPreferences(address?: Address): UserPreferencesState {
   const resolvedAddress          = address ?? USER_PREFERENCES_ADDRESS;
-  const { address: userAddress } = useAccount();
+  const { address: userAddress } = useConnection();
   const base = { address: resolvedAddress, abi: UserPreferencesABI } as const;
 
   const { data: config, isLoading: l1, refetch } = useReadContract({

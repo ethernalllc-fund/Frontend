@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useWriteContract, useAccount, useWaitForTransactionReceipt } from 'wagmi';
+import { useWriteContract, useConnection, useWaitForTransactionReceipt } from 'wagmi';
 import { useUSDCAllowance, useUSDCBalance } from './useUSDC';
 import { useUSDCApproval }                  from './useUSDCApproval';
 import { parseUSDC, needsApproval, formatUSDC, hasEnoughBalance } from './usdcUtils';
@@ -24,7 +24,7 @@ export function useUSDCTransaction({
   autoExecuteAfterApproval = true,
 }: UseUSDCTransactionProps): UseUSDCTransactionReturn {
 
-  const { address } = useAccount();
+  const { address } = useConnection();
   const [step,  setStep]  = useState<TxStepStatus>('idle');
   const [error, setError] = useState<Error | null>(null);
   const {

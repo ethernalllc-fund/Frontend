@@ -15,7 +15,7 @@ vi.mock('@reown/appkit/react', () => ({
 }));
 
 vi.mock('wagmi', () => ({
-  useAccount: vi.fn(() => ({
+  useConnection: vi.fn(() => ({
     address: '0x1234567890123456789012345678901234567890' as `0x${string}`,
     isConnected: true,
     isConnecting: false,
@@ -26,7 +26,7 @@ vi.mock('wagmi', () => ({
 }));
 
 import { useAppKit, useAppKitAccount, useAppKitNetwork } from '@reown/appkit/react';
-import { useAccount, useDisconnect } from 'wagmi';
+import { useConnection, useDisconnect } from 'wagmi';
 import { useWallet } from './web3/useWallet';
 
 describe('useWallet', () => {
@@ -46,7 +46,7 @@ describe('useWallet', () => {
       caipNetwork: { id: 1, name: 'Ethereum' },
     } as any);
 
-    vi.mocked(useAccount).mockReturnValue({
+    vi.mocked(useConnection).mockReturnValue({
       address:        '0x1234567890123456789012345678901234567890' as `0x${string}`,
       isConnected:    true,
       isConnecting:   false,

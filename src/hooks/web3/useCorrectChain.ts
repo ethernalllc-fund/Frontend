@@ -1,4 +1,4 @@
-import { useAccount, useSwitchChain, useReadContract } from 'wagmi';
+import { useConnection, useSwitchChain, useReadContract } from 'wagmi';
 import { DEFAULT_CHAIN } from '@/config/chains';
 import { getContractAddresses } from '@/config/addresses';
 import type { Address } from 'viem';
@@ -8,7 +8,7 @@ export const DEFAULT_ADMIN_ROLE =
   '0x0000000000000000000000000000000000000000000000000000000000000000' as const;
 
 export function useCorrectChain() {
-  const { chain } = useAccount();
+  const { chain } = useConnection();
   const { switchChain } = useSwitchChain();
   const isCorrectChain = chain?.id === DEFAULT_CHAIN.id;
   const switchToCorrectChain = () => {
@@ -37,7 +37,7 @@ const TREASURY_ADMIN_ABI = [
 ] as const;
 
 export function useOnChainAdminRole(address: Address | undefined) {
-  const { chain } = useAccount();
+  const { chain } = useConnection();
   const chainId = chain?.id ?? DEFAULT_CHAIN.id;
   const addresses = getContractAddresses(chainId);
   const treasuryAddress = addresses?.treasury;

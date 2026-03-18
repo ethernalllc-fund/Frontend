@@ -1,5 +1,5 @@
 import { useAppKit, useAppKitAccount, useAppKitNetwork } from '@reown/appkit/react'
-import { useDisconnect, useAccount } from 'wagmi'
+import { useDisconnect, useConnection } from 'wagmi'
 import type { Chain, Address } from 'viem'
 
 export interface WalletState {
@@ -19,7 +19,7 @@ export function useWallet(): WalletState {
   const { open } = useAppKit()
   const { address, isConnected } = useAppKitAccount()
   const { chainId: rawChainId } = useAppKitNetwork()
-  const { chain } = useAccount()
+  const { chain } = useConnection()
   const { disconnect } = useDisconnect()
   const safeAddress = address && address.startsWith('0x') && address.length === 42
     ? (address as Address)

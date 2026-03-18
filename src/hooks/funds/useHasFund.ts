@@ -1,4 +1,4 @@
-import { useReadContract, useAccount, useChainId } from 'wagmi';
+import { useReadContract, useConnection, useChainId } from 'wagmi';
 import { PersonalFundFactoryABI } from '@/contracts/abis';
 import { getContractAddress } from '@/config';
 
@@ -13,7 +13,7 @@ export interface UseHasFundResult {
 }
 
 export function useHasFund(): UseHasFundResult {
-  const { address } = useAccount();
+  const { address } = useConnection();
   const chainId     = useChainId();
   const factoryAddress = getContractAddress(chainId, 'personalFundFactory');
 

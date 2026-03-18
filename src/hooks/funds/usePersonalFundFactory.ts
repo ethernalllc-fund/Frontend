@@ -1,4 +1,4 @@
-import { useReadContract, useAccount, useChainId } from 'wagmi';
+import { useReadContract, useConnection, useChainId } from 'wagmi';
 import type { Address } from 'viem';
 import { PersonalFundFactoryABI } from '@/contracts/abis';
 import { getContractAddress } from '@/config';
@@ -15,7 +15,7 @@ export interface PersonalFundFactoryState {
 export function usePersonalFundFactory(address?: Address): PersonalFundFactoryState {
   const chainId                  = useChainId();
   const resolvedAddress          = address ?? getContractAddress(chainId, 'personalFundFactory');
-  const { address: userAddress } = useAccount();
+  const { address: userAddress } = useConnection();
 
   const { data, isLoading, refetch } = useReadContract({
     address:      resolvedAddress,

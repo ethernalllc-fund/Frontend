@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAccount, useSignMessage, usePublicClient } from 'wagmi';
+import { useConnection, useSignMessage, usePublicClient } from 'wagmi';
 import { z } from 'zod';
 import { useOnChainAdminRole } from './web3/useCorrectChain';
 import { getContractAddresses } from './../config/addresses';
@@ -84,7 +84,7 @@ export const useSecureAdmin = (): UseSecureAdminResult => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const onChainTimedOut = useRef<boolean>(false);
   const navigate                        = useNavigate();
-  const { address, isConnected, chain } = useAccount();
+  const { address, isConnected, chain } = useConnection();
   const { signMessageAsync }            = useSignMessage();
   const publicClient                    = usePublicClient();
   const {

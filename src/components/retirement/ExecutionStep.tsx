@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { useWriteContract, useWaitForTransactionReceipt, useAccount, usePublicClient } from 'wagmi';
+import { useWriteContract, useWaitForTransactionReceipt, useConnection, usePublicClient } from 'wagmi';
 import { Loader2, CheckCircle, AlertCircle, ExternalLink } from 'lucide-react';
 import { parseUnits, erc20Abi } from 'viem';
 import type { Abi } from 'viem';
@@ -135,7 +135,7 @@ export function ExecutionStep({
   selectedProtocol,
   onSuccess,
 }: ExecutionStepProps) {
-  const { address: account, chain } = useAccount();
+  const { address: account, chain } = useConnection();
   const publicClient                = usePublicClient();
 
   const [step,               setStep             ] = useState<TxStep>('idle');

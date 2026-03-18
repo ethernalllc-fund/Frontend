@@ -1,4 +1,4 @@
-import { useAccount, useChainId } from 'wagmi';
+import { useConnection, useChainId } from 'wagmi';
 import { PUBLIC_PATHS } from './PublicRoutes';
 import { USER_PATHS } from './UserRoutes';
 import { ADMIN_PATHS } from './AdminRoutes';
@@ -133,7 +133,7 @@ export const getNavigationGuards = (path: string) => {
 };
 
 export const useNavigationGuards = () => {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected } = useConnection();
   const chainId = useChainId();
   const isCorrectNetwork = ACTIVE_CHAIN_IDS.includes(chainId as any);
   const validate = (

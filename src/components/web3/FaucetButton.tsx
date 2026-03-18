@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAccount, useChainId } from 'wagmi';
+import { useConnection, useChainId } from 'wagmi';
 import { Droplets, CheckCircle, AlertCircle, Loader2, ExternalLink, RefreshCw } from 'lucide-react';
 import { useFaucet } from '@/hooks/web3/useFaucet';
 import type { FaucetResponse } from '@/services/faucet/faucet-client';
@@ -13,7 +13,7 @@ type Status = 'idle' | 'loading' | 'success' | 'error';
 const EXPLORER_URL = import.meta.env.VITE_EXPLORER_URL || 'https://sepolia.arbiscan.io';
 
 export function FaucetButton({ className = '' }: FaucetButtonProps) {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected } = useConnection();
   const chainId                  = useChainId();
   const { requestTokens, loading, error: faucetError, clearError } = useFaucet();
 

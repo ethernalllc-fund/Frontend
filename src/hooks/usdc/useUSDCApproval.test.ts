@@ -4,7 +4,7 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 vi.mock('wagmi', () => ({
   useWriteContract:             vi.fn(),
   useWaitForTransactionReceipt: vi.fn(),
-  useAccount:                   vi.fn(),
+  useConnection:                   vi.fn(),
   usePublicClient:              vi.fn(),
 }));
 
@@ -16,7 +16,7 @@ vi.mock('@/hooks/usdc/usdcUtils', () => ({
 import {
   useWriteContract,
   useWaitForTransactionReceipt,
-  useAccount,
+  useConnection,
   usePublicClient,
 } from 'wagmi';
 import { useUSDCAddress } from '@/hooks/usdc/usdcUtils';
@@ -40,7 +40,7 @@ function setupMocks(overrides: {
 } = {}) {
   const writeContract = overrides.writeContract ?? vi.fn();
 
-  vi.mocked(useAccount).mockReturnValue({
+  vi.mocked(useConnection).mockReturnValue({
     address: 'userAddress' in overrides ? overrides.userAddress : USER_ADDRESS,
   } as any);
 

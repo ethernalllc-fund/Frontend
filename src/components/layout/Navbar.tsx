@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, startTransition } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useAccount, useDisconnect, useBalance, useChainId, useSwitchChain } from 'wagmi';
+import { useConnection, useDisconnect, useBalance, useChainId, useSwitchChain } from 'wagmi';
 import { formatUnits } from 'viem';
 import { useAppKit } from '@reown/appkit/react';
 import { useTranslation } from 'react-i18next';
@@ -26,7 +26,7 @@ import logo from '@/assets/logo.ico';
 const Navbar: React.FC = () => {
   const location = useLocation();
   const { t } = useTranslation();
-  const { address, isConnected, chain } = useAccount();
+  const { address, isConnected, chain } = useConnection();
   const { disconnect } = useDisconnect();
   const { data: balance } = useBalance({ address });
   const chainId = useChainId();

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { 
   useWriteContract, 
   useWaitForTransactionReceipt, 
-  useAccount,
+  useConnection,
   useChainId
 } from 'wagmi';
 import { type Address, zeroAddress, decodeEventLog } from 'viem';
@@ -92,7 +92,7 @@ function validateParams(params: CreateFundParams): void {
 }
 
 export function useCreatePersonalFund(): UseCreatePersonalFundReturn {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected } = useConnection();
   const chainId = useChainId();
   const configuredFactoryAddress = getContractAddress(chainId, 'personalFundFactory');
   const isFactoryConfigured = !!configuredFactoryAddress;

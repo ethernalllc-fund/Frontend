@@ -1,4 +1,4 @@
-import { useReadContract, useAccount } from 'wagmi';
+import { useReadContract, useConnection } from 'wagmi';
 import { erc20Abi, type Address } from 'viem';
 import { useUSDCAddress, USDC_DECIMALS, formatUSDC, parseUSDC } from '@/hooks/usdc/usdcUtils';
 
@@ -100,7 +100,7 @@ export function useUSDCBalance(
   refetchInterval = 15_000,
 ): ReadContractResult<bigint> {
   const usdcAddress = useUSDCAddress();
-  const { address: connectedAddress } = useAccount();
+  const { address: connectedAddress } = useConnection();
   const target = address ?? connectedAddress;
 
   const result = useReadContract({

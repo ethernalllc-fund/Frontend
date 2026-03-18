@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAccount } from 'wagmi';
+import { useConnection } from 'wagmi';
 import { Mail, User, MessageSquare, Send, CheckCircle, AlertCircle } from 'lucide-react';
 import SEO from '@/components/common/SEO';
 import { contactService } from '@/services/api';
@@ -20,7 +20,7 @@ interface FormErrors {
 
 const ContactPage: React.FC = () => {
   const { t } = useTranslation();
-  const { address } = useAccount();
+  const { address } = useConnection();
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',

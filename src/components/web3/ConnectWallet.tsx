@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAppKit } from '@reown/appkit/react';
-import { useAccount, useDisconnect, useChainId } from 'wagmi';
+import { useConnection, useDisconnect, useChainId } from 'wagmi';
 
 const EXPLORERS: Record<number, string> = {
   1:        'https://etherscan.io',
@@ -65,7 +65,7 @@ type CopyState = 'idle' | 'copied';
 
 export function ConnectWallet() {
   const { open }               = useAppKit();
-  const { address, isConnected } = useAccount();
+  const { address, isConnected } = useConnection();
   const { disconnect }         = useDisconnect();
   const chainId                = useChainId();
   const [isOpen,     setIsOpen    ] = useState(false);
@@ -212,7 +212,7 @@ export function ConnectWallet() {
 
 export function ConnectWalletSimple() {
   const { open }       = useAppKit();
-  const { isConnected } = useAccount();
+  const { isConnected } = useConnection();
 
   return (
     <button

@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagmi';
+import { useWriteContract, useWaitForTransactionReceipt, useConnection } from 'wagmi';
 import { type Address, parseAbi } from 'viem';
 
 const factoryABI = parseAbi([
@@ -91,7 +91,7 @@ export function useCreateContract({
   onError,
   enabled = true,
 }: UseCreateContractProps = {}): UseCreateContractReturn {
-  const { address: userAddress } = useAccount();
+  const { address: userAddress } = useConnection();
   const [error, setError] = useState<Error | null>(null);
   const {
     writeContract,

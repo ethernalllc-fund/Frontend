@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   useReadContract, useWriteContract, useWaitForTransactionReceipt,
-  useAccount, useReadContracts,
+  useConnection, useReadContracts,
 } from 'wagmi';
 import { parseUnits, formatUnits, isAddress } from 'viem';
 import type { Abi } from 'viem';
@@ -120,7 +120,7 @@ function StatCard({
 
 export default function AdminTreasury() {
   const navigate                    = useNavigate();
-  const { address: walletAddress }  = useAccount();
+  const { address: walletAddress }  = useConnection();
   const { toasts, showToast }       = useToasts();
 
   const [withdrawRecipient, setWithdrawRecipient] = useState('');

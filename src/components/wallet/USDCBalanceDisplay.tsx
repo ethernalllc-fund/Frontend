@@ -1,5 +1,5 @@
 import { Wallet, RefreshCw, CheckCircle, AlertCircle } from 'lucide-react';
-import { useAccount } from 'wagmi';
+import { useConnection } from 'wagmi';
 import { useUSDCBalance } from '@/hooks/usdc/useUSDC';
 import { formatCurrency } from '@/lib';
 
@@ -14,7 +14,7 @@ export const USDCBalanceDisplay = ({
   showValidation = false,
   className = '',
 }: USDCBalanceDisplayProps) => {
-  const { address } = useAccount();
+  const { address } = useConnection();
   const {
     data:      balanceRaw,
     isLoading,

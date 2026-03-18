@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef, startTransition } from 'react
 import {
   useWriteContract,
   useWaitForTransactionReceipt,
-  useAccount,
+  useConnection,
 } from 'wagmi';
 import { erc20Abi } from 'viem';
 import { parseUSDC, useUSDCAddress } from './usdcUtils';
@@ -64,7 +64,7 @@ export function useUSDCApproval({
   onSuccess,
   onError,
 }: UseUSDCApprovalProps): UseUSDCApprovalReturn {
-  const { address }  = useAccount();
+  const { address }  = useConnection();
   const usdcAddress  = useUSDCAddress();
   const [localError, setLocalError] = useState<Error | null>(null);
   const onSuccessRef = useRef(onSuccess);

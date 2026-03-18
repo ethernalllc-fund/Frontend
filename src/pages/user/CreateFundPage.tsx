@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, startTransition } from 'react';
 import { useNavigate }              from 'react-router-dom';
-import { useChainId, useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useChainId, useConnection, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { formatUnits }              from 'viem';
 
 import { useRetirementPlan }        from '@/components/context/RetirementContext';
@@ -215,7 +215,7 @@ const Guard: React.FC<GuardProps> = ({ icon, color, title, body, cta, secondary 
 
 const CreateFundPage: React.FC = () => {
   const navigate                   = useNavigate();
-  const { address }                = useAccount();
+  const { address }                = useConnection();
   const chainId                    = useChainId();
   const { planData }               = useRetirementPlan();
   const { isConnected }            = useWallet();

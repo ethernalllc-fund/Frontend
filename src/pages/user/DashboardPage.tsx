@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useNavigate }    from 'react-router-dom';
 import { useEthernal }    from '@/hooks/useEthernal';
-import { useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagmi';
+import { useWriteContract, useWaitForTransactionReceipt, useConnection } from 'wagmi';
 import { format }         from 'date-fns';
 import {
   Wallet, Shield, TrendingUp, DollarSign, Clock,
@@ -134,7 +134,7 @@ const ADMIN_CONTENT = [
 
 const DashboardPage: React.FC = () => {
   const navigate    = useNavigate();
-  const { address } = useAccount();
+  const { address } = useConnection();
   const {
     personalFund,
     factory,

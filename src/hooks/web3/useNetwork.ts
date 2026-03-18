@@ -1,4 +1,4 @@
-import { useAccount, useChainId, useSwitchChain } from 'wagmi';
+import { useConnection, useChainId, useSwitchChain } from 'wagmi';
 import { useCallback, useEffect, useState } from 'react';
 import type { Chain } from 'viem/chains';
 import { arbitrumSepolia, polygonAmoy, anvil, sepolia, mainnet } from 'viem/chains';
@@ -37,7 +37,7 @@ export interface UseNetworkReturn {
 }
 
 export function useNetwork(): UseNetworkReturn {
-  const { isConnected } = useAccount();
+  const { isConnected } = useConnection();
   const chainId = useChainId();
   const { switchChainAsync, isPending: isSwitching, error: switchError } = useSwitchChain();
   const [error, setError] = useState<Error | null>(null);
