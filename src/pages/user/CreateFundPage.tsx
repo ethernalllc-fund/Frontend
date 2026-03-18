@@ -28,13 +28,13 @@ import { PersonalFundFactoryABI } from '@/contracts/abis';
 
 import {
   ArrowLeft, ArrowRight, CheckCircle, AlertCircle,
-  Wallet, RefreshCw, Sparkles, ShieldCheck,
+  Wallet, RefreshCw, ShieldCheck,
   Clock, Info, Lock,
   TrendingUp, Zap, BarChart3,
 } from 'lucide-react';
 
 const ZERO_ADDR        = '0x0000000000000000000000000000000000000000' as const;
-const SUCCESS_REDIRECT = 4_000; // ms before auto-navigating to dashboard
+const SUCCESS_REDIRECT = 4_000; 
 
 function fmtUSD(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -217,7 +217,7 @@ const CreateFundPage: React.FC = () => {
   const navigate                   = useNavigate();
   const { address }                = useConnection();
   const chainId                    = useChainId();
-  const { planData }               = useRetirementPlan();
+  const { planData, clearPlanData }  = useRetirementPlan();
   const { isConnected }            = useWallet();
   const {
     hasFund,
@@ -225,7 +225,6 @@ const CreateFundPage: React.FC = () => {
     isLoading: loadingFund,
   } = useHasFund();
 
-  // Reads from config — no hardcoded chain IDs or addresses in this component
   const factoryAddress = getContractAddress(chainId, 'personalFundFactory') as `0x${string}` | undefined;
   const explorerBase   = getExplorerUrl(chainId);
   const activeChainNames = ACTIVE_CHAINS.map(c => c.name).join(', ');
@@ -249,15 +248,12 @@ const CreateFundPage: React.FC = () => {
     if (isConnected) startTransition(() => setPlan(planData));
   }, [planData, isConnected, navigate]);
 
-  // Cleanup redirect timer on unmount
   useEffect(() => () => {
     if (redirectRef.current) clearTimeout(redirectRef.current);
   }, []);
 
   const derived       = useMemo(() => plan ? derivePlanValues(plan) : null, [plan]);
   const requiredUsdc  = useMemo(() => plan ? initialDepositAmount(plan) : 0n, [plan]);
-
-  // ── Balance & allowance ──────────────────────────────────────────────────────
   const {
     data: usdcBalanceWei,
     isLoading: loadingBalance,
@@ -274,7 +270,6 @@ const CreateFundPage: React.FC = () => {
   const allowanceNum     = currentAllowanceWei ? Number(formatUnits(currentAllowanceWei, 6)) : 0;
   const requiredNum      = derived?.initialDepositUsdc ?? 0;
   const hasEnoughBalance = usdcBalanceNum >= requiredNum;
-  // Re-derived on every render — stays in sync with on-chain state automatically
   const needsApproval    = allowanceNum < requiredNum;
 
   const approval = useUSDCApproval({
@@ -290,7 +285,6 @@ const CreateFundPage: React.FC = () => {
     },
   });
 
-  // ── Create fund tx ────────────────────────────────────────────────────────────
   const {
     writeContract:  writeCreate,
     data:           createTxHash,
@@ -306,16 +300,15 @@ const CreateFundPage: React.FC = () => {
     query: { enabled: !!createTxHash },
   });
 
-  // When create tx confirms on-chain → success
   useEffect(() => {
     if (!isCreateSuccess || !createTxHash) return;
     setCreateHash(createTxHash);
     setCreateDone(true);
+    clearPlanData(); 
     startTransition(() => setStep('success'));
     redirectRef.current = setTimeout(() => navigate('/dashboard'), SUCCESS_REDIRECT);
-  }, [isCreateSuccess, createTxHash, navigate]);
+  }, [isCreateSuccess, createTxHash, navigate, clearPlanData]);
 
-  // Create write errors
   useEffect(() => {
     if (!createWriteError) return;
     setCreateError(createWriteError as Error);
@@ -334,7 +327,7 @@ const CreateFundPage: React.FC = () => {
             <strong>{activeChainNames}</strong>.
           </>
         }
-        cta={{ label: 'Volver a la Calculadora', onClick: () => navigate('/calculator') }}
+        cta={{ label: 'Volver a la Calculadora', onClick: () => { clearPlanData(); navigate('/calculator'); } }}
       />
     );
   }
@@ -354,7 +347,7 @@ const CreateFundPage: React.FC = () => {
           </>
         }
         cta={{ label: 'Ir al Dashboard', onClick: () => navigate('/dashboard') }}
-        secondary={{ label: 'Volver a la Calculadora', onClick: () => navigate('/calculator') }}
+        secondary={{ label: 'Volver a la Calculadora', onClick: () => { clearPlanData(); navigate('/calculator'); } }}
       />
     );
   }
@@ -431,7 +424,7 @@ const CreateFundPage: React.FC = () => {
         {step !== 'success' && (
           <button
             onClick={() => {
-              if      (step === 'review')   navigate('/calculator');
+              if      (step === 'review')   { clearPlanData(); navigate('/calculator'); }
               else if (step === 'balance')  setStep('review');
               else if (step === 'approve')  setStep('balance');
               else if (step === 'create')   setStep(needsApproval ? 'approve' : 'balance');
@@ -449,7 +442,7 @@ const CreateFundPage: React.FC = () => {
           {/* Header */}
           <div className="bg-linear-to-r from-indigo-600 to-purple-700 p-8 text-white">
             <div className="flex items-center gap-4 mb-2">
-              <Sparkles size={32} className="opacity-90" />
+              <ShieldCheck size={32} className="opacity-90" />
               <h1 className="text-3xl font-black">Crear mi Fondo</h1>
             </div>
             <p className="text-indigo-100 text-sm">
@@ -731,7 +724,7 @@ const CreateFundPage: React.FC = () => {
               <div className="space-y-6">
                 <div className="text-center">
                   <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Sparkles size={32} className="text-purple-600" />
+                    <ShieldCheck size={32} className="text-purple-600" />
                   </div>
                   <h2 className="text-xl font-bold text-gray-800">Crear el Fondo</h2>
                   <p className="text-gray-500 text-sm mt-1">
@@ -768,7 +761,7 @@ const CreateFundPage: React.FC = () => {
                   >
                     {createWallet || createConfirming
                       ? <><RefreshCw className="animate-spin" size={22} />Procesando…</>
-                      : <><Sparkles size={22} />Crear mi Fondo</>
+                      : <><ShieldCheck size={22} />Crear mi Fondo</>
                     }
                   </button>
                 )}

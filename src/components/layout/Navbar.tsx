@@ -21,7 +21,7 @@ import {
   getFaucetUrl,
 } from '@/config';
 import { LanguageSwitcher } from '@/components/common/LanguageSwitcher';
-import logo from '@/assets/logo.ico';
+import logo from '@/public/logo.svg';
 
 const Navbar: React.FC = () => {
   const location = useLocation();
