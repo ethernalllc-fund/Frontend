@@ -18,7 +18,6 @@ import { formatCurrency, formatYears } from '@/lib/formatters';
 import { FaucetButton } from '@/components/web3/FaucetButton';
 import {
   Calculator,
-  TrendingUp,
   DollarSign,
   Calendar,
   Percent,
@@ -30,35 +29,185 @@ import {
   AlertCircle,
   Droplets,
   ChevronRight,
+  TrendingUp,
 } from 'lucide-react';
 
+// ── Fee model (from Treasury.vy) ─────────────────────────────────────────────
+// DEFAULT_FEE = 500 bps = 5% on every deposit
+// net_to_fund = gross * 0.95
+//
+// PMT_net  = formula result (what actually compounds)
+// PMT_gross = PMT_net / 0.95  ← what user pays
+//
+// Corpus needed to pay D/mo for Y years at rate r:
+//   PV = D * (1 - (1+r)^-n) / r
+// Monthly net PMT to accumulate corpus C in N months at rate r:
+//   PMT_net = (C - P_net*(1+r)^N) * r / ((1+r)^N - 1)
+//   where P_net = principal * 0.95
+const DEPOSIT_FEE = 0.05; // 5%
+
+// ── Types ────────────────────────────────────────────────────────────────────
 type ContributionFrequency = 'monthly' | 'quarterly' | 'annual';
 
 interface Inputs {
-  initialCapital: number;
-  currentAge: number;
-  retirementAge: number;
-  desiredMonthlyIncome: number;
-  annualRate: number;
+  principal:            number;   // lump-sum (USDC)
+  currentAge:           number;
+  retirementAge:        number;
+  desiredMonthly:       number;   // desired monthly income at retirement (USDC)
+  annualRate:           number;   // APY % (display)
+  yearsInRetirement:    number;
   contributionFrequency: ContributionFrequency;
-  yearsInRetirement: number;
 }
 
 interface Result {
-  monthlyDeposit: number;
-  totalContributed: number;
-  totalInterest: number;
-  futureValue: number;
-  yearsToRetirement: number;
-  principal: number;
-  firstMonthlyDeposit: number;
-  initialDeposit: number;
-  feeAmount: number;
-  netToOwner: number;
+  corpus:          number;  // PV of annuity = required fund at retirement
+  pmtGross:        number;  // monthly deposit the user must send (gross, includes fee)
+  pmtNet:          number;  // monthly net that enters the fund
+  totalGross:      number;  // total USDC out of wallet over accumulation period
+  fundValue:       number;  // estimated fund value at retirement
+  feePerDeposit:   number;  // fee per monthly deposit
+  totalFeesPaid:   number;  // total fees over all deposits
+  yearsToRet:      number;
+  initialDeposit:  number;  // principal + 1st monthly gross (what user approves)
 }
 
 interface ChartPoint { year: number; balance: number }
 
+// ── Helpers ──────────────────────────────────────────────────────────────────
+const getPeriodsPerYear = (freq: ContributionFrequency): number => {
+  switch (freq) {
+    case 'monthly':   return 12;
+    case 'quarterly': return 4;
+    case 'annual':    return 1;
+  }
+};
+
+// ── Validation (mirrors ethernal.html validateStep1) ─────────────────────────
+function validate(inputs: Inputs): string | null {
+  const yearsToRet = inputs.retirementAge - inputs.currentAge;
+  if (inputs.currentAge < 18 || inputs.currentAge > 80)
+    return 'Current age must be 18–80';
+  if (inputs.retirementAge < 55)
+    return 'Retirement age must be at least 55';
+  if (inputs.retirementAge <= inputs.currentAge)
+    return 'Retirement age must be greater than current age';
+  if (yearsToRet < 15)
+    return 'At least 15 years required until retirement';
+  if (inputs.desiredMonthly <= 0)
+    return 'Desired monthly income must be greater than 0';
+  if (inputs.principal > 100_000)
+    return 'Principal cannot exceed 100,000 USDC';
+  if (inputs.annualRate < 0 || inputs.annualRate > 100)
+    return 'Expected annual return must be between 0 and 100%';
+  if (inputs.yearsInRetirement <= 0)
+    return 'Years receiving payments must be greater than 0';
+  return null;
+}
+
+// ── Core calculation (mirrors ethernal.html runCalculator) ───────────────────
+function runCalculator(inputs: Inputs): { result: Result; chartData: ChartPoint[] } | null {
+  const {
+    principal, currentAge, retirementAge,
+    desiredMonthly, annualRate, yearsInRetirement, contributionFrequency,
+  } = inputs;
+
+  const yearsToRet     = retirementAge - currentAge;
+  const periodsPerYear = getPeriodsPerYear(contributionFrequency);
+  const N              = yearsToRet * 12;         // accumulation months (for chart & totals)
+  const Np             = yearsToRet * periodsPerYear; // accumulation periods
+  const n              = yearsInRetirement * 12;  // payout months
+  const r              = annualRate / 100 / 12;   // monthly rate
+  const rp             = annualRate / 100 / periodsPerYear; // periodic rate
+  const netRate        = 1 - DEPOSIT_FEE;         // 0.95
+
+  if (yearsToRet < 15 || retirementAge < 55 || desiredMonthly <= 0 || yearsInRetirement <= 0) {
+    return null;
+  }
+
+  // Step 1: corpus needed at retirement (PV of annuity)
+  const corpus = r === 0
+    ? desiredMonthly * n
+    : desiredMonthly * (1 - Math.pow(1 + r, -n)) / r;
+
+  // Step 2: PMT_net per period to reach corpus
+  const principalNet = principal * netRate;
+  let pmtNetPeriodic: number;
+  if (Np <= 0) {
+    pmtNetPeriodic = 0;
+  } else if (rp === 0) {
+    pmtNetPeriodic = Math.max(0, (corpus - principalNet) / Np);
+  } else {
+    const fvFactor    = Math.pow(1 + rp, Np);
+    const principalFV = principalNet * fvFactor;
+    const remaining   = corpus - principalFV;
+    pmtNetPeriodic = remaining <= 0 ? 0 : remaining * rp / (fvFactor - 1);
+  }
+
+  // Step 3: convert periodic PMT_net to monthly equivalent for display
+  // PMT_monthly = PMT_period × r_m / [(1 + r_m)^(12/periods) - 1]
+  const monthsPerPeriod = 12 / periodsPerYear;
+  let pmtNet: number;
+  if (contributionFrequency === 'monthly') {
+    pmtNet = pmtNetPeriodic;
+  } else if (r === 0) {
+    pmtNet = pmtNetPeriodic / monthsPerPeriod;
+  } else {
+    pmtNet = pmtNetPeriodic * r / (Math.pow(1 + r, monthsPerPeriod) - 1);
+  }
+
+  // Step 4: gross PMT (contract minimum 50 USDC gross)
+  let pmtGross = Math.max(pmtNet / netRate, 50);
+  pmtNet = pmtGross * netRate; // recalc net after enforcing minimum
+  const pmtNetPeriodic2 = contributionFrequency === 'monthly'
+    ? pmtNet
+    : pmtNet * (Math.pow(1 + r, monthsPerPeriod) - 1) / r;
+
+  // Fees & totals
+  const feePerDeposit = pmtGross * DEPOSIT_FEE;
+  const totalFeesPaid = feePerDeposit * N + principal * DEPOSIT_FEE;
+  const totalGross    = principal + pmtGross * N;
+
+  // Actual fund value at retirement (using periodic rate for accuracy)
+  let fundValue: number;
+  if (rp === 0) {
+    fundValue = principalNet + pmtNetPeriodic2 * Np;
+  } else {
+    const fvFactor = Math.pow(1 + rp, Np);
+    fundValue = principalNet * fvFactor + pmtNetPeriodic2 * (fvFactor - 1) / rp;
+  }
+
+  // Initial deposit to approve (principal + 1st monthly gross)
+  const initialDeposit = principal + pmtGross;
+
+  // Build chart data (annual snapshots by age, always using monthly compounding)
+  const chartData: ChartPoint[] = [];
+  let balance = principalNet;
+  for (let year = 0; year <= yearsToRet; year++) {
+    chartData.push({ year: currentAge + year, balance: Math.round(balance) });
+    for (let m = 0; m < 12; m++) {
+      // add net contribution once per period
+      const isDepositMonth = m % monthsPerPeriod === 0;
+      balance = balance * (1 + r) + (isDepositMonth ? pmtNetPeriodic2 : 0);
+    }
+  }
+
+  return {
+    result: {
+      corpus,
+      pmtGross,
+      pmtNet,
+      totalGross,
+      fundValue,
+      feePerDeposit,
+      totalFeesPaid,
+      yearsToRet,
+      initialDeposit,
+    },
+    chartData,
+  };
+}
+
+// ── FormField ────────────────────────────────────────────────────────────────
 const FormField: React.FC<{
   label: string;
   value: number;
@@ -66,8 +215,10 @@ const FormField: React.FC<{
   icon?: React.ReactNode;
   step?: number;
   min?: number;
+  max?: number;
+  hint?: string;
   error?: string;
-}> = ({ label, value, onChange, icon, step = 1, min = 0, error }) => (
+}> = ({ label, value, onChange, icon, step = 1, min = 0, max, hint, error }) => (
   <div>
     <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
       {icon}
@@ -79,6 +230,7 @@ const FormField: React.FC<{
       onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
       step={step}
       min={min}
+      max={max}
       className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 transition ${
         error
           ? 'border-red-300 focus:ring-red-200 focus:border-red-500'
@@ -86,6 +238,9 @@ const FormField: React.FC<{
       }`}
       aria-describedby={error ? `${label}-error` : undefined}
     />
+    {hint && !error && (
+      <p className="mt-1 text-xs text-gray-400">{hint}</p>
+    )}
     {error && (
       <p id={`${label}-error`} className="mt-1 text-sm text-red-600 flex items-center gap-1">
         <AlertCircle size={14} />
@@ -95,15 +250,7 @@ const FormField: React.FC<{
   </div>
 );
 
-const FEE_PERCENTAGE = 0.05;
-const getPeriodsPerYear = (freq: ContributionFrequency): number => {
-  switch (freq) {
-    case 'monthly':   return 12;
-    case 'quarterly': return 4;
-    case 'annual':    return 1;
-  }
-};
-
+// ── Component ────────────────────────────────────────────────────────────────
 const CalculatorPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -113,114 +260,53 @@ const CalculatorPage: React.FC = () => {
   const factoryAddress = CONTRACT_ADDRESSES[chainId]?.personalFundFactory;
 
   const [isConnecting, setIsConnecting] = useState(false);
-  const [error, setError]             = useState('');
-  const [result, setResult]           = useState<Result | null>(null);
-  const [chartData, setChartData]     = useState<ChartPoint[]>([]);
+  const [error, setError]     = useState('');
+  const [warning, setWarning] = useState('');
+  const [result, setResult]   = useState<Result | null>(null);
+  const [chartData, setChartData] = useState<ChartPoint[]>([]);
   const [inputs, setInputs] = useState<Inputs>({
-    initialCapital:       0,
-    currentAge:           30,
-    retirementAge:        65,
-    desiredMonthlyIncome: 4000,
-    annualRate:           7,
+    principal:             0,
+    currentAge:            30,
+    retirementAge:         65,
+    desiredMonthly:        3000,
+    annualRate:            5,
+    yearsInRetirement:     20,
     contributionFrequency: 'monthly',
-    yearsInRetirement:    25,
   });
 
   useEffect(() => {
-    calculatePlan();
+    recalculate();
   }, [inputs]);
 
-  const calculatePlan = () => {
+  const recalculate = () => {
     setError('');
+    setWarning('');
 
-    const s = {
-      ...inputs,
-      initialCapital:       inputs.initialCapital || 0,
-      currentAge:           inputs.currentAge || 0,
-      retirementAge:        inputs.retirementAge || 0,
-      desiredMonthlyIncome: inputs.desiredMonthlyIncome || 0,
-      annualRate:           inputs.annualRate || 0,
-      yearsInRetirement:    inputs.yearsInRetirement || 0,
-    };
-
-    if (s.currentAge <= 0)  return bail(t('calculator.validation.ageRequired'));
-    if (s.currentAge >= 100) return bail(t('calculator.validation.ageTooHigh'));
-
-    const yearsToRetirement = s.retirementAge - s.currentAge;
-    if (yearsToRetirement <= 0) return bail(t('calculator.validation.retirementAgeTooLow'));
-    if (yearsToRetirement < 5)  return bail(t('calculator.validation.minYears'));
-    if (s.desiredMonthlyIncome <= 0) return bail(t('calculator.validation.contributionRequired'));
-    if (s.annualRate <= 0 || s.annualRate > 30) return bail(t('calculator.validation.rateRange'));
-
-    const periodsPerYear = getPeriodsPerYear(s.contributionFrequency);
-    const r = s.annualRate / 100 / periodsPerYear;
-    const rMonthly = s.annualRate / 100 / 12;
-    const n = yearsToRetirement * periodsPerYear;
-    const totalNeeded = s.desiredMonthlyIncome * 12 * s.yearsInRetirement;
-    const fvInitial   = s.initialCapital * Math.pow(1 + r, n);
-
-    // requiredPMT: depósito neto por periodo que el usuario envía al fondo
-    // El contrato requiere allowance = principal + monthlyDeposit (el neto)
-    // El fee (5%) lo descuenta el fondo internamente de ese neto
-    const requiredPMT =
-      r > 0
-        ? (totalNeeded - fvInitial) * (r / (Math.pow(1 + r, n) - 1))
-        : (totalNeeded - fvInitial) / n;
-
-    // Equivalente mensual usando equivalencia de anualidades (no división simple)
-    // periodic → monthly: PMT_monthly = PMT_period × r_m / [(1 + r_m)^k - 1]
-    const monthsPerPeriod = 12 / periodsPerYear;
-    const monthlyDeposit =
-      s.contributionFrequency === 'monthly'
-        ? requiredPMT
-        : rMonthly > 0
-          ? requiredPMT * rMonthly / (Math.pow(1 + rMonthly, monthsPerPeriod) - 1)
-          : requiredPMT / monthsPerPeriod;
-
-    const FEE_ON_INITIAL = s.initialCapital * FEE_PERCENTAGE;
-    let balance = s.initialCapital - FEE_ON_INITIAL; // el fee también se aplica al depósito inicial, así que lo descontamos desde el inicio para reflejar el crecimiento real en el fondo
-    const data: ChartPoint[] = [];
-    const contributions: number[] = [];
-
-    for (let year = 0; year <= yearsToRetirement; year++) {
-      data.push({ year: s.currentAge + year, balance: Math.round(balance) });
-      for (let p = 0; p < periodsPerYear; p++) {
-        balance = balance * (1 + r) + requiredPMT;
-        contributions.push(requiredPMT);
-      }
+    const validationError = validate(inputs);
+    if (validationError) {
+      setError(validationError);
+      setResult(null);
+      setChartData([]);
+      return;
     }
 
-    const totalContributed  = s.initialCapital + contributions.reduce((a, b) => a + b, 0);
-    const totalInterest     = balance - totalContributed;
-    const firstMonthly   = Math.max(0, monthlyDeposit);
-    const initialDeposit = s.initialCapital + firstMonthly;  // lo que sale de la wallet = lo que aprueba
+    const calc = runCalculator(inputs);
+    if (!calc) {
+      setResult(null);
+      setChartData([]);
+      return;
+    }
 
-    // El fee lo descuenta el fondo internamente del depósito recibido
-    // Usuario envía: initialDeposit (el neto)
-    // Fondo recibe:  initialDeposit, descuenta fee = initialDeposit * 5%
-    // Queda en fondo: initialDeposit * 95%
-    const feeAmount = initialDeposit * FEE_PERCENTAGE;
-    const netToFund = initialDeposit - feeAmount;
+    const { result: r, chartData: cd } = calc;
+    setResult(r);
+    setChartData(cd);
 
-    setResult({
-      monthlyDeposit:      firstMonthly,   // neto mensual equivalente — lo que el usuario ve y el contrato recibe
-      totalContributed,
-      totalInterest,
-      futureValue:         balance,
-      yearsToRetirement,
-      principal:           s.initialCapital,
-      firstMonthlyDeposit: firstMonthly,
-      initialDeposit,      // neto del primer depósito = lo que aprueba (allowance = initialDeposit)
-      feeAmount,           // fee interno que descuenta el fondo (informativo para UI)
-      netToOwner:          netToFund,  // lo que efectivamente queda en el fondo tras el fee
-    });
-    setChartData(data);
-  };
-
-  const bail = (msg: string) => {
-    setError(msg);
-    setResult(null);
-    setChartData([]);
+    const warnings: string[] = [];
+    if (r.pmtGross > 100_000)
+      warnings.push('⚠ Monthly deposit exceeds $100,000 — consider a higher APY, longer accumulation, or lower desired income.');
+    if (r.yearsToRet < 20)
+      warnings.push('⚠ Less than 20 years to retirement — results are aggressive.');
+    if (warnings.length) setWarning(warnings.join(' · '));
   };
 
   const handleCreateContract = async () => {
@@ -248,17 +334,14 @@ const CalculatorPage: React.FC = () => {
 
   const proceedToCreateContract = () => {
     if (!result) return;
-    const timelockYears = Math.max(
-      15,
-      Math.floor((inputs.retirementAge - inputs.currentAge) * 0.3)
-    );
+    const timelockYears = Math.max(15, Math.floor(result.yearsToRet * 0.3));
 
     setPlanData({
-      principal:            result.principal,
-      monthlyDeposit:       result.monthlyDeposit,
+      principal:            inputs.principal,
+      monthlyDeposit:       result.pmtGross,
       currentAge:           inputs.currentAge,
       retirementAge:        inputs.retirementAge,
-      desiredMonthlyIncome: inputs.desiredMonthlyIncome,
+      desiredMonthlyIncome: inputs.desiredMonthly,
       yearsPayments:        inputs.yearsInRetirement,
       interestRate:         inputs.annualRate,
       timelockYears,
@@ -298,55 +381,76 @@ const CalculatorPage: React.FC = () => {
         )}
 
         <div className="grid lg:grid-cols-2 gap-6 sm:gap-10">
-
           <div className="space-y-6">
 
-            {/* Config card */}
+            {/* ── CALCULATOR CARD ── */}
             <div className="bg-white/90 backdrop-blur rounded-3xl shadow-2xl p-6 sm:p-8 border border-purple-100">
               <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 sm:mb-8 flex items-center gap-3">
                 <Sparkles className="text-purple-600" />
                 {t('calculator.configurePlan')}
               </h2>
 
+              <p className="text-sm text-gray-500 mb-6">
+                Enter your retirement goal — we calculate the monthly deposit needed.
+              </p>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+
+                {/* Desired monthly income */}
                 <FormField
-                  label={t('calculator.initialCapital')}
-                  value={inputs.initialCapital}
-                  onChange={(val) => setInputs((p) => ({ ...p, initialCapital: val }))}
+                  label="Desired Monthly at Retirement (USDC)"
+                  value={inputs.desiredMonthly}
+                  onChange={(val) => setInputs((p) => ({ ...p, desiredMonthly: val }))}
                   icon={<DollarSign className="w-5 h-5" />}
-                  min={0}
+                  min={1}
+                  hint="How much you want to receive per month"
                 />
+
+                {/* Current age */}
                 <FormField
                   label={t('calculator.currentAge')}
                   value={inputs.currentAge}
                   onChange={(val) => setInputs((p) => ({ ...p, currentAge: val }))}
                   icon={<Calendar className="w-5 h-5" />}
                   min={18}
+                  max={80}
+                  hint="18 – 80"
                 />
+
+                {/* Retirement age */}
                 <FormField
                   label={t('calculator.retirementAge')}
                   value={inputs.retirementAge}
                   onChange={(val) => setInputs((p) => ({ ...p, retirementAge: val }))}
                   icon={<Calendar className="w-5 h-5" />}
-                  min={inputs.currentAge + 1}
+                  min={55}
+                  hint="≥ 55, at least 15 yrs ahead"
                 />
-                <FormField
-                  label={t('calculator.monthlyContribution')}
-                  value={inputs.desiredMonthlyIncome}
-                  onChange={(val) => setInputs((p) => ({ ...p, desiredMonthlyIncome: val }))}
-                  icon={<DollarSign className="w-5 h-5" />}
-                  min={0}
-                />
+
+                {/* Expected APY */}
                 <FormField
                   label={t('calculator.expectedReturn')}
                   value={inputs.annualRate}
                   onChange={(val) => setInputs((p) => ({ ...p, annualRate: val }))}
                   step={0.1}
                   icon={<Percent className="w-5 h-5" />}
-                  min={0.1}
+                  min={0}
+                  max={100}
+                  hint="Use the protocol APY — e.g. 5 for 5%"
                 />
 
-                {/* Frequency select */}
+                {/* Principal */}
+                <FormField
+                  label={t('calculator.initialCapital')}
+                  value={inputs.principal}
+                  onChange={(val) => setInputs((p) => ({ ...p, principal: val }))}
+                  icon={<DollarSign className="w-5 h-5" />}
+                  min={0}
+                  max={100_000}
+                  hint="Optional lump-sum deposit (max 100,000 USDC)"
+                />
+
+                {/* Contribution frequency */}
                 <div>
                   <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
                     <TrendingUp className="w-5 h-5" />
@@ -366,9 +470,10 @@ const CalculatorPage: React.FC = () => {
                     <option value="quarterly">{t('calculator.frequencyQuarterly')}</option>
                     <option value="annual">{t('calculator.frequencyAnnual')}</option>
                   </select>
+                  <p className="mt-1 text-xs text-gray-400">How often you make deposits</p>
                 </div>
 
-                {/* Years slider */}
+                {/* Years in retirement — slider */}
                 <div className="sm:col-span-2">
                   <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
                     <Calendar className="w-5 h-5" />
@@ -395,6 +500,73 @@ const CalculatorPage: React.FC = () => {
                   </div>
                 </div>
               </div>
+
+              {/* ── RESULT BOX ── */}
+              {result && (
+                <div className="mt-6 bg-gray-50 border border-gray-200 rounded-2xl p-5">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4">Result</p>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1">Required Corpus</p>
+                      <p className="font-mono font-bold text-gray-800">{formatCurrency(result.corpus)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1">Monthly Deposit Needed</p>
+                      <p className="font-mono font-bold text-purple-600 text-lg">{formatCurrency(result.pmtGross)} / mo</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1">Total You Will Deposit</p>
+                      <p className="font-mono font-bold text-gray-800">{formatCurrency(result.totalGross)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1">Years to Retirement</p>
+                      <p className="font-mono font-bold text-gray-800">{result.yearsToRet} years</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1">Est. Fund at Retirement</p>
+                      <p className="font-mono font-bold text-gray-800">{formatCurrency(result.fundValue)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1">Monthly Income For</p>
+                      <p className="font-mono font-bold text-gray-800">{formatYears(inputs.yearsInRetirement)}</p>
+                    </div>
+
+                    {/* Fee row */}
+                    <div className="col-span-2 sm:col-span-3 border-t border-gray-200 pt-3 mt-1">
+                      <p className="text-xs font-semibold text-amber-600 mb-1">5% Protocol Fee (included in deposit)</p>
+                      <p className="font-mono text-sm text-amber-700">
+                        {formatCurrency(result.feePerDeposit)}/mo · {formatCurrency(result.totalFeesPaid)} total
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Warning */}
+                  {warning && (
+                    <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-3">
+                      <p className="font-mono text-xs text-amber-700">{warning}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* ── DEPOSIT PREVIEW ── */}
+              {result && (
+                <div className="mt-4 grid grid-cols-3 gap-3 bg-gray-50 border border-gray-200 rounded-2xl p-4">
+                  <div>
+                    <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Principal</p>
+                    <p className="font-mono text-sm font-bold text-purple-600">{formatCurrency(inputs.principal)}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">+ 1st Monthly</p>
+                    <p className="font-mono text-sm font-bold text-purple-600">{formatCurrency(result.pmtGross)}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">= Total to Approve</p>
+                    <p className="font-mono text-sm font-bold text-purple-600">{formatCurrency(result.initialDeposit)}</p>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Faucet */}
@@ -421,10 +593,10 @@ const CalculatorPage: React.FC = () => {
               <div className="space-y-4">
                 {(
                   [
-                    { step: 1, icon: <Wallet className="w-5 h-5" />,     titleKey: 'calculator.step1Title', descKey: 'calculator.step1Desc' },
-                    { step: 2, icon: <Droplets className="w-5 h-5" />,   titleKey: 'calculator.step2Title', descKey: 'calculator.step2Desc' },
-                    { step: 3, icon: <Calculator className="w-5 h-5" />, titleKey: 'calculator.step3Title', descKey: 'calculator.step3Desc' },
-                    { step: 4, icon: <CheckCircle className="w-5 h-5" />,titleKey: 'calculator.step4Title', descKey: 'calculator.step4Desc' },
+                    { step: 1, icon: <Wallet className="w-5 h-5" />,      titleKey: 'calculator.step1Title', descKey: 'calculator.step1Desc' },
+                    { step: 2, icon: <Droplets className="w-5 h-5" />,    titleKey: 'calculator.step2Title', descKey: 'calculator.step2Desc' },
+                    { step: 3, icon: <Calculator className="w-5 h-5" />,  titleKey: 'calculator.step3Title', descKey: 'calculator.step3Desc' },
+                    { step: 4, icon: <CheckCircle className="w-5 h-5" />, titleKey: 'calculator.step4Title', descKey: 'calculator.step4Desc' },
                   ] as const
                 ).map((item) => (
                   <div
@@ -532,7 +704,7 @@ const CalculatorPage: React.FC = () => {
                   <Info className="w-6 h-6 sm:w-8 sm:h-8" />
                   {t('calculator.depositSummary')}
                 </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                   <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg text-center">
                     <p className="text-gray-600 text-xs sm:text-sm">{t('calculator.totalDeposit')}</p>
                     <p className="text-2xl sm:text-3xl font-black text-gray-800 break-word">
@@ -543,14 +715,14 @@ const CalculatorPage: React.FC = () => {
                   <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg text-center">
                     <p className="text-gray-600 text-xs sm:text-sm">{t('calculator.daoFee')}</p>
                     <p className="text-2xl sm:text-3xl font-black text-orange-600 break-word">
-                      {formatCurrency(result.feeAmount)}
+                      {formatCurrency(result.feePerDeposit)}
                     </p>
                     <p className="text-xs text-gray-500 mt-1">{t('calculator.goesToTreasury')}</p>
                   </div>
                   <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg text-center">
                     <p className="text-gray-600 text-xs sm:text-sm">{t('calculator.netToFund')}</p>
                     <p className="text-2xl sm:text-3xl font-black text-green-600 break-word">
-                      {formatCurrency(result.netToOwner)}
+                      {formatCurrency(result.pmtNet)}
                     </p>
                     <p className="text-xs text-gray-500 mt-1">{t('calculator.forDefi')}</p>
                   </div>
@@ -565,7 +737,7 @@ const CalculatorPage: React.FC = () => {
                 <p className="text-base sm:text-xl mb-6 sm:mb-8">
                   {t('calculator.monthlySavingsRequired')}{' '}
                   <strong className="text-2xl sm:text-3xl block sm:inline mt-2 sm:mt-0">
-                    {formatCurrency(result.monthlyDeposit)}
+                    {formatCurrency(result.pmtGross)} / mo
                   </strong>
                 </p>
 
