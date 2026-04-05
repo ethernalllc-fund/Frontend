@@ -14,7 +14,7 @@ import LoadingScreen from './components/common/LoadingScreen';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
 const HomePage            = lazy(() => import('./pages/public/HomePage'));
-const CalculatorPage      = lazy(() => import('./pages/public/CalculatorPage'));
+const Calculatorpage      = lazy(() => import('./pages/public/Calculatorpage'));
 const ContactPage         = lazy(() => import('./pages/public/ContactPage'));
 const SurveyPage          = lazy(() => import('./pages/public/SurveyPage'));
 const DashboardPage       = lazy(() => import('./pages/user/DashboardPage'));
@@ -114,7 +114,7 @@ function AppContent() {
           <Routes>
             {/* Public */}
             <Route path="/"           element={<HomePage />} />
-            <Route path="/calculator" element={<CalculatorPage />} />
+            <Route path="/calculator" element={<Calculatorpage />} />
             <Route path="/contact"    element={<ContactPage />} />
             <Route path="/survey"     element={<SurveyPage />} />
 
