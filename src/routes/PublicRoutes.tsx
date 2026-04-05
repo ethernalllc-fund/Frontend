@@ -2,7 +2,7 @@ import React, { lazy, Suspense } from "react";
 import { Navigate } from "react-router-dom";
 
 const HomePage = lazy(() => import("../pages/public/HomePage"));
-const Calculator = lazy(() => import("../pages/public/Calculatorpage"));
+const Calculator = lazy(() => import("../pages/public/CalculatorPage"));
 const ContactPage = lazy(() => import("../pages/public/ContactPage"));
 const SurveyPage = lazy(() => import("../pages/public/SurveyPage"));
 
