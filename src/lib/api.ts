@@ -1,33 +1,36 @@
-import { buildApiUrl as buildUrl, API_CONFIG } from '../config/api.config';
-
-export const getApiUrl = (): string => {
-  return API_CONFIG.BASE_URL;
-};
-
-export const buildApiUrl = (endpoint: string): string => {
-  return buildUrl(endpoint);
-};
-
-export const buildQueryString = (params: Record<string, unknown>): string => {
-  const filtered = Object.entries(params)
-    .filter(([, value]) => value !== undefined && value !== null)
-    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)
-    .join('&');
-  return filtered ? `?${filtered}` : '';
-};
-
 export class ApiError extends Error {
-  status?: number;
-  data?: unknown;
+  readonly status?: number;
+  readonly code?:   string;
 
-  constructor(message: string, status?: number, data?: unknown) {
+  constructor(message: string, status?: number, code?: string) {
     super(message);
     this.name   = 'ApiError';
     this.status = status;
-    this.data   = data;
+    this.code   = code;
   }
 }
 
-export const isApiError = (error: unknown): error is ApiError => {
-  return error instanceof ApiError;
-};
+export function isApiError(err: unknown): err is ApiError {
+  return err instanceof ApiError;
+}
+
+export async function apiFetch<T>(
+  url: string,
+  options?: RequestInit,
+): Promise<T> {
+  const res = await fetch(url, {
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    ...options,
+  });
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({})) as { message?: string; code?: string };
+    throw new ApiError(
+      body.message ?? `Request failed with status ${res.status}`,
+      res.status,
+      body.code,
+    );
+  }
+
+  return res.json() as Promise<T>;
+}
