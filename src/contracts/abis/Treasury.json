@@ -1,6 +1,6 @@
 {
   "contractName": "Treasury",
-  "address": "0x782A654DeecF0036bD3377f50092eda494Adb80d",
+  "address": "0x0a743430067AFC5B69B0F8fF542fdbdAD206A748",
   "abi": [
     {
       "name": "FeeReceived",
@@ -259,6 +259,43 @@
           "name": "newAdmin",
           "type": "address",
           "indexed": true
+        },
+        {
+          "name": "timestamp",
+          "type": "uint256",
+          "indexed": false
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "name": "EmergencyWithdraw",
+      "inputs": [
+        {
+          "name": "token",
+          "type": "address",
+          "indexed": true
+        },
+        {
+          "name": "recipient",
+          "type": "address",
+          "indexed": true
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "indexed": false
+        },
+        {
+          "name": "isUSDC",
+          "type": "bool",
+          "indexed": false
+        },
+        {
+          "name": "feesAdjusted",
+          "type": "uint256",
+          "indexed": false
         },
         {
           "name": "timestamp",
@@ -611,30 +648,6 @@
     {
       "stateMutability": "view",
       "type": "function",
-      "name": "getPendingRequests",
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "",
-          "type": "address[]"
-        }
-      ]
-    },
-    {
-      "stateMutability": "view",
-      "type": "function",
-      "name": "getApprovedRequests",
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "",
-          "type": "address[]"
-        }
-      ]
-    },
-    {
-      "stateMutability": "view",
-      "type": "function",
       "name": "getRequestStats",
       "inputs": [],
       "outputs": [
@@ -728,35 +741,6 @@
       ]
     },
     {
-      "stateMutability": "view",
-      "type": "function",
-      "name": "getAllFunds",
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "",
-          "type": "address[]"
-        }
-      ]
-    },
-    {
-      "stateMutability": "view",
-      "type": "function",
-      "name": "getTopFundsByFees",
-      "inputs": [
-        {
-          "name": "_limit",
-          "type": "uint256"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "",
-          "type": "address[]"
-        }
-      ]
-    },
-    {
       "stateMutability": "nonpayable",
       "type": "fallback"
     },
@@ -832,23 +816,6 @@
               "type": "bool"
             }
           ]
-        }
-      ]
-    },
-    {
-      "stateMutability": "view",
-      "type": "function",
-      "name": "registeredFunds",
-      "inputs": [
-        {
-          "name": "arg0",
-          "type": "uint256"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "",
-          "type": "address"
         }
       ]
     },
@@ -941,23 +908,6 @@
               "type": "uint256"
             }
           ]
-        }
-      ]
-    },
-    {
-      "stateMutability": "view",
-      "type": "function",
-      "name": "allRequests",
-      "inputs": [
-        {
-          "name": "arg0",
-          "type": "uint256"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "",
-          "type": "address"
         }
       ]
     },

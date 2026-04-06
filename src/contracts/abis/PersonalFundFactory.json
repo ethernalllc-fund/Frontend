@@ -1,6 +1,6 @@
 {
   "contractName": "PersonalFundFactory",
-  "address": "0xb6351cF3f42475c78e9c94AAD391C9f689d8898F",
+  "address": "0x467CFb98Ce2429EB5dEBF6960B48a3C87A2D5a5A",
   "abi": [
     {
       "name": "FundCreated",
@@ -99,6 +99,10 @@
         },
         {
           "name": "_userPreferences",
+          "type": "address"
+        },
+        {
+          "name": "_dateTime",
           "type": "address"
         }
       ],
@@ -238,6 +242,18 @@
       "outputs": []
     },
     {
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "name": "updateDateTime",
+      "inputs": [
+        {
+          "name": "_newDateTime",
+          "type": "address"
+        }
+      ],
+      "outputs": []
+    },
+    {
       "stateMutability": "view",
       "type": "function",
       "name": "getUserFund",
@@ -302,18 +318,6 @@
         {
           "name": "",
           "type": "uint256"
-        }
-      ]
-    },
-    {
-      "stateMutability": "view",
-      "type": "function",
-      "name": "getAllFunds",
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "",
-          "type": "address[]"
         }
       ]
     },
@@ -421,6 +425,10 @@
         {
           "name": "",
           "type": "address"
+        },
+        {
+          "name": "",
+          "type": "address"
         }
       ]
     },
@@ -468,6 +476,18 @@
       "stateMutability": "view",
       "type": "function",
       "name": "userPreferences",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ]
+    },
+    {
+      "stateMutability": "view",
+      "type": "function",
+      "name": "dateTime",
       "inputs": [],
       "outputs": [
         {
@@ -577,23 +597,6 @@
         {
           "name": "",
           "type": "uint256"
-        }
-      ]
-    },
-    {
-      "stateMutability": "view",
-      "type": "function",
-      "name": "allFunds",
-      "inputs": [
-        {
-          "name": "arg0",
-          "type": "uint256"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "",
-          "type": "address"
         }
       ]
     },
@@ -726,5 +729,5 @@
       "outputs": []
     }
   ],
-  "constructorArgs": "00000000000000000000000001bdc8990d3f11420a62b2a4edb54bfca2023a94000000000000000000000000782a654deecf0036bd3377f50092eda494adb80d"
+  "constructorArgs": "000000000000000000000000b9357c7c7938f2336ea2a01063cb1c6edb697f9e0000000000000000000000000a743430067afc5b69b0f8ff542fdbdad206a748"
 }

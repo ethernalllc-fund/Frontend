@@ -1,8 +1,3 @@
-// ============================================================
-// Ethernal Faucet API Client
-// Compatible con: https://mock-usdc-i67q.onrender.com
-// ============================================================
-
 export interface FaucetRequest {
   address: string;                    // Ethereum address (checksum)
   turnstile_token?: string;           // Cloudflare Turnstile (opcional)

@@ -1,6 +1,6 @@
 {
-  "contractName": "MockDeFiProtocol",
-  "address": "0xc02998E722173eC07c7697Dd0EBe66dEd527Fd71",
+  "contractName": "MockOndoAdapter",
+  "address": "0x9177D9BCbE0e6c3aD4ad9361c7CAe69FAd439198",
   "abi": [
     {
       "name": "Deposited",
@@ -12,6 +12,11 @@
         },
         {
           "name": "amount",
+          "type": "uint256",
+          "indexed": false
+        },
+        {
+          "name": "timestamp",
           "type": "uint256",
           "indexed": false
         }
@@ -29,6 +34,11 @@
         },
         {
           "name": "amount",
+          "type": "uint256",
+          "indexed": false
+        },
+        {
+          "name": "timestamp",
           "type": "uint256",
           "indexed": false
         }
@@ -71,22 +81,6 @@
       ]
     },
     {
-      "stateMutability": "nonpayable",
-      "type": "function",
-      "name": "recoverTokens",
-      "inputs": [
-        {
-          "name": "_token",
-          "type": "address"
-        },
-        {
-          "name": "_amount",
-          "type": "uint256"
-        }
-      ],
-      "outputs": []
-    },
-    {
       "stateMutability": "view",
       "type": "function",
       "name": "getBalance",
@@ -102,6 +96,22 @@
           "type": "uint256"
         }
       ]
+    },
+    {
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "name": "recoverTokens",
+      "inputs": [
+        {
+          "name": "_token",
+          "type": "address"
+        },
+        {
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "outputs": []
     },
     {
       "stateMutability": "view",
@@ -142,8 +152,13 @@
     {
       "stateMutability": "view",
       "type": "function",
-      "name": "totalDeposited",
-      "inputs": [],
+      "name": "balances",
+      "inputs": [
+        {
+          "name": "arg0",
+          "type": "address"
+        }
+      ],
       "outputs": [
         {
           "name": "",
@@ -154,13 +169,25 @@
     {
       "stateMutability": "view",
       "type": "function",
-      "name": "balances",
+      "name": "depositTimestamps",
       "inputs": [
         {
           "name": "arg0",
           "type": "address"
         }
       ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ]
+    },
+    {
+      "stateMutability": "view",
+      "type": "function",
+      "name": "totalDeposited",
+      "inputs": [],
       "outputs": [
         {
           "name": "",
@@ -184,5 +211,5 @@
       "outputs": []
     }
   ],
-  "constructorArgs": "0000000000000000000000006e1371974d923397ece9ee7525ac50ad7087c77f0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000c4d6f636b20416176652076330000000000000000000000000000000000000000"
+  "constructorArgs": "0000000000000000000000006e1371974d923397ece9ee7525ac50ad7087c77f0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000e4d6f636b204f6e646f2055534459000000000000000000000000000000000000"
 }

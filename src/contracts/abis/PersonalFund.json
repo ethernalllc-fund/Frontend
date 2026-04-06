@@ -1,6 +1,6 @@
 {
   "contractName": "PersonalFund",
-  "address": "0x01BDc8990D3f11420A62b2a4EDB54bFCA2023a94",
+  "address": "0xb9357c7c7938f2336eA2A01063cb1C6EDB697F9E",
   "abi": [
     {
       "name": "Initialized",
@@ -352,6 +352,60 @@
       "type": "event"
     },
     {
+      "name": "ExtraDepositReclaimed",
+      "inputs": [
+        {
+          "name": "owner",
+          "type": "address",
+          "indexed": true
+        },
+        {
+          "name": "grossAmount",
+          "type": "uint256",
+          "indexed": false
+        },
+        {
+          "name": "penaltyAmount",
+          "type": "uint256",
+          "indexed": false
+        },
+        {
+          "name": "refundAmount",
+          "type": "uint256",
+          "indexed": false
+        },
+        {
+          "name": "timestamp",
+          "type": "uint256",
+          "indexed": false
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "name": "MissedMonthRecorded",
+      "inputs": [
+        {
+          "name": "owner",
+          "type": "address",
+          "indexed": true
+        },
+        {
+          "name": "missedMonths",
+          "type": "uint256",
+          "indexed": false
+        },
+        {
+          "name": "timestamp",
+          "type": "uint256",
+          "indexed": false
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
       "stateMutability": "nonpayable",
       "type": "function",
       "name": "initialize",
@@ -374,6 +428,10 @@
         },
         {
           "name": "_userPreferences",
+          "type": "address"
+        },
+        {
+          "name": "_dateTime",
           "type": "address"
         },
         {
@@ -444,6 +502,13 @@
           "type": "uint256"
         }
       ],
+      "outputs": []
+    },
+    {
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "name": "reclaimExtraDeposit",
+      "inputs": [],
       "outputs": []
     },
     {
@@ -983,6 +1048,18 @@
     {
       "stateMutability": "view",
       "type": "function",
+      "name": "dateTime",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ]
+    },
+    {
+      "stateMutability": "view",
+      "type": "function",
       "name": "selectedProtocol",
       "inputs": [],
       "outputs": [
@@ -1395,6 +1472,78 @@
         {
           "name": "",
           "type": "uint256"
+        }
+      ]
+    },
+    {
+      "stateMutability": "view",
+      "type": "function",
+      "name": "lastMonthlyDepositTime",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ]
+    },
+    {
+      "stateMutability": "view",
+      "type": "function",
+      "name": "missedMonths",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ]
+    },
+    {
+      "stateMutability": "view",
+      "type": "function",
+      "name": "lastExtraDepositTime",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ]
+    },
+    {
+      "stateMutability": "view",
+      "type": "function",
+      "name": "lastExtraDepositGross",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ]
+    },
+    {
+      "stateMutability": "view",
+      "type": "function",
+      "name": "lastExtraDepositNet",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ]
+    },
+    {
+      "stateMutability": "view",
+      "type": "function",
+      "name": "extraReclaimUsed",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
         }
       ]
     }

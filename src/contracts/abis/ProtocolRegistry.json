@@ -1,6 +1,6 @@
 {
   "contractName": "ProtocolRegistry",
-  "address": "0x8236F34D948e6665A6d4675E692995B73CC0737C",
+  "address": "0xa76322A970EA80B0ebbB9c5213a2F3A1ee53118f",
   "abi": [
     {
       "name": "ProtocolAdded",
@@ -13,6 +13,11 @@
         {
           "name": "name",
           "type": "string",
+          "indexed": false
+        },
+        {
+          "name": "category",
+          "type": "uint8",
           "indexed": false
         },
         {
@@ -189,6 +194,33 @@
       "type": "event"
     },
     {
+      "name": "USDCUpdated",
+      "inputs": [
+        {
+          "name": "oldUSDC",
+          "type": "address",
+          "indexed": true
+        },
+        {
+          "name": "newUSDC",
+          "type": "address",
+          "indexed": true
+        },
+        {
+          "name": "updatedBy",
+          "type": "address",
+          "indexed": true
+        },
+        {
+          "name": "timestamp",
+          "type": "uint256",
+          "indexed": false
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
       "stateMutability": "nonpayable",
       "type": "function",
       "name": "setAdmin",
@@ -239,6 +271,18 @@
     {
       "stateMutability": "nonpayable",
       "type": "function",
+      "name": "updateUSDC",
+      "inputs": [
+        {
+          "name": "_newUSDC",
+          "type": "address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "stateMutability": "nonpayable",
+      "type": "function",
       "name": "addDeFiProtocol",
       "inputs": [
         {
@@ -255,6 +299,10 @@
         },
         {
           "name": "_riskLevel",
+          "type": "uint8"
+        },
+        {
+          "name": "_category",
           "type": "uint8"
         }
       ],
@@ -319,22 +367,6 @@
     {
       "stateMutability": "nonpayable",
       "type": "function",
-      "name": "updateTotalDeposited",
-      "inputs": [
-        {
-          "name": "_protocolAddress",
-          "type": "address"
-        },
-        {
-          "name": "_newTotal",
-          "type": "uint256"
-        }
-      ],
-      "outputs": []
-    },
-    {
-      "stateMutability": "nonpayable",
-      "type": "function",
       "name": "recordDeposit",
       "inputs": [
         {
@@ -343,6 +375,22 @@
         },
         {
           "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "name": "updateTotalDeposited",
+      "inputs": [
+        {
+          "name": "_protocolAddress",
+          "type": "address"
+        },
+        {
+          "name": "_newTotal",
           "type": "uint256"
         }
       ],
@@ -370,6 +418,10 @@
             {
               "name": "name",
               "type": "string"
+            },
+            {
+              "name": "category",
+              "type": "uint8"
             },
             {
               "name": "apy",
@@ -406,24 +458,24 @@
     {
       "stateMutability": "view",
       "type": "function",
-      "name": "getActiveProtocols",
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "",
-          "type": "address[100]"
-        }
-      ]
-    },
-    {
-      "stateMutability": "view",
-      "type": "function",
       "name": "getActiveProtocolsList",
       "inputs": [],
       "outputs": [
         {
           "name": "",
           "type": "address[]"
+        }
+      ]
+    },
+    {
+      "stateMutability": "view",
+      "type": "function",
+      "name": "getActiveProtocols",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address[100]"
         }
       ]
     },
@@ -453,6 +505,23 @@
         {
           "name": "",
           "type": "address[100]"
+        }
+      ]
+    },
+    {
+      "stateMutability": "view",
+      "type": "function",
+      "name": "getProtocolsByCategory",
+      "inputs": [
+        {
+          "name": "_category",
+          "type": "uint8"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address[]"
         }
       ]
     },
@@ -609,6 +678,23 @@
     {
       "stateMutability": "view",
       "type": "function",
+      "name": "getCategoryName",
+      "inputs": [
+        {
+          "name": "_category",
+          "type": "uint8"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "stateMutability": "view",
+      "type": "function",
       "name": "admin",
       "inputs": [],
       "outputs": [
@@ -622,6 +708,18 @@
       "stateMutability": "view",
       "type": "function",
       "name": "treasury",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ]
+    },
+    {
+      "stateMutability": "view",
+      "type": "function",
+      "name": "usdc",
       "inputs": [],
       "outputs": [
         {
@@ -652,6 +750,10 @@
             {
               "name": "name",
               "type": "string"
+            },
+            {
+              "name": "category",
+              "type": "uint8"
             },
             {
               "name": "apy",
@@ -789,16 +891,41 @@
       ]
     },
     {
+      "stateMutability": "view",
+      "type": "function",
+      "name": "protocolsByCategory",
+      "inputs": [
+        {
+          "name": "arg0",
+          "type": "uint8"
+        },
+        {
+          "name": "arg1",
+          "type": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ]
+    },
+    {
       "stateMutability": "nonpayable",
       "type": "constructor",
       "inputs": [
         {
           "name": "_treasury",
           "type": "address"
+        },
+        {
+          "name": "_usdc",
+          "type": "address"
         }
       ],
       "outputs": []
     }
   ],
-  "constructorArgs": "000000000000000000000000782a654deecf0036bd3377f50092eda494adb80d"
+  "constructorArgs": "0000000000000000000000000a743430067afc5b69b0f8ff542fdbdad206a7480000000000000000000000006e1371974d923397ece9ee7525ac50ad7087c77f"
 }

@@ -6,11 +6,12 @@ export interface ContractAddresses {
   userPreferences?:    `0x${string}`
   dateTime?:           `0x${string}`
   mockDeFiProtocol?:   `0x${string}`
+  mockAaveAdapter?:    `0x${string}`
+  mockOndoAdapter?:    `0x${string}`
 }
 
 export type ContractName = keyof ContractAddresses
-export type ChainId      = keyof typeof CONTRACT_ADDRESSES
-
+export type SupportedChainId = keyof typeof CONTRACT_ADDRESSES
 export const ZERO_ADDRESS: `0x${string}` = '0x0000000000000000000000000000000000000000'
 
 const OFFICIAL_USDC: Record<number, `0x${string}`> = {
@@ -28,7 +29,7 @@ const OFFICIAL_USDC: Record<number, `0x${string}`> = {
   1:     '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // Ethereum
 }
 
-const MOCK_USDC: Record<number, `0x${string}`> = {
+export const MOCK_USDC: Record<number, `0x${string}`> = {
   421614: '0x6e1371974D923397ecE9eE7525ac50ad7087c77f', // Arbitrum Sepolia
   80002:  '0xDA7610fD028bA2958d1Bb3dcB43F2d5d2Fb2A29d', // Polygon Amoy
 }
@@ -38,15 +39,18 @@ const resolveUSDC = (chainId: number): `0x${string}` =>
 
 export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
 
-  // ✅ ARBITRUM SEPOLIA — deployed 2026-03-12
+  // ✅ ARBITRUM SEPOLIA — deployed 2026-04-02
   421614: {
-    personalFundFactory: '0xb6351cF3f42475c78e9c94AAD391C9f689d8898F',
+    personalFundFactory: '0x467CFb98Ce2429EB5dEBF6960B48a3C87A2D5a5A',
     usdc:                resolveUSDC(421614),
-    treasury:            '0x782A654DeecF0036bD3377f50092eda494Adb80d',
-    protocolRegistry:    '0x8236F34D948e6665A6d4675E692995B73CC0737C',
-    userPreferences:     '0x5dA89820567d1b558107D395803D5AF7a15601d7',
-    dateTime:            '0x609905ac6441B63Ffc0e5DF8fc4E1C25c02abE1C',
-    mockDeFiProtocol:    '0x3D774C2a2456640F2B7d98E6bF0e81C00d9090b8',
+    treasury:            '0x0a743430067AFC5B69B0F8fF542fdbdAD206A748',
+    protocolRegistry:    '0xa76322A970EA80B0ebbB9c5213a2F3A1ee53118f',
+    userPreferences:     '0x1c3d7f6C47C7d8EA4bc29864fFB966F2B5896704',
+    dateTime:            '0xe4A76Bc0CbEC3F4B1297C754985Aed9Fb9b2AaE9',
+    // personalFund:        '0xb9357c7c7938f2336eA2A01063cb1C6EDB697F9E',
+    mockDeFiProtocol:    '0xc02998E722173eC07c7697Dd0EBe66dEd527Fd71',
+    mockAaveAdapter:     '0x3833088891bEcE92e2c492Fd459Cd025dc7b849D',
+    mockOndoAdapter:     '0x9177D9BCbE0e6c3aD4ad9361c7CAe69FAd439198',
   },
 
   // ✅ POLYGON AMOY — deployed 2026-03-08
@@ -88,8 +92,6 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
     userPreferences:     ZERO_ADDRESS,
     dateTime:            ZERO_ADDRESS,
   },
-
-  // ── Mainnets ────────────────────────────────────────────────────────────────
 
   // 🔴 ARBITRUM ONE — pending
   42161: {
@@ -140,54 +142,47 @@ export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
 export const getContractAddresses = (chainId: number): ContractAddresses | undefined =>
   CONTRACT_ADDRESSES[chainId]
 
-/** Returns a single contract address, or undefined. */
 export const getContractAddress = (
   chainId:  number,
   contract: ContractName,
-): `0x${string}` | undefined =>
-  CONTRACT_ADDRESSES[chainId]?.[contract]
+): `0x${string}` | undefined => CONTRACT_ADDRESSES[chainId]?.[contract]
 
 export const isValidAddress = (address: string | undefined): address is `0x${string}` =>
   !!address && address !== ZERO_ADDRESS && /^0x[a-fA-F0-9]{40}$/.test(address)
 
-export const isContractDeployed = (
-  chainId:  number,
-  contract: ContractName,
-): boolean =>
+export const isContractDeployed = (chainId: number, contract: ContractName): boolean =>
   isValidAddress(CONTRACT_ADDRESSES[chainId]?.[contract])
 
 export const areMainContractsDeployed = (chainId: number): boolean => {
   const a = CONTRACT_ADDRESSES[chainId]
   if (!a) return false
-  const core: ContractName[] = [
-    'personalFundFactory', 'usdc', 'treasury', 'protocolRegistry', 'userPreferences',
-  ]
-  return core.every(c => isValidAddress(a[c]))
+  const core: ContractName[] = ['personalFundFactory', 'usdc', 'treasury', 'protocolRegistry', 'userPreferences']
+  return core.every((c) => isValidAddress(a[c]))
 }
 
-export const getOfficialUSDC  = (chainId: number): `0x${string}` | undefined => OFFICIAL_USDC[chainId]
-export const getMockUSDC      = (chainId: number): `0x${string}` | undefined => MOCK_USDC[chainId]
-export const getUSDCForChain  = (chainId: number): `0x${string}` | undefined => CONTRACT_ADDRESSES[chainId]?.usdc
-export const hasMockUSDC      = (chainId: number): boolean => chainId in MOCK_USDC
+export const getOfficialUSDC = (chainId: number): `0x${string}` | undefined => OFFICIAL_USDC[chainId]
+export const getMockUSDC     = (chainId: number): `0x${string}` | undefined => MOCK_USDC[chainId]
+export const getUSDCForChain = (chainId: number): `0x${string}` | undefined => CONTRACT_ADDRESSES[chainId]?.usdc
+export const hasMockUSDC     = (chainId: number): boolean => chainId in MOCK_USDC
 
 export const getCurrentUSDCType = (chainId: number): 'mock' | 'official' | 'unknown' => {
   const addr = CONTRACT_ADDRESSES[chainId]?.usdc
-  if (!addr)                               return 'unknown'
-  if (addr === MOCK_USDC[chainId])         return 'mock'
-  if (addr === OFFICIAL_USDC[chainId])     return 'official'
+  if (!addr)                           return 'unknown'
+  if (addr === MOCK_USDC[chainId])     return 'mock'
+  if (addr === OFFICIAL_USDC[chainId]) return 'official'
   return 'unknown'
 }
 
 export const getDeployedContracts = (chainId: number): ContractName[] => {
   const a = CONTRACT_ADDRESSES[chainId]
   if (!a) return []
-  return (Object.keys(a) as ContractName[]).filter(c => isValidAddress(a[c]))
+  return (Object.keys(a) as ContractName[]).filter((c) => isValidAddress(a[c]))
 }
 
 export const getPendingContracts = (chainId: number): ContractName[] => {
   const a = CONTRACT_ADDRESSES[chainId]
   if (!a) return []
-  return (Object.keys(a) as ContractName[]).filter(c => !isValidAddress(a[c]))
+  return (Object.keys(a) as ContractName[]).filter((c) => !isValidAddress(a[c]))
 }
 
 export const getDeploymentProgress = (chainId: number): number => {
@@ -198,43 +193,26 @@ export const getDeploymentProgress = (chainId: number): number => {
   return Math.round((deployed / total) * 100)
 }
 
-const _arb = CONTRACT_ADDRESSES[421614] as ContractAddresses
-
-export const TREASURY_ADDRESS          = _arb.treasury
-export const FACTORY_ADDRESS           = _arb.personalFundFactory
-export const USDC_ADDRESS              = _arb.usdc
-export const PROTOCOL_REGISTRY_ADDRESS = _arb.protocolRegistry!
-export const USER_PREFERENCES_ADDRESS  = _arb.userPreferences!
-export const DATETIME_ADDRESS          = _arb.dateTime ?? ZERO_ADDRESS
-export const MOCK_USDC_ADDRESS         = MOCK_USDC[421614]!
-export const OFFICIAL_USDC_ADDRESS     = OFFICIAL_USDC[421614]!
-
 if (import.meta.env.DEV) {
   const warnings: string[] = []
 
   Object.entries(CONTRACT_ADDRESSES).forEach(([id, a]) => {
     const chainId = Number(id)
-    if (!a.usdc || a.usdc === ZERO_ADDRESS) {
+    if (!a.usdc || a.usdc === ZERO_ADDRESS)
       warnings.push(`Chain ${chainId}: missing USDC address`)
-    }
-    // Catch partial deploys: factory present but treasury missing (or vice versa)
     const hasFactory  = isValidAddress(a.personalFundFactory)
     const hasTreasury = isValidAddress(a.treasury)
-    if (hasFactory !== hasTreasury) {
+    if (hasFactory !== hasTreasury)
       warnings.push(`Chain ${chainId}: partial deploy — factory=${hasFactory} treasury=${hasTreasury}`)
-    }
   })
 
-  if (warnings.length > 0) {
-    console.warn('[addresses] ⚠️ Config warnings:', warnings)
-  }
+  if (warnings.length > 0) console.warn('[addresses] ⚠️ Config warnings:', warnings)
 
-  ;[421614, 80002].forEach(chainId => {
+  ;[421614, 80002].forEach((chainId) => {
     const type = getCurrentUSDCType(chainId)
-    if (type !== 'mock') {
+    if (type !== 'mock')
       console.error(`[addresses] ❌ Chain ${chainId} should use MockUSDC but is using: ${type}`)
-    } else {
+    else
       console.log(`[addresses] ✅ Chain ${chainId}: correctly using MockUSDC`)
-    }
   })
 }
