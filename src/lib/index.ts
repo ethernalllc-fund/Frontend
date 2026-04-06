@@ -56,23 +56,6 @@ export {
 
 export type { ValidationResult } from './validators';
 
-// Contracts 
-export {
-  USER_PREFERENCES_ABI,
-  PROTOCOL_REGISTRY_ABI,
-  RISK_LEVELS,
-  STRATEGY_TYPES,
-  RISK_LABELS,
-  STRATEGY_LABELS,
-} from '@/lib/contracts-abi';
-
-export type {
-  UserConfig,
-  RoutingStrategy,
-  ProtocolComparison,
-  ProtocolStats,
-} from '@/lib/contracts-abi';
-
 // Calculator 
 export {
   calculate,

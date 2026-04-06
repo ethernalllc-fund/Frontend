@@ -9,7 +9,7 @@ import {
   Settings, Zap, BarChart3, BookOpen, ChevronRight, Activity,
   AlertTriangle, Info,
 } from 'lucide-react';
-import { PERSONAL_FUND_ABI, USER_PREFERENCES_ABI } from '@/config/abis';
+import { USER_PREFERENCES_ABI } from '@/config/abis';
 import { USER_PREFERENCES_ADDRESS }                from '@/config';
 
 type Protocol = {
@@ -333,8 +333,8 @@ const DashboardPage: React.FC = () => {
         functionName: 'setUserConfig',
         args: [
           effectiveProtocol ?? ZERO_ADDRESS,
-          userPreferences.userConfig?.autoCompound ?? false,
           effectiveRisk as 0 | 1 | 2,
+          userPreferences.userConfig?.autoCompound ?? false,
         ],
       });
       setPendingRisk(null);
