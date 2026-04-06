@@ -1,6 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate }                                        from 'react-router-dom';
-import { useWriteContract, useWaitForTransactionReceipt, useConnection } from 'wagmi';
+import {
+  useReadContract,
+  useReadContracts,
+  useWriteContract,
+  useWaitForTransactionReceipt,
+  useAccount,
+} from 'wagmi';
 import { format }                                            from 'date-fns';
 import {
   Wallet, Shield, TrendingUp, DollarSign, Clock,
@@ -10,8 +16,68 @@ import {
   AlertTriangle, Info,
 } from 'lucide-react';
 import { USER_PREFERENCES_ABI } from '@/config/abis';
-import { USER_PREFERENCES_ADDRESS }                from '@/config';
+import { USER_PREFERENCES_ADDRESS } from '@/config';
 
+// ─── Contract addresses (Arbitrum Sepolia) ───────────────────────────────────
+const FACTORY_ADDRESS          = '0x467CFb98Ce2429EB5dEBF6960B48a3C87A2D5a5A' as const;
+const PROTOCOL_REGISTRY_ADDRESS = '0xa76322A970EA80B0ebbB9c5213a2F3A1ee53118f' as const;
+const ARBISCAN_BASE            = 'https://sepolia.arbiscan.io/address/';
+
+// ─── ABIs (minimal) ──────────────────────────────────────────────────────────
+const FACTORY_ABI = [
+  {
+    name: 'getUserFund',
+    type: 'function',
+    stateMutability: 'view',
+    inputs:  [{ name: '_user',    type: 'address' }],
+    outputs: [{ name: 'fundAddr', type: 'address' }],
+  },
+  {
+    name: 'canUserCreateFund',
+    type: 'function',
+    stateMutability: 'view',
+    inputs:  [{ name: '_user', type: 'address' }],
+    outputs: [{ name: '',      type: 'bool'    }],
+  },
+  {
+    name: 'getFundCount',
+    type: 'function',
+    stateMutability: 'view',
+    inputs:  [],
+    outputs: [{ name: '', type: 'uint256' }],
+  },
+] as const;
+
+const FUND_ABI = [
+  { name: 'totalBalance',           type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'uint256' }] },
+  { name: 'monthlyDeposit',         type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'uint256' }] },
+  { name: 'retirementAge',          type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'uint256' }] },
+  { name: 'timelockEnd',            type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'uint256' }] },
+  { name: 'selectedProtocol',       type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'address' }] },
+  { name: 'retirementStarted',      type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'bool'    }] },
+  { name: 'monthlyDepositCount',    type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'uint256' }] },
+  { name: 'lastMonthlyDepositTime', type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'uint256' }] },
+  { name: 'missedMonths',           type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'uint256' }] },
+] as const;
+
+const REGISTRY_ABI = [
+  {
+    name: 'getActiveProtocolsList',
+    type: 'function',
+    stateMutability: 'view',
+    inputs:  [],
+    outputs: [{ name: '', type: 'address[]' }],
+  },
+  {
+    name: 'getProtocolCount',
+    type: 'function',
+    stateMutability: 'view',
+    inputs:  [],
+    outputs: [{ name: 'total', type: 'uint256' }, { name: 'active', type: 'uint256' }],
+  },
+] as const;
+
+// ─── Types ───────────────────────────────────────────────────────────────────
 type Protocol = {
   protocolAddress: `0x${string}`;
   riskLevel:       number;
@@ -19,8 +85,7 @@ type Protocol = {
   isVerified?:     boolean;
 };
 
-const ZERO_ADDRESS  = '0x0000000000000000000000000000000000000000' as const;
-const ARBISCAN_BASE = 'https://sepolia.arbiscan.io/address/';
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000' as const;
 
 const RISK_LEVELS = [
   {
@@ -62,56 +127,33 @@ const RISK_LEVELS = [
 ] as const;
 
 const STRATEGY_TYPES = [
-  {
-    value:       0,
-    label:       'Concentrado',
-    description: 'Todo en el mejor protocolo disponible según tu perfil',
-    icon:        Target,
-  },
-  {
-    value:       1,
-    label:       'Diversificado',
-    description: 'Distribución entre múltiples protocolos para reducir riesgo',
-    icon:        PieChart,
-  },
-  {
-    value:       2,
-    label:       'Híbrido',
-    description: 'Combinación dinámica ajustada al rendimiento del mercado',
-    icon:        Activity,
-  },
+  { value: 0, label: 'Concentrado',  description: 'Todo en el mejor protocolo disponible según tu perfil',             icon: Target   },
+  { value: 1, label: 'Diversificado',description: 'Distribución entre múltiples protocolos para reducir riesgo',       icon: PieChart },
+  { value: 2, label: 'Híbrido',      description: 'Combinación dinámica ajustada al rendimiento del mercado',          icon: Activity },
 ] as const;
 
 const ADMIN_CONTENT = [
   {
-    id:      1,
-    type:    'recommendation' as const,
+    id: 1, type: 'recommendation' as const,
     title:   'Estrategia recomendada para Q1 2025',
     summary: 'Dados los indicadores macroeconómicos actuales, el equipo de análisis recomienda aumentar exposición a Aave v3 en Arbitrum.',
-    date:    'Feb 15, 2025',
-    icon:    TrendingUp,
-    color:   'indigo',
+    date: 'Feb 15, 2025', icon: TrendingUp, color: 'indigo',
   },
   {
-    id:      2,
-    type:    'course' as const,
+    id: 2, type: 'course' as const,
     title:   'Módulo 3: Fundamentos de DeFi',
     summary: 'Aprende cómo funcionan los protocolos de lending descentralizado y cómo evaluar su seguridad antes de invertir.',
-    date:    'Feb 10, 2025',
-    icon:    BookOpen,
-    color:   'pink',
+    date: 'Feb 10, 2025', icon: BookOpen, color: 'pink',
   },
   {
-    id:      3,
-    type:    'recommendation' as const,
+    id: 3, type: 'recommendation' as const,
     title:   'Alerta: Actualización de riesgo',
     summary: 'Compound Finance actualizó sus parámetros de colateral. Usuarios con estrategia Agresiva deben revisar su exposición.',
-    date:    'Feb 8, 2025',
-    icon:    AlertTriangle,
-    color:   'amber',
+    date: 'Feb 8, 2025', icon: AlertTriangle, color: 'amber',
   },
 ];
 
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 function formatTimestamp(ts: bigint | undefined): string {
   if (!ts || ts === 0n) return 'Nunca';
   return format(new Date(Number(ts) * 1000), 'MMM dd, yyyy – HH:mm');
@@ -137,9 +179,9 @@ function riskLevelLabel(level: number): string {
   return RISK_LEVELS[level]?.label ?? 'Desconocido';
 }
 
+// ─── CountdownTimer ───────────────────────────────────────────────────────────
 function CountdownTimer({ targetDate }: { targetDate: Date | null }) {
   const [display, setDisplay] = useState('—');
-
   useEffect(() => {
     if (!targetDate) { setDisplay('—'); return; }
     const update = () => {
@@ -154,60 +196,89 @@ function CountdownTimer({ targetDate }: { targetDate: Date | null }) {
     const id = setInterval(update, 60_000);
     return () => clearInterval(id);
   }, [targetDate]);
-
   return <span>{display}</span>;
 }
 
-// Componente principal 
-
+// ─── Main Component ───────────────────────────────────────────────────────────
 const DashboardPage: React.FC = () => {
   const navigate        = useNavigate();
-  const { address }     = useConnection();
+  const { address }     = useAccount();
 
-  const personalFund: {
-    balance?: bigint;
-    fundInfo?: {
-      principal?:            bigint;
-      monthlyDeposit?:       bigint;
-      desiredMonthlyIncome?: bigint;
-      yearsPayments?:        number;
-      retirementAge?:        bigint;
-      retirementStarted?:    boolean;
-    };
-    depositStats?: {
-      lastDepositTimestamp?: bigint;
-      monthlyDepositCount?:  bigint;
-    };
-    timelockInfo?: {
-      timelockEnd?:   bigint;
-      remainingTime?: bigint;
-      isUnlocked?:    boolean;
-    };
-  } = {};
+  // ── 1. Leer dirección del fondo desde el Factory ──────────────────────────
+  const {
+    data:    userFundAddress,
+    isLoading: isLoadingFund,
+    refetch: refetchFund,
+  } = useReadContract({
+    address:      FACTORY_ADDRESS,
+    abi:          FACTORY_ABI,
+    functionName: 'getUserFund',
+    args:         address ? [address] : undefined,
+    query:        { enabled: !!address },
+  });
 
-  const factory: { userFund?: `0x${string}` } = {};
+  const fundAddress = userFundAddress as `0x${string}` | undefined;
+  const hasFund     = !!fundAddress && fundAddress !== ZERO_ADDRESS;
 
-  const protocolRegistry: {
-    activeProtocolCount?: bigint;
-    activeProtocols:      Protocol[];
-  } = { activeProtocols: [] };
+  // ── 2. Leer todos los datos del PersonalFund desplegado ───────────────────
+  const fundContracts = hasFund && fundAddress
+    ? ([
+        { address: fundAddress, abi: FUND_ABI, functionName: 'totalBalance'           },
+        { address: fundAddress, abi: FUND_ABI, functionName: 'monthlyDeposit'         },
+        { address: fundAddress, abi: FUND_ABI, functionName: 'retirementAge'          },
+        { address: fundAddress, abi: FUND_ABI, functionName: 'timelockEnd'            },
+        { address: fundAddress, abi: FUND_ABI, functionName: 'selectedProtocol'       },
+        { address: fundAddress, abi: FUND_ABI, functionName: 'retirementStarted'      },
+        { address: fundAddress, abi: FUND_ABI, functionName: 'monthlyDepositCount'    },
+        { address: fundAddress, abi: FUND_ABI, functionName: 'lastMonthlyDepositTime' },
+        { address: fundAddress, abi: FUND_ABI, functionName: 'missedMonths'           },
+      ] as const)
+    : ([] as const);
 
-  const userPreferences: {
-    userConfig?: {
-      riskTolerance?:    number;
-      selectedProtocol?: `0x${string}`;
-      autoCompound?:     boolean;
-    };
-    routingStrategy?: {
-      strategyType?: number;
-    };
-  } = {};
+  const {
+    data:    fundData,
+    isLoading: isLoadingFundData,
+    refetch: refetchFundData,
+  } = useReadContracts({
+    contracts: fundContracts as any,
+    query:     { enabled: hasFund },
+  });
 
-  const isLoading  = false;
-  const refetchAll = useCallback(async () => {}, []);
+  // Extraer valores del fondo (índices según el orden de fundContracts)
+  const balance            = fundData?.[0]?.result as bigint  | undefined;
+  const monthlyDeposit     = fundData?.[1]?.result as bigint  | undefined;
+  const retirementAge      = fundData?.[2]?.result as bigint  | undefined;
+  const timelockEnd        = fundData?.[3]?.result as bigint  | undefined;
+  const selectedProtocol   = fundData?.[4]?.result as string  | undefined;
+  const retirementStarted  = fundData?.[5]?.result as boolean | undefined;
+  const monthlyDepositCount= fundData?.[6]?.result as bigint  | undefined;
+  const lastMonthlyTime    = fundData?.[7]?.result as bigint  | undefined;
 
-  // ── Estado local ──────────────────────────────────────────────────────────
+  // ── 3. Leer protocolos del Registry ──────────────────────────────────────
+  const {
+    data:    protocolListRaw,
+    refetch: refetchProtocols,
+  } = useReadContract({
+    address:      PROTOCOL_REGISTRY_ADDRESS,
+    abi:          REGISTRY_ABI,
+    functionName: 'getActiveProtocolsList',
+    query:        { enabled: true },
+  });
 
+  // Construimos una lista de protocolos simplificada
+  // (el Registry devuelve solo direcciones; en una integración completa
+  //  harías multicall a getProtocol por cada una)
+  const activeProtocols: Protocol[] = useMemo(() => {
+    if (!protocolListRaw) return [];
+    return (protocolListRaw as `0x${string}`[]).map((addr) => ({
+      protocolAddress: addr,
+      riskLevel:       1,   // placeholder – reemplazar con multicall a getProtocol
+      apy:             500n, // placeholder – 5.00 %
+      isVerified:      true,
+    }));
+  }, [protocolListRaw]);
+
+  // ── 4. Estado local ───────────────────────────────────────────────────────
   const [depositAmount,      setDepositAmount]      = useState('');
   const [depositAmountError, setDepositAmountError] = useState<string | null>(null);
   const [depositMode,        setDepositMode]        = useState<'monthly' | 'custom'>('monthly');
@@ -220,6 +291,12 @@ const DashboardPage: React.FC = () => {
   const [prefSaveOk,      setPrefSaveOk]      = useState(false);
   const [stratSaveOk,     setStratSaveOk]     = useState(false);
 
+  // Preferencias on-chain (aún usando objeto vacío como antes)
+  const userPreferences: {
+    userConfig?: { riskTolerance?: number; selectedProtocol?: `0x${string}`; autoCompound?: boolean };
+    routingStrategy?: { strategyType?: number };
+  } = {};
+
   const currentRisk     = userPreferences.userConfig?.riskTolerance    ?? 0;
   const currentStrategy = userPreferences.routingStrategy?.strategyType ?? 0;
   const currentProtocol = userPreferences.userConfig?.selectedProtocol  ?? ZERO_ADDRESS;
@@ -228,37 +305,29 @@ const DashboardPage: React.FC = () => {
   const effectiveStrategy = pendingStrategy ?? currentStrategy;
   const effectiveProtocol = pendingProtocol ?? (currentProtocol !== ZERO_ADDRESS ? currentProtocol : null);
 
-  const hasFund     = !!factory.userFund && factory.userFund !== ZERO_ADDRESS;
-  const fundAddress = factory.userFund;
-
-  const monthlyDepositAmount = personalFund.fundInfo?.monthlyDeposit
-    ? (Number(personalFund.fundInfo.monthlyDeposit) / 1e6).toFixed(2)
+  const monthlyDepositAmount = monthlyDeposit
+    ? (Number(monthlyDeposit) / 1e6).toFixed(2)
     : '0';
 
   const activeDepositAmount = depositMode === 'monthly' ? monthlyDepositAmount : depositAmount;
 
   const nextDepositDate = useMemo<Date | null>(() => {
-    const lastTs = personalFund.depositStats?.lastDepositTimestamp;
-    if (!lastTs || lastTs === 0n) return null;
-    const next = new Date(Number(lastTs) * 1000);
+    if (!lastMonthlyTime || lastMonthlyTime === 0n) return null;
+    const next = new Date(Number(lastMonthlyTime) * 1000);
     next.setMonth(next.getMonth() + 1);
     return next;
-  }, [personalFund.depositStats]);
+  }, [lastMonthlyTime]);
+
+  const nowSec = BigInt(Math.floor(Date.now() / 1000));
 
   const progress = useMemo(() => {
-    if (!personalFund.fundInfo || !personalFund.balance) return null;
-    const currentBalance  = Number(personalFund.balance) / 1e6;
-    const monthlyDeposit  = Number(personalFund.fundInfo.monthlyDeposit  ?? 0n) / 1e6;
-    const desiredIncome   = Number(personalFund.fundInfo.desiredMonthlyIncome ?? 0n) / 1e6;
-    const yearsPayments   = Number(personalFund.fundInfo.yearsPayments ?? 0);
-    const timelockEnd     = personalFund.timelockInfo?.timelockEnd;
-    const nowSec          = BigInt(Math.floor(Date.now() / 1000));
+    if (!balance || !monthlyDeposit) return null;
+    const currentBalance  = Number(balance) / 1e6;
+    const monthly         = Number(monthlyDeposit) / 1e6;
     const remainingSec    = timelockEnd && timelockEnd > nowSec ? timelockEnd - nowSec : 0n;
     const remainingMonths = Number(remainingSec) / (30 * 24 * 3600);
-    const neededBalance   = desiredIncome > 0 && yearsPayments > 0
-      ? desiredIncome * 12 * yearsPayments
-      : monthlyDeposit * 12 * 25;
-    const projectedBalance   = currentBalance + monthlyDeposit * remainingMonths;
+    const neededBalance   = monthly * 12 * 25; // fallback: 25 años
+    const projectedBalance   = currentBalance + monthly * remainingMonths;
     const progressPercentage = neededBalance > 0
       ? Math.min((currentBalance / neededBalance) * 100, 100)
       : 0;
@@ -270,8 +339,20 @@ const DashboardPage: React.FC = () => {
       onTrack:             projectedBalance >= neededBalance,
       monthsRemaining:     Math.floor(remainingMonths),
     };
-  }, [personalFund]);
+  }, [balance, monthlyDeposit, timelockEnd]);
 
+  const isLoading = isLoadingFund || isLoadingFundData;
+
+  // ── 5. refetchAll: refresca todos los datos de la blockchain ─────────────
+  const refetchAll = useCallback(async () => {
+    await Promise.all([
+      refetchFund(),
+      refetchFundData(),
+      refetchProtocols(),
+    ]);
+  }, [refetchFund, refetchFundData, refetchProtocols]);
+
+  // ── 6. Write contracts ────────────────────────────────────────────────────
   const { writeContract: writeConfig,   isPending: isWritingConfig,   data: configTxHash } = useWriteContract();
   const { writeContract: writeStrategy, isPending: isWritingStrategy, data: stratTxHash  } = useWriteContract();
 
@@ -279,7 +360,6 @@ const DashboardPage: React.FC = () => {
     hash:  configTxHash,
     query: { enabled: Boolean(configTxHash) },
   });
-
   const { isLoading: isConfirmingStrategy } = useWaitForTransactionReceipt({
     hash:  stratTxHash,
     query: { enabled: Boolean(stratTxHash) },
@@ -288,6 +368,7 @@ const DashboardPage: React.FC = () => {
   const isSavingPrefs    = isWritingConfig    || isConfirmingConfig;
   const isSavingStrategy = isWritingStrategy  || isConfirmingStrategy;
 
+  // ── 7. Handlers ───────────────────────────────────────────────────────────
   const handleOpenDepositModal = useCallback(() => {
     setDepositMode('monthly');
     setDepositAmount('');
@@ -312,9 +393,7 @@ const DashboardPage: React.FC = () => {
     setDepositAmount(value);
     const parsed = parseFloat(value);
     setDepositAmountError(
-      value && (isNaN(parsed) || parsed <= 0)
-        ? 'Ingresa un monto válido mayor a 0'
-        : null,
+      value && (isNaN(parsed) || parsed <= 0) ? 'Ingresa un monto válido mayor a 0' : null,
     );
   }, []);
 
@@ -332,9 +411,10 @@ const DashboardPage: React.FC = () => {
         abi:          USER_PREFERENCES_ABI,
         functionName: 'setUserConfig',
         args: [
+          address,
           effectiveProtocol ?? ZERO_ADDRESS,
-          effectiveRisk as 0 | 1 | 2,
           userPreferences.userConfig?.autoCompound ?? false,
+          effectiveRisk as 0 | 1 | 2,
         ],
       });
       setPendingRisk(null);
@@ -354,11 +434,7 @@ const DashboardPage: React.FC = () => {
         address:      USER_PREFERENCES_ADDRESS,
         abi:          USER_PREFERENCES_ABI,
         functionName: 'setRoutingStrategy',
-        args: [
-          effectiveStrategy as 0 | 1 | 2,
-          50n,
-          10n,
-        ],
+        args: [effectiveStrategy as 0 | 1 | 2, 50n, 10n],
       });
       setPendingStrategy(null);
       setStratSaveOk(true);
@@ -368,8 +444,7 @@ const DashboardPage: React.FC = () => {
     }
   }, [address, effectiveStrategy, writeStrategy]);
 
-  // ── Render ────────────────────────────────────────────────────────────────
-
+  // ── 8. Render ─────────────────────────────────────────────────────────────
   if (isLoading) {
     return (
       <div className="min-h-screen bg-linear-to-br from-indigo-50 to-purple-50 flex items-center justify-center">
@@ -429,21 +504,24 @@ const DashboardPage: React.FC = () => {
 
             {hasFund ? (
               <div className="space-y-6 sm:space-y-8">
+
+                {/* Balance + Estado */}
                 <div className="grid sm:grid-cols-2 gap-6 sm:gap-8">
                   <div>
                     <p className="text-gray-500 text-base sm:text-lg mb-2">Balance Actual</p>
                     <p className="text-4xl sm:text-5xl font-black text-emerald-600">
-                      {formatUSDCDisplay(personalFund.balance)}
+                      {formatUSDCDisplay(balance)}
                     </p>
                   </div>
                   <div>
                     <p className="text-gray-500 text-base sm:text-lg mb-2">Estado del Fondo</p>
                     <p className="text-2xl sm:text-3xl font-bold text-indigo-700">
-                      {personalFund.fundInfo?.retirementStarted ? 'Jubilado' : 'Ahorrando'}
+                      {retirementStarted ? 'Jubilado' : 'Ahorrando'}
                     </p>
                   </div>
                 </div>
 
+                {/* Barra de progreso */}
                 {progress && (
                   <div className="bg-linear-to-r from-blue-50 to-purple-50 rounded-2xl p-6 border-2 border-blue-200">
                     <div className="flex items-center justify-between mb-3">
@@ -483,12 +561,13 @@ const DashboardPage: React.FC = () => {
                   </div>
                 )}
 
+                {/* Stats grid */}
                 <div className="grid grid-cols-2 gap-4">
                   {[
-                    { label: 'Principal',        value: formatUSDCDisplay(personalFund.fundInfo?.principal)       },
-                    { label: 'Depósito Mensual', value: formatUSDCDisplay(personalFund.fundInfo?.monthlyDeposit) },
-                    { label: 'Total Depósitos',  value: personalFund.depositStats?.monthlyDepositCount?.toString() ?? '0' },
-                    { label: 'Edad de Retiro',   value: `${personalFund.fundInfo?.retirementAge?.toString() ?? '0'} años` },
+                    { label: 'Depósito Mensual', value: formatUSDCDisplay(monthlyDeposit)             },
+                    { label: 'Total Depósitos',  value: monthlyDepositCount?.toString() ?? '0'        },
+                    { label: 'Edad de Retiro',   value: `${retirementAge?.toString() ?? '0'} años`    },
+                    { label: 'Protocolo',        value: selectedProtocol ? shortAddr(selectedProtocol) : '—' },
                   ].map((stat) => (
                     <div key={stat.label} className="bg-gray-50 rounded-xl p-4">
                       <p className="text-gray-500 text-sm mb-1">{stat.label}</p>
@@ -497,7 +576,7 @@ const DashboardPage: React.FC = () => {
                   ))}
                 </div>
 
-                {/* ── Deposit Cards ── */}
+                {/* Deposit Cards */}
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-5 flex flex-col gap-4">
                     <div className="flex items-start justify-between gap-2">
@@ -508,7 +587,7 @@ const DashboardPage: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-3xl sm:text-4xl font-black text-emerald-700">
-                        {formatUSDCDisplay(personalFund.fundInfo?.monthlyDeposit)}
+                        {formatUSDCDisplay(monthlyDeposit)}
                       </p>
                       <p className="text-xs text-emerald-600 mt-1">
                         USDC · 5% de comisión deducida on-chain
@@ -538,6 +617,7 @@ const DashboardPage: React.FC = () => {
                   </div>
                 </div>
 
+                {/* Dirección del contrato */}
                 <div className="bg-linear-to-r from-indigo-50 to-purple-50 rounded-2xl p-4 sm:p-6 border-2 border-indigo-200">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div className="flex-1 min-w-0">
@@ -556,24 +636,26 @@ const DashboardPage: React.FC = () => {
                   </div>
                 </div>
 
-                {personalFund.timelockInfo?.timelockEnd && (
+                {/* Timelock */}
+                {timelockEnd && timelockEnd > 0n && (
                   <div className="bg-linear-to-r from-amber-50 to-orange-50 rounded-2xl p-6 border-2 border-amber-300">
                     <p className="text-gray-700 font-medium mb-2 flex items-center gap-2">
                       <Clock size={24} className="text-amber-600" />
                       Timelock termina:
                     </p>
                     <p className="text-xl sm:text-2xl font-black text-amber-700">
-                      {formatTimestamp(personalFund.timelockInfo.timelockEnd)}
+                      {formatTimestamp(timelockEnd)}
                     </p>
-                    {personalFund.timelockInfo.remainingTime && personalFund.timelockInfo.remainingTime > 0n && (
+                    {timelockEnd > nowSec && (
                       <p className="text-sm text-amber-600 mt-2">
-                        {Math.floor(Number(personalFund.timelockInfo.remainingTime) / 86400)} días restantes
+                        {Math.floor(Number(timelockEnd - nowSec) / 86400)} días restantes
                       </p>
                     )}
                   </div>
                 )}
 
-                {!personalFund.fundInfo?.retirementStarted && personalFund.timelockInfo?.isUnlocked && (
+                {/* Botón iniciar retiro */}
+                {!retirementStarted && timelockEnd && timelockEnd <= nowSec && (
                   <button
                     onClick={handleStartRetirement}
                     className="w-full bg-linear-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition transform hover:scale-105 flex items-center justify-center gap-3"
@@ -582,8 +664,10 @@ const DashboardPage: React.FC = () => {
                     Iniciar Retiro
                   </button>
                 )}
+
               </div>
             ) : (
+              /* Sin fondo */
               <div className="text-center py-12 sm:py-16">
                 <Wallet className="w-24 h-24 sm:w-32 sm:h-32 text-gray-200 mx-auto mb-6" />
                 <p className="text-xl sm:text-2xl text-gray-600 mb-8">
@@ -601,10 +685,10 @@ const DashboardPage: React.FC = () => {
             )}
           </div>
 
-          {/* ══ GRILLA INFERIOR (3 columnas) ══ */}
+          {/* ══ GRILLA INFERIOR ══ */}
           <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
 
-            {/* ── LEFT / MAIN COLUMN ── */}
+            {/* LEFT / MAIN COLUMN */}
             <div className="lg:col-span-2 space-y-6 sm:space-y-8">
               {hasFund && (
                 <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-purple-100 p-6 sm:p-10">
@@ -624,7 +708,7 @@ const DashboardPage: React.FC = () => {
               )}
             </div>
 
-            {/* ── RIGHT SIDEBAR ── */}
+            {/* RIGHT SIDEBAR */}
             <div className="space-y-6 sm:space-y-8">
 
               {/* Preferencias */}
@@ -634,7 +718,7 @@ const DashboardPage: React.FC = () => {
                   Mis Preferencias
                 </h3>
                 <p className="text-gray-500 text-sm mb-6">
-                  Configurá tu perfil de inversión on-chain. Estos parámetros determinan cómo se enrutan tus depósitos.
+                  Configurá tu perfil de inversión on-chain.
                 </p>
 
                 {userPreferences.userConfig && (
@@ -652,9 +736,7 @@ const DashboardPage: React.FC = () => {
 
                 {/* Nivel de riesgo */}
                 <div className="mb-6">
-                  <p className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3">
-                    Nivel de Riesgo
-                  </p>
+                  <p className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3">Nivel de Riesgo</p>
                   <div className="space-y-2">
                     {RISK_LEVELS.map((r) => {
                       const Icon       = r.icon;
@@ -685,40 +767,34 @@ const DashboardPage: React.FC = () => {
 
                 {/* Protocolo preferido */}
                 <div className="mb-6">
-                  <p className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3">
-                    Protocolo Preferido
-                  </p>
-                  {protocolRegistry.activeProtocols.length > 0 ? (
+                  <p className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3">Protocolo Preferido</p>
+                  {activeProtocols.length > 0 ? (
                     <div className="space-y-2 max-h-44 overflow-y-auto pr-1">
-                      {protocolRegistry.activeProtocols
-                        .filter((p: Protocol) => !!p?.protocolAddress)
-                        .map((p: Protocol) => {
-                          const isSelected = effectiveProtocol === p.protocolAddress;
-                          return (
-                            <button
-                              key={p.protocolAddress}
-                              onClick={() => setPendingProtocol(p.protocolAddress)}
-                              className={`w-full flex items-center justify-between gap-2 p-3 rounded-xl border transition-all text-left ${
-                                isSelected
-                                  ? 'border-indigo-400 bg-indigo-50 shadow'
-                                  : 'border-gray-200 hover:bg-gray-50'
-                              }`}
-                            >
-                              <div className="min-w-0">
-                                <p className="font-mono text-xs text-gray-700 truncate">{shortAddr(p.protocolAddress)}</p>
-                                <div className="flex items-center gap-2 mt-0.5">
-                                  <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${RISK_LEVELS[p.riskLevel]?.badge ?? 'bg-gray-100 text-gray-700'}`}>
-                                    {riskLevelLabel(p.riskLevel)}
-                                  </span>
-                                  <span className="text-xs text-emerald-600 font-semibold">
-                                    APY {(Number(p.apy) / 100).toFixed(2)}%
-                                  </span>
-                                </div>
+                      {activeProtocols.filter((p) => !!p?.protocolAddress).map((p) => {
+                        const isSelected = effectiveProtocol === p.protocolAddress;
+                        return (
+                          <button
+                            key={p.protocolAddress}
+                            onClick={() => setPendingProtocol(p.protocolAddress)}
+                            className={`w-full flex items-center justify-between gap-2 p-3 rounded-xl border transition-all text-left ${
+                              isSelected ? 'border-indigo-400 bg-indigo-50 shadow' : 'border-gray-200 hover:bg-gray-50'
+                            }`}
+                          >
+                            <div className="min-w-0">
+                              <p className="font-mono text-xs text-gray-700 truncate">{shortAddr(p.protocolAddress)}</p>
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${RISK_LEVELS[p.riskLevel]?.badge ?? 'bg-gray-100 text-gray-700'}`}>
+                                  {riskLevelLabel(p.riskLevel)}
+                                </span>
+                                <span className="text-xs text-emerald-600 font-semibold">
+                                  APY {(Number(p.apy) / 100).toFixed(2)}%
+                                </span>
                               </div>
-                              {isSelected && <CheckCircle size={16} className="text-indigo-500 shrink-0" />}
-                            </button>
-                          );
-                        })}
+                            </div>
+                            {isSelected && <CheckCircle size={16} className="text-indigo-500 shrink-0" />}
+                          </button>
+                        );
+                      })}
                     </div>
                   ) : (
                     <p className="text-gray-400 text-sm text-center py-4 border border-dashed border-gray-200 rounded-xl">
@@ -729,14 +805,12 @@ const DashboardPage: React.FC = () => {
 
                 {prefSaveError && (
                   <p className="text-red-600 text-xs mb-3 flex items-start gap-1">
-                    <AlertCircle size={14} className="shrink-0 mt-0.5" />
-                    {prefSaveError}
+                    <AlertCircle size={14} className="shrink-0 mt-0.5" />{prefSaveError}
                   </p>
                 )}
                 {prefSaveOk && (
                   <p className="text-emerald-600 text-xs mb-3 flex items-center gap-1">
-                    <CheckCircle size={14} />
-                    Preferencias guardadas on-chain
+                    <CheckCircle size={14} />Preferencias guardadas on-chain
                   </p>
                 )}
 
@@ -763,9 +837,7 @@ const DashboardPage: React.FC = () => {
                 </p>
 
                 <div className="mb-6">
-                  <p className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3">
-                    Estrategia de Inversión
-                  </p>
+                  <p className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3">Estrategia de Inversión</p>
                   <div className="space-y-2">
                     {STRATEGY_TYPES.map((s) => {
                       const Icon       = s.icon;
@@ -775,9 +847,7 @@ const DashboardPage: React.FC = () => {
                           key={s.value}
                           onClick={() => setPendingStrategy(s.value)}
                           className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${
-                            isSelected
-                              ? 'border-violet-400 bg-violet-50 shadow'
-                              : 'border-gray-200 hover:bg-gray-50'
+                            isSelected ? 'border-violet-400 bg-violet-50 shadow' : 'border-gray-200 hover:bg-gray-50'
                           }`}
                         >
                           <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isSelected ? 'bg-violet-100 text-violet-700' : 'bg-gray-100 text-gray-400'}`}>
@@ -795,8 +865,7 @@ const DashboardPage: React.FC = () => {
 
                   {stratSaveOk && (
                     <p className="text-emerald-600 text-xs mt-2 flex items-center gap-1">
-                      <CheckCircle size={14} />
-                      Estrategia guardada on-chain
+                      <CheckCircle size={14} />Estrategia guardada on-chain
                     </p>
                   )}
 
@@ -814,45 +883,38 @@ const DashboardPage: React.FC = () => {
 
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <p className="text-sm font-bold text-gray-700 uppercase tracking-wide">
-                      Protocolos Activos
-                    </p>
+                    <p className="text-sm font-bold text-gray-700 uppercase tracking-wide">Protocolos Activos</p>
                     <span className="bg-violet-100 text-violet-700 text-xs font-bold px-2 py-1 rounded-full">
-                      {protocolRegistry.activeProtocolCount?.toString() ?? '0'} verificados
+                      {activeProtocols.length} verificados
                     </span>
                   </div>
 
-                  {protocolRegistry.activeProtocols.length > 0 ? (
+                  {activeProtocols.length > 0 ? (
                     <div className="space-y-2">
-                      {protocolRegistry.activeProtocols
-                        .filter((p: Protocol) => !!p?.protocolAddress)
-                        .slice(0, 3)
-                        .map((p: Protocol) => (
-                          <div key={p.protocolAddress} className="bg-gray-50 rounded-xl p-3 flex items-center justify-between gap-3">
-                            <div className="min-w-0">
-                              <p className="font-mono text-xs text-gray-600 truncate">{shortAddr(p.protocolAddress)}</p>
-                              <div className="flex items-center gap-1.5 mt-0.5">
-                                <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${RISK_LEVELS[p.riskLevel]?.badge ?? 'bg-gray-100 text-gray-700'}`}>
-                                  {riskLevelLabel(p.riskLevel)}
+                      {activeProtocols.filter((p) => !!p?.protocolAddress).slice(0, 3).map((p) => (
+                        <div key={p.protocolAddress} className="bg-gray-50 rounded-xl p-3 flex items-center justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="font-mono text-xs text-gray-600 truncate">{shortAddr(p.protocolAddress)}</p>
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                              <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${RISK_LEVELS[p.riskLevel]?.badge ?? 'bg-gray-100 text-gray-700'}`}>
+                                {riskLevelLabel(p.riskLevel)}
+                              </span>
+                              {p.isVerified && (
+                                <span className="text-xs text-blue-500 font-semibold flex items-center gap-0.5">
+                                  <CheckCircle size={10} />Verificado
                                 </span>
-                                {p.isVerified && (
-                                  <span className="text-xs text-blue-500 font-semibold flex items-center gap-0.5">
-                                    <CheckCircle size={10} />Verificado
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                            <div className="text-right shrink-0">
-                              <p className="text-emerald-600 font-black text-sm">
-                                {(Number(p.apy) / 100).toFixed(2)}%
-                              </p>
-                              <p className="text-gray-400 text-xs">APY</p>
+                              )}
                             </div>
                           </div>
-                        ))}
-                      {protocolRegistry.activeProtocols.length > 3 && (
+                          <div className="text-right shrink-0">
+                            <p className="text-emerald-600 font-black text-sm">{(Number(p.apy) / 100).toFixed(2)}%</p>
+                            <p className="text-gray-400 text-xs">APY</p>
+                          </div>
+                        </div>
+                      ))}
+                      {activeProtocols.length > 3 && (
                         <button className="w-full text-center text-sm text-violet-600 hover:text-violet-700 font-medium py-2 flex items-center justify-center gap-1">
-                          Ver {protocolRegistry.activeProtocols.length - 3} más
+                          Ver {activeProtocols.length - 3} más
                           <ChevronRight size={14} />
                         </button>
                       )}
@@ -877,21 +939,10 @@ const DashboardPage: React.FC = () => {
                 <div className="space-y-3">
                   {ADMIN_CONTENT.map((item) => {
                     const Icon = item.icon;
-                    const colorMap: Record<string, string> = {
-                      indigo: 'bg-indigo-50 border-indigo-200',
-                      pink:   'bg-pink-50 border-pink-200',
-                      amber:  'bg-amber-50 border-amber-200',
-                    };
-                    const iconColorMap: Record<string, string> = {
-                      indigo: 'text-indigo-600 bg-indigo-100',
-                      pink:   'text-pink-600 bg-pink-100',
-                      amber:  'text-amber-600 bg-amber-100',
-                    };
+                    const colorMap: Record<string, string> = { indigo: 'bg-indigo-50 border-indigo-200', pink: 'bg-pink-50 border-pink-200', amber: 'bg-amber-50 border-amber-200' };
+                    const iconColorMap: Record<string, string> = { indigo: 'text-indigo-600 bg-indigo-100', pink: 'text-pink-600 bg-pink-100', amber: 'text-amber-600 bg-amber-100' };
                     return (
-                      <div
-                        key={item.id}
-                        className={`border rounded-2xl p-4 ${colorMap[item.color]} transition hover:shadow-md cursor-pointer`}
-                      >
+                      <div key={item.id} className={`border rounded-2xl p-4 ${colorMap[item.color]} transition hover:shadow-md cursor-pointer`}>
                         <div className="flex items-start gap-3">
                           <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${iconColorMap[item.color]}`}>
                             <Icon size={16} />
@@ -944,13 +995,7 @@ const DashboardPage: React.FC = () => {
           <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-2xl font-black text-gray-800">Realizar Depósito</h3>
-              <button
-                onClick={handleCloseDepositModal}
-                className="text-gray-400 hover:text-gray-600 transition text-2xl leading-none"
-                aria-label="Cerrar"
-              >
-                ×
-              </button>
+              <button onClick={handleCloseDepositModal} className="text-gray-400 hover:text-gray-600 transition text-2xl leading-none" aria-label="Cerrar">×</button>
             </div>
 
             <div className="grid grid-cols-2 gap-2 mb-6 bg-gray-100 p-1 rounded-xl">
@@ -971,17 +1016,13 @@ const DashboardPage: React.FC = () => {
               {depositMode === 'monthly' ? (
                 <div className="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-5 text-center">
                   <p className="text-gray-600 text-sm mb-1">Depósito mensual configurado</p>
-                  <p className="text-4xl font-black text-emerald-700">
-                    {formatUSDCDisplay(personalFund.fundInfo?.monthlyDeposit)}
-                  </p>
+                  <p className="text-4xl font-black text-emerald-700">{formatUSDCDisplay(monthlyDeposit)}</p>
                 </div>
               ) : (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Monto en USDC</label>
                   <input
-                    type="number"
-                    min="0.01"
-                    step="0.01"
+                    type="number" min="0.01" step="0.01"
                     value={depositAmount}
                     onChange={(e) => handleDepositAmountChange(e.target.value)}
                     placeholder="Ej: 500.00"
@@ -994,9 +1035,7 @@ const DashboardPage: React.FC = () => {
               )}
 
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-3">
-                <p className="text-amber-800 text-sm">
-                  La funcionalidad de depósito estará disponible próximamente.
-                </p>
+                <p className="text-amber-800 text-sm">La funcionalidad de depósito estará disponible próximamente.</p>
               </div>
 
               <p className="text-xs text-gray-400 text-center">

@@ -1,5 +1,4 @@
 import { Wallet, RefreshCw, CheckCircle, AlertCircle } from 'lucide-react';
-import { useConnection } from 'wagmi';
 import { useFund } from '@/hooks/useFund';
 import { formatCurrency } from '@/lib';
 
@@ -14,7 +13,6 @@ export const USDCBalanceDisplay = ({
   showValidation = false,
   className = '',
 }: USDCBalanceDisplayProps) => {
-  const { address } = useConnection();
   const {
     usdcBalance:  balanceRaw,
     isLoading,
