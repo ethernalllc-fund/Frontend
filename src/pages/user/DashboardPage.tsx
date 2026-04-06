@@ -1,6 +1,6 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate }    from 'react-router-dom';
-import { useEthernal }    from '@/hooks/useEthernal';
+// import { useEthernal }    from '@/hooks/useEthernal';
 import { useWriteContract, useWaitForTransactionReceipt, useConnection } from 'wagmi';
 import { format }         from 'date-fns';
 import {
@@ -10,9 +10,9 @@ import {
   Settings, Zap, BarChart3, BookOpen, ChevronRight, Activity,
   AlertTriangle, Info,
 } from 'lucide-react';
-import { formatUSDCWithSymbol, formatUSDC, isValidUSDCAmount, parseUSDC } from '@/hooks/usdc/usdcUtils';
-import { useUSDCTransaction } from '@/hooks/usdc/useUSDCTransaction';
-import { PERSONAL_FUND_ABI, USER_PREFERENCES_ABI } from '@/contracts/abis';
+// import { formatUSDCWithSymbol, formatUSDC, isValidUSDCAmount, parseUSDC } from '@/hooks/usdc/usdcUtils';
+// import { useUSDCTransaction } from '@/hooks/usdc/useUSDCTransaction';
+import { PERSONAL_FUND_ABI, USER_PREFERENCES_ABI } from '@/config/abis';
 import { USER_PREFERENCES_ADDRESS } from '@/config';
 
 const ZERO_ADDRESS  = '0x0000000000000000000000000000000000000000';
@@ -82,9 +82,14 @@ function formatTimestamp(ts: bigint | undefined): string {
   return format(new Date(Number(ts) * 1000), 'MMM dd, yyyy – HH:mm');
 }
 
+// function formatUSDCDisplay(amount: bigint | undefined): string {
+//   if (!amount) return '$0.00';
+//   return `$${formatUSDC(amount)}`;
+// }
+// TODO: stub temporal — reemplazar cuando formatUSDC esté disponible
 function formatUSDCDisplay(amount: bigint | undefined): string {
   if (!amount) return '$0.00';
-  return `$${formatUSDC(amount)}`;
+  return `$${(Number(amount) / 1e6).toFixed(2)}`;
 }
 
 function shortAddr(addr: string | undefined): string {
@@ -132,17 +137,82 @@ const ADMIN_CONTENT = [
   },
 ];
 
+function CountdownTimer({ targetDate }: { targetDate: Date | null }) {
+  const [display, setDisplay] = useState('—');
+
+  useEffect(() => {
+    if (!targetDate) { setDisplay('—'); return; }
+    const update = () => {
+      const diff = targetDate.getTime() - Date.now();
+      if (diff <= 0) { setDisplay('Ahora'); return; }
+      const d = Math.floor(diff / 86_400_000);
+      const h = Math.floor((diff % 86_400_000) / 3_600_000);
+      const m = Math.floor((diff % 3_600_000) / 60_000);
+      setDisplay(`${d}d ${h}h ${m}m`);
+    };
+    update();
+    const id = setInterval(update, 60_000);
+    return () => clearInterval(id);
+  }, [targetDate]);
+
+  return <span>{display}</span>;
+}
+
 const DashboardPage: React.FC = () => {
   const navigate    = useNavigate();
   const { address } = useConnection();
-  const {
-    personalFund,
-    factory,
-    protocolRegistry,
-    userPreferences,
-    isLoading,
-    refetchAll,
-  } = useEthernal();
+  // const {
+  //   personalFund,
+  //   factory,
+  //   protocolRegistry,
+  //   userPreferences,
+  //   isLoading,
+  //   refetchAll,
+  // } = useEthernal();
+
+  // TODO: stubs temporarios — reemplazar cuando useEthernal esté disponible
+  const personalFund: {
+    balance?: bigint;
+    fundInfo?: {
+      principal?: bigint;
+      monthlyDeposit?: bigint;
+      desiredMonthlyIncome?: bigint;
+      yearsPayments?: number;
+      retirementAge?: bigint;
+      retirementStarted?: boolean;
+    };
+    depositStats?: {
+      lastDepositTimestamp?: bigint;
+      monthlyDepositCount?: bigint;
+    };
+    timelockInfo?: {
+      timelockEnd?: bigint;
+      remainingTime?: bigint;
+      isUnlocked?: boolean;
+    };
+  } = {};
+  const factory: { userFund?: `0x${string}` } = {};
+  const protocolRegistry: {
+    activeProtocolCount?: bigint;
+    activeProtocols: {
+      protocolAddress: `0x${string}`;
+      riskLevel: number;
+      apy: bigint;
+      isVerified?: boolean;
+    }[];
+  } = { activeProtocols: [] };
+  const userPreferences: {
+    userConfig?: {
+      riskTolerance?: number;
+      selectedProtocol?: `0x${string}`;
+      autoCompound?: boolean;
+    };
+    routingStrategy?: {
+      strategyType?: number;
+    };
+  } = {};
+  const isLoading = false;
+  const refetchAll = async () => {};
 
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [depositAmount,      setDepositAmount]      = useState('');
@@ -199,28 +269,36 @@ const DashboardPage: React.FC = () => {
     ? (Number(personalFund.fundInfo.monthlyDeposit) / 1e6).toFixed(2)
     : '0';
 
-  const activeDepositAmount = depositMode === 'monthly' ? monthlyDepositAmount : depositAmount;
-  const activeDepositAmountBigInt = useMemo<bigint | undefined>(() => {
-    if (!activeDepositAmount || parseFloat(activeDepositAmount) <= 0) return undefined;
-    try { return parseUSDC(activeDepositAmount); } catch { return undefined; }
-  }, [activeDepositAmount]);
+  const nextDepositDate = useMemo<Date | null>(() => {
+    const lastTs = personalFund.depositStats?.lastDepositTimestamp;
+    if (!lastTs || lastTs === 0n) return null;
+    const next = new Date(Number(lastTs) * 1000);
+    next.setMonth(next.getMonth() + 1);
+    return next;
+  }, [personalFund.depositStats]);
 
-  const depositTx = useUSDCTransaction({
-    contractAddress:          fundAddress as `0x${string}`,
-    abi:                      PERSONAL_FUND_ABI,
-    functionName:             'deposit',
-    args:                     [],
-    usdcAmount:               activeDepositAmountBigInt,
-    enabled:                  hasFund && isDepositModalOpen && parseFloat(activeDepositAmount) > 0,
-    autoExecuteAfterApproval: true,
-    onTransactionSuccess: () => {
-      void refetchAll();
-      setIsDepositModalOpen(false);
-      setDepositAmount('');
-      setDepositMode('monthly');
-    },
-    onError: () => {},
-  });
+  const activeDepositAmount = depositMode === 'monthly' ? monthlyDepositAmount : depositAmount;
+  // const activeDepositAmountBigInt = useMemo<bigint | undefined>(() => {
+  //   if (!activeDepositAmount || parseFloat(activeDepositAmount) <= 0) return undefined;
+  //   try { return parseUSDC(activeDepositAmount); } catch { return undefined; }
+  // }, [activeDepositAmount]);
+
+  // const depositTx = useUSDCTransaction({
+  //   contractAddress:          fundAddress as `0x${string}`,
+  //   abi:                      PERSONAL_FUND_ABI,
+  //   functionName:             'deposit',
+  //   args:                     [],
+  //   usdcAmount:               activeDepositAmountBigInt,
+  //   enabled:                  hasFund && isDepositModalOpen && parseFloat(activeDepositAmount) > 0,
+  //   autoExecuteAfterApproval: true,
+  //   onTransactionSuccess: () => {
+  //     void refetchAll();
+  //     setIsDepositModalOpen(false);
+  //     setDepositAmount('');
+  //     setDepositMode('monthly');
+  //   },
+  //   onError: () => {},
+  // });
 
   const progress = useMemo(() => {
     if (!personalFund.fundInfo || !personalFund.balance) return null;
@@ -255,28 +333,35 @@ const DashboardPage: React.FC = () => {
     setIsDepositModalOpen(true);
   }, []);
 
-  const handleCloseDepositModal = useCallback(() => {
-    if (depositTx.isLoading) return;
-    setIsDepositModalOpen(false);
+  const handleOpenExtraDepositModal = useCallback(() => {
+    setDepositMode('custom');
     setDepositAmount('');
     setDepositAmountError(null);
-    depositTx.reset();
-  }, [depositTx]);
+    setIsDepositModalOpen(true);
+  }, []);
 
-  const handleDepositAmountChange = (value: string) => {
-    setDepositAmount(value);
-    setDepositAmountError(
-      value && !isValidUSDCAmount(value) ? 'Ingresa un monto válido (máximo 6 decimales)' : null
-    );
-  };
+  // const handleCloseDepositModal = useCallback(() => {
+  //   if (depositTx.isLoading) return;
+  //   setIsDepositModalOpen(false);
+  //   setDepositAmount('');
+  //   setDepositAmountError(null);
+  //   depositTx.reset();
+  // }, [depositTx]);
 
-  const handleExecuteDeposit = useCallback(() => {
-    if (depositMode === 'custom' && !isValidUSDCAmount(depositAmount)) {
-      setDepositAmountError('Ingresa un monto válido antes de continuar');
-      return;
-    }
-    void depositTx.executeAll();
-  }, [depositMode, depositAmount, depositTx]);
+  // const handleDepositAmountChange = (value: string) => {
+  //   setDepositAmount(value);
+  //   setDepositAmountError(
+  //     value && !isValidUSDCAmount(value) ? 'Ingresa un monto válido (máximo 6 decimales)' : null
+  //   );
+  // };
+
+  // const handleExecuteDeposit = useCallback(() => {
+  //   if (depositMode === 'custom' && !isValidUSDCAmount(depositAmount)) {
+  //     setDepositAmountError('Ingresa un monto válido antes de continuar');
+  //     return;
+  //   }
+  //   void depositTx.executeAll();
+  // }, [depositMode, depositAmount, depositTx]);
 
   const handleStartRetirement = useCallback(() => {
     console.log('[DashboardPage] Start retirement – pending implementation');
@@ -366,13 +451,10 @@ const DashboardPage: React.FC = () => {
           </button>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
+        <div className="space-y-6 sm:space-y-8">
 
-          {/* ══ LEFT / MAIN COLUMN ══ */}
-          <div className="lg:col-span-2 space-y-6 sm:space-y-8">
-
-            {/* ── Mi Fondo Personal ── */}
-            <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-purple-100 p-6 sm:p-10">
+          {/* ══ MI FONDO PERSONAL — ancho completo ══ */}
+          <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-purple-100 p-6 sm:p-10">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4">
                 <h2 className="text-3xl sm:text-4xl font-black text-gray-800 flex items-center gap-3">
                   <Shield className="text-emerald-600" size={40} />
@@ -458,6 +540,51 @@ const DashboardPage: React.FC = () => {
                     ))}
                   </div>
 
+                  {/* ── Deposit Cards ── */}
+                  <div className="grid sm:grid-cols-2 gap-4">
+
+                    {/* Monthly Deposit */}
+                    <div className="bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-5 flex flex-col gap-4">
+                      <div className="flex items-start justify-between gap-2">
+                        <p className="font-black text-emerald-900 text-base">Depósito Mensual</p>
+                        <span className="flex items-center gap-1.5 bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap shrink-0">
+                          🔒 Next in <CountdownTimer targetDate={nextDepositDate} />
+                        </span>
+                      </div>
+                      <div>
+                        <p className="text-3xl sm:text-4xl font-black text-emerald-700">
+                          {/* formatUSDCWithSymbol(personalFund.fundInfo?.monthlyDeposit) */}
+                        </p>
+                        <p className="text-xs text-emerald-600 mt-1">
+                          USDC · 5% de comisión deducida on-chain
+                        </p>
+                      </div>
+                      <button
+                        onClick={handleOpenDepositModal}
+                        className="w-full bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2 text-sm"
+                      >
+                        <DollarSign size={16} />
+                        Depositar Mensual
+                      </button>
+                    </div>
+
+                    {/* Extra Deposit */}
+                    <div className="bg-gray-50 border-2 border-gray-200 rounded-2xl p-5 flex flex-col gap-4">
+                      <p className="font-black text-gray-800 text-base">Depósito Extra</p>
+                      <p className="text-sm text-gray-500 leading-relaxed flex-1">
+                        Aportá cualquier monto adicional en cualquier momento
+                      </p>
+                      <button
+                        onClick={handleOpenExtraDepositModal}
+                        className="w-full bg-white hover:bg-gray-100 active:scale-95 text-gray-800 font-bold py-3 rounded-xl border-2 border-gray-300 transition flex items-center justify-center gap-2 text-sm"
+                      >
+                        <DollarSign size={16} />
+                        Depositar Extra
+                      </button>
+                    </div>
+
+                  </div>
+
                   <div className="bg-linear-to-r from-indigo-50 to-purple-50 rounded-2xl p-4 sm:p-6 border-2 border-indigo-200">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                       <div className="flex-1 min-w-0">
@@ -493,24 +620,15 @@ const DashboardPage: React.FC = () => {
                     </div>
                   )}
 
-                  <div className="grid sm:grid-cols-2 gap-4">
+                  {!personalFund.fundInfo?.retirementStarted && personalFund.timelockInfo?.isUnlocked && (
                     <button
-                      onClick={handleOpenDepositModal}
-                      className="bg-linear-to-r from-emerald-600 to-green-700 hover:from-emerald-700 hover:to-green-800 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition transform hover:scale-105 flex items-center justify-center gap-3"
+                      onClick={handleStartRetirement}
+                      className="w-full bg-linear-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition transform hover:scale-105 flex items-center justify-center gap-3"
                     >
-                      <DollarSign size={24} />
-                      Realizar Depósito
+                      <TrendingUp size={24} />
+                      Iniciar Retiro
                     </button>
-                    {!personalFund.fundInfo?.retirementStarted && personalFund.timelockInfo?.isUnlocked && (
-                      <button
-                        onClick={handleStartRetirement}
-                        className="bg-linear-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition transform hover:scale-105 flex items-center justify-center gap-3"
-                      >
-                        <TrendingUp size={24} />
-                        Iniciar Retiro
-                      </button>
-                    )}
-                  </div>
+                  )}
                 </div>
               ) : (
                 <div className="text-center py-12 sm:py-16">
@@ -530,6 +648,12 @@ const DashboardPage: React.FC = () => {
               )}
             </div>
 
+          {/* ══ GRILLA INFERIOR (3 columnas) ══ */}
+          <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
+
+          {/* ══ LEFT / MAIN COLUMN ══ */}
+          <div className="lg:col-span-2 space-y-6 sm:space-y-8">
+
             {hasFund && (
               <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-purple-100 p-6 sm:p-10">
                 <h3 className="text-2xl sm:text-3xl font-black text-gray-800 mb-6 flex items-center gap-3">
@@ -548,6 +672,7 @@ const DashboardPage: React.FC = () => {
             )}
           </div>
 
+          </div>
           {/* ══ RIGHT SIDEBAR ══ */}
           <div className="space-y-6 sm:space-y-8">
             <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-purple-100 p-6 sm:p-8">
@@ -845,7 +970,8 @@ const DashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {isDepositModalOpen && (
+      {/* TODO: Descomentar cuando useUSDCTransaction, formatUSDCWithSymbol e isValidUSDCAmount estén disponibles */}
+      {/* {isDepositModalOpen && (
         <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50"
           onClick={(e) => e.target === e.currentTarget && handleCloseDepositModal()}
@@ -975,7 +1101,7 @@ const DashboardPage: React.FC = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
